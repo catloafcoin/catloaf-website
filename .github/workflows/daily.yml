@@ -1,28 +1,24 @@
 name: CatLoaf AI Bakery
 
 on:
-  schedule:
-    - cron: "0 3 * * *"
   workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
 
 jobs:
   bakery:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install Dependencies
-        run: |
-          pip install -r ai-bakery/requirements.txt
+      - run: pip install -r ai-bakery/requirements.txt
 
-      - name: Run CatLoaf AI
+      - name: Run AI Bakery
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -30,4 +26,3 @@ jobs:
         run: |
           cd ai-bakery
           python main.py
-
