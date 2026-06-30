@@ -1,48 +1,48 @@
 function copyCA() {
-    const ca = "GEEQMeTNRYvQKBHZo2jEaHd7j93AZugmSa6UsktJpump";
+    const ca = document.getElementById("ca").innerText;
     navigator.clipboard.writeText(ca);
     alert("Contract Address Copied!");
 }
 
-// Fade-in animation
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+// Fade in sections
+const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting){
             entry.target.classList.add("show");
         }
     });
-}, {
-    threshold: 0.15
+},{
+    threshold:0.15
 });
 
-document.querySelectorAll("section, .card").forEach((el) => {
+document.querySelectorAll("section,.card").forEach(el=>{
     el.classList.add("hidden");
     observer.observe(el);
 });
 
-// Floating background
-const bg = document.createElement("div");
-bg.className = "floating-bg";
+// Floating bread & paws
+const bg=document.createElement("div");
+bg.className="floating-bg";
 document.body.prepend(bg);
 
-const emojis = ["🍞","🐾"];
+const icons=["🍞","🐾"];
 
-for(let i=0;i<16;i++){
+for(let i=0;i<20;i++){
 
-    const e=document.createElement("div");
+    const item=document.createElement("div");
 
-    e.className="float";
+    item.className="float";
 
-    e.innerHTML=emojis[Math.floor(Math.random()*emojis.length)];
+    item.innerHTML=icons[Math.floor(Math.random()*icons.length)];
 
-    e.style.left=Math.random()*100+"vw";
+    item.style.left=Math.random()*100+"vw";
 
-    e.style.animationDuration=(18+Math.random()*12)+"s";
+    item.style.animationDuration=(18+Math.random()*15)+"s";
 
-    e.style.animationDelay=(-Math.random()*30)+"s";
+    item.style.animationDelay=(-Math.random()*40)+"s";
 
-    e.style.fontSize=(18+Math.random()*18)+"px";
+    item.style.fontSize=(18+Math.random()*22)+"px";
 
-    bg.appendChild(e);
+    bg.appendChild(item);
 
 }
