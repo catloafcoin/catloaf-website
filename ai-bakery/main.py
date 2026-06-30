@@ -1,12 +1,17 @@
 import google.generativeai as genai
 import requests
 import os
+import json
+import modules
 
 print("Starting AI Bakery...")
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel("gemini-2.5-flash")
+
+with open("config.json", "r") as f:
+    config = json.load(f)
 
 with open("brand.txt", "r", encoding="utf-8") as f:
     brand_guide = f.read()
@@ -86,10 +91,17 @@ message = response.text
 
 print(message)
 
-requests.post(
-    f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
-    data={
-        "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
-        "text": message
-    }
-)
+parts = [
+    p.strip()
+    for p in message.split("========================")
+    if p.strip()
+]
+
+for part in parts:
+    requests.post(
+        f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
+        data={
+            "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
+            "text": part
+        }
+    )
