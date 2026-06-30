@@ -1,0 +1,1 @@
+function copyCA(){navigator.clipboard.writeText(document.getElementById('ca').innerText);alert('Contract copied!');}
