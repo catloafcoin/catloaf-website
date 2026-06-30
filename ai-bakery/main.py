@@ -3,8 +3,15 @@ import requests
 import os
 import json
 import modules
+from rss_reader import get_latest_news
 
 print("Starting AI Bakery...")
+
+news = get_latest_news()
+
+print("Latest News:")
+for article in news:
+    print(article["title"])
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
