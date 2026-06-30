@@ -130,3 +130,24 @@ border-radius:12px;
 }
 
 }
+.buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-top:30px;
+}
+
+.buttons a{
+    background:#ffb84d;
+    color:#222;
+    padding:14px 22px;
+    border-radius:999px;
+    text-decoration:none;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.buttons a:hover{
+    background:#ffd27a;
+}
