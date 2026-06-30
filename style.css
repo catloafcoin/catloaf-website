@@ -139,3 +139,14 @@ max-width:320px;
 }
 
 }
+.logo{
+    width:180px;
+    display:block;
+    margin:0 auto 20px;
+    border-radius:50%;
+    box-shadow:0 0 35px rgba(255,185,80,.35);
+}
+.banner{
+    width:100%;
+    display:block;
+}
