@@ -3,61 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CatLoaf</title>
-<style>
-body{margin:0;font-family:Arial,sans-serif;background:#18110d;color:#fff}
-.hero{background:linear-gradient(135deg,#9c5c2e,#d58a42);padding:60px 20px;text-align:center}
-h1{font-size:3rem;margin:.2em 0}
-.tag{font-size:1.2rem}
-.btn{display:inline-block;margin:10px;padding:14px 26px;border-radius:30px;background:#ffbf47;color:#222;text-decoration:none;font-weight:bold}
-section{max-width:900px;margin:auto;padding:20px}
-.card{background:#2a1a12;border-radius:14px;padding:20px;margin:20px 0}
-footer{text-align:center;color:#bbb;padding:30px}
-</style>
+<title>CatLoaf ($CLOAF)</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-<div class="hero">
+
+<header class="hero">
+
+<div class="overlay">
+
 <h1>🐱🍞 CatLoaf</h1>
-<p class="tag">The Internet's Fluffiest Community on Solana.</p>
-<a class="btn" href="https://x.com/catloafcoin">Follow on X</a>
-<a class="btn" href="https://t.me/catloafcoin">Telegram</a>
+
+<p class="tagline">
+The Internet's Fluffiest Community on Solana.
+</p>
+
+<div class="buttons">
+
+<a class="btn buy"
+href="https://pump.fun/coin/GEEQMeTNRYvQKBHZo2jEaHd7j93AZugmSa6UsktJpump"
+target="_blank">
+BUY $CLOAF
+</a>
+
+<a class="btn"
+href="https://x.com/catloafcoin"
+target="_blank">
+X
+</a>
+
+<a class="btn"
+href="https://t.me/catloafcoin"
+target="_blank">
+Telegram
+</a>
+
+<button class="btn"
+onclick="copyCA()">
+Copy CA
+</button>
+
 </div>
+
+</div>
+
+</header>
 
 <section>
+
 <div class="card">
-<h2>About</h2>
-<p>CatLoaf is a community-driven meme coin celebrating wholesome internet culture, original art and good vibes on Solana.</p>
+
+<h2>About CatLoaf</h2>
+
+<p>
+
+CatLoaf is a community-driven meme coin on Solana inspired by everyone's favourite internet cats curled up like a loaf of bread.
+
+No drama.
+
+No complicated promises.
+
+Just memes, community and good vibes.
+
+</p>
+
 </div>
 
 <div class="card">
+
+<h2>Contract Address</h2>
+
+<p id="ca">
+
+GEEQMeTNRYvQKBHZo2jEaHd7j93AZugmSa6UsktJpump
+
+</p>
+
+</div>
+
+<div class="card">
+
 <h2>Roadmap</h2>
+
 <ul>
-<li>✅ Launch</li>
-<li>✅ X & Telegram</li>
-<li>🌐 Website</li>
-<li>📄 Litepaper</li>
-<li>🎨 Community events</li>
-<li>🚀 Grow the Loaf Gang</li>
+
+<li>✅ Pump.fun Launch</li>
+
+<li>✅ Website</li>
+
+<li>✅ Telegram</li>
+
+<li>✅ X Community</li>
+
+<li>🚀 DexScreener</li>
+
+<li>🚀 CoinGecko</li>
+
+<li>🚀 Community Growth</li>
+
 </ul>
+
 </div>
 
-<div class="card">
-<h2>Tokenomics</h2>
-<ul>
-<li>Blockchain: Solana</li>
-<li>Community focused</li>
-<li>Fair launch</li>
-<li>No unnecessary complexity</li>
-</ul>
-</div>
-
-<div class="card">
-<h2>FAQ</h2>
-<p><b>What is CatLoaf?</b><br>A fun community meme project built on Solana.</p>
-<p><b>How do I join?</b><br>Follow on X and join Telegram.</p>
-</div>
 </section>
 
-<footer>🐱🍞 One Loaf. One Community. Endless Good Vibes.</footer>
+<footer>
+
+🐱🍞 One Loaf. One Community. Endless Good Vibes.
+
+</footer>
+
+<script src="script.js"></script>
+
 </body>
+
 </html>
