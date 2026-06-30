@@ -8,10 +8,16 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-prompt = prompt = """
+with open("brand.txt", "r", encoding="utf-8") as f:
+    brand_guide = f.read()
+
+prompt = f"""
+{brand_guide}
+
 You are CatLoaf's official AI Marketing Director.
 
 Brand personality:
+
 - Wholesome
 - Witty
 - Internet-native
