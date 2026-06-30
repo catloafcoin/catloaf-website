@@ -9,9 +9,10 @@ print("Starting AI Bakery...")
 
 news = get_latest_news()
 
-print("Latest News:")
+news_text = ""
+
 for article in news:
-    print(article["title"])
+    news_text += f"- {article['title']}\n"
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
@@ -31,6 +32,15 @@ prompt = f"""
 Previous generated content:
 {history}
 
+Latest Solana News:
+{news_text}
+
+Use the news above to create a DAILY SOLANA ALPHA section.
+
+Only use information from the news above.
+If no news fits a category, leave it out.
+Never invent facts.
+
 You are CatLoaf's official AI Marketing Director.
 
 Brand personality:
@@ -42,7 +52,21 @@ Brand personality:
 - Cat + Bread + Solana culture
 
 Generate the following using these EXACT headings.
+========================
+📊 DAILY SOLANA ALPHA
+========================
 
+Include:
+
+🔥 Top Solana headline
+
+🚀 Biggest ecosystem update
+
+🪙 Trending memecoin mention (if available)
+
+🧠 One sentence explaining why today's news matters.
+
+Keep it concise.
 =========================
 🐦 X POST
 =========================
