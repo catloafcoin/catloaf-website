@@ -52,9 +52,7 @@ Brand personality:
 - Cat + Bread + Solana culture
 
 Generate the following using these EXACT headings.
-========================
-📊 DAILY SOLANA ALPHA
-========================
+===SECTION:DAILY_ALPHA===
 
 Include:
 
@@ -67,9 +65,7 @@ Include:
 🧠 One sentence explaining why today's news matters.
 
 Keep it concise.
-=========================
-🐦 X POST
-=========================
+===SECTION:X_POST===
 Requirements:
 - Maximum 280 characters
 - Viral
@@ -77,35 +73,24 @@ Requirements:
 - One call to action
 - 2-4 hashtags maximum
 
-=========================
-📢 TELEGRAM POST
-=========================
+===SECTION:TELEGRAM_POST===
 Requirements:
 - Exciting
 - Easy to read
 - Short paragraphs
 - Invite discussion
 
-=========================
-😂 MEME IDEA
-=========================
+===SECTION:MEME_IDEA===
 Include:
 - Meme concept
 - Caption
 
-=========================
-🎨 AI IMAGE PROMPT
-=========================
+===SECTION:IMAGE_PROMPT===
 Create a detailed image prompt suitable for AI image generators.
-
-=========================
-💬 ENGAGEMENT QUESTION
-=========================
+===SECTION:ENGAGEMENT===
 Create ONE question that encourages replies.
 
-=========================
-📅 BEST TIME TO POST
-=========================
+===SECTION:BEST_TIME===
 Suggest the best UTC posting time and explain why in one sentence.
 
 Rules:
@@ -122,17 +107,18 @@ message = response.text
 
 print(message)
 
-parts = [
-    p.strip()
-    for p in message.split("========================")
-    if p.strip()
-]
+sections = message.split("===SECTION:")
 
-for part in parts:
+for section in sections:
+    section = section.strip()
+
+    if not section:
+        continue
+
     requests.post(
         f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
         data={
             "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
-            "text": part
+            "text": section.strip()
         }
     )
