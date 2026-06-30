@@ -1,4 +1,4 @@
 feedparser
 requests
-google-genai
+google-generativeai
 python-dotenv
