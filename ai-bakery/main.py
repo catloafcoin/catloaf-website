@@ -1,49 +1,34 @@
-import feedparser
-from google import genai
-from config import GEMINI_API_KEY
+import google.generativeai as genai
+import requests
+import os
 
-# Load RSS feeds
-with open("rss_feeds.txt", "r") as f:
-    feeds = [line.strip() for line in f if line.strip()]
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-articles = []
+model = genai.GenerativeModel("gemini-2.5-flash")
 
-for feed in feeds:
-    try:
-        rss = feedparser.parse(feed)
-        for entry in rss.entries[:3]:
-            articles.append(
-                f"Title: {entry.get('title','')}\n"
-                f"Summary: {entry.get('summary','')}\n"
-            )
-    except Exception:
-        pass
-
-news = "\n\n".join(articles[:15])
-
-# Load CatLoaf personality
-with open("prompt.txt", "r") as f:
-    system_prompt = f.read()
-
-client = genai.Client(api_key=GEMINI_API_KEY)
-
-response = client.models.generate_content(
-    model="gemini-2.5-flash",
-    contents=f"""
-{system_prompt}
-
-Today's news:
-
-{news}
+prompt = """
+You are the marketing manager for CatLoaf, a Solana meme coin.
 
 Generate:
 
-1. One X post
+1. One viral X post
 2. One Telegram post
-3. One engagement question
-4. One image prompt in CatLoaf style
-5. Best posting time (IST)
-"""
-)
+3. One meme idea
+4. One image prompt
+5. One engagement question
 
-print(response.text)
+Keep the tone fun, wholesome, witty and community-driven.
+Avoid making false promises or price predictions.
+"""
+
+response = model.generate_content(prompt)
+
+message = response.text
+
+requests.post(
+    f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
+    data={
+        "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
+        "text": message
+    }
+)
