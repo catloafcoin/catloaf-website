@@ -2,33 +2,41 @@ import google.generativeai as genai
 import requests
 import os
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+print("Starting AI Bakery...")
+
+api_key = os.getenv("GEMINI_API_KEY")
+print("API key found:", bool(api_key))
+
+genai.configure(api_key=api_key)
+
+print("Connecting to Gemini...")
 
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 prompt = """
-You are the marketing manager for CatLoaf, a Solana meme coin.
-
-Generate:
-
-1. One viral X post
-2. One Telegram post
-3. One meme idea
-4. One image prompt
-5. One engagement question
-
-Keep the tone fun, wholesome, witty and community-driven.
-Avoid making false promises or price predictions.
+Write one fun CatLoaf X post in under 280 characters.
 """
 
 response = model.generate_content(prompt)
 
+print("Gemini replied.")
+
 message = response.text
 
-requests.post(
-    f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
+print(message)
+
+bot = os.getenv("TELEGRAM_BOT_TOKEN")
+chat = os.getenv("TELEGRAM_CHAT_ID")
+
+print("Sending to Telegram...")
+
+r = requests.post(
+    f"https://api.telegram.org/bot{bot}/sendMessage",
     data={
-        "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
+        "chat_id": chat,
         "text": message
     }
 )
+
+print("Telegram status:", r.status_code)
+print("Telegram response:", r.text)
