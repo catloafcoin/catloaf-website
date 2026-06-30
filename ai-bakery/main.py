@@ -11,8 +11,13 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 with open("brand.txt", "r", encoding="utf-8") as f:
     brand_guide = f.read()
 
+with open("history.txt", "r", encoding="utf-8") as f:
+    history = f.read()
+
 prompt = f"""
 {brand_guide}
+Previous generated content:
+{history}
 
 You are CatLoaf's official AI Marketing Director.
 
