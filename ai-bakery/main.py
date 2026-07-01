@@ -353,7 +353,7 @@ for index, (message, msg_type) in enumerate(zip(messages, message_types), start=
         print(f"Skipping internal message: {msg_type}")
         continue
 
-try:
+    try:
 
     if msg_type == "what_if":
 
@@ -376,7 +376,7 @@ try:
 
     print(f"✓ Message {index}/{len(messages)} sent")
 
-except Exception as e:
+    except Exception as e:
 
     failed += 1
 
