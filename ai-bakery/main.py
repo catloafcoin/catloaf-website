@@ -133,6 +133,9 @@ data = validate_json(response.text)
 
 print("✓ JSON Validated")
 
+add_to_queue(data)
+print("✓ Saved to Queue")
+
 # --------------------------------------------------
 # Telegram Message Builder
 # --------------------------------------------------
