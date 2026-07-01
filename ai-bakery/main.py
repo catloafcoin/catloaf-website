@@ -339,7 +339,10 @@ print(f"✓ Built {len(messages)} Telegram Messages")
 # Compact History
 # --------------------------------------------------
 
-fingerprint = json.dumps(data["history"], ensure_ascii=False)
+fingerprint = json.dumps(
+    data.get("history", {}),
+    ensure_ascii=False
+)
 
 entries = [
     line
