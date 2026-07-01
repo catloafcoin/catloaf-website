@@ -151,3 +151,25 @@ def send_telegram(token, chat_id, text, msg_type):
             print("Telegram send failed.")
 
         time.sleep(1)
+
+def send_poll(token, chat_id, questions):
+
+    if not questions:
+        return
+
+    url = f"https://api.telegram.org/bot{token}/sendPoll"
+
+    r = requests.post(
+        url,
+        data={
+            "chat_id": chat_id,
+            "question": "🤔 WHAT IF $CLOAF?",
+            "options": json.dumps(questions[:4]),
+            "is_anonymous": False,
+            "allows_multiple_answers": False
+        },
+        timeout=20
+    )
+
+    if r.status_code != 200:
+        raise Exception(r.text)
