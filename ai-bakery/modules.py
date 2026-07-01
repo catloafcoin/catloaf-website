@@ -152,6 +152,31 @@ def send_telegram(token, chat_id, text, msg_type):
 
         time.sleep(1)
 
+def send_photo(token, chat_id, photo_path, caption=""):
+
+    url = f"https://api.telegram.org/bot{token}/sendPhoto"
+
+    with open(photo_path, "rb") as photo:
+
+        r = requests.post(
+            url,
+            data={
+                "chat_id": chat_id,
+                "caption": telegram_safe(caption),
+                "parse_mode": "HTML"
+            },
+            files={
+                "photo": photo
+            },
+            timeout=60
+        )
+
+    print(r.status_code)
+    print(r.text)
+
+    if r.status_code != 200:
+        raise Exception(r.text)
+
 def send_poll(token, chat_id, question, options):
 
     if not question or not options:
