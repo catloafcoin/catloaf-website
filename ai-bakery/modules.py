@@ -155,7 +155,7 @@ def send_telegram(token, chat_id, text, msg_type):
 def send_poll(token, chat_id, question, options):
 
     if not question or not options:
-    return
+        return
     
     url = f"https://api.telegram.org/bot{token}/sendPoll"
 
