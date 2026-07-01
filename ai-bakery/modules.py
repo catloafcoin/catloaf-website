@@ -100,11 +100,25 @@ def send_telegram(token, chat_id, text):
             r = requests.post(
                 url,
                 data={
-                    "chat_id": chat_id,
-                    "text": telegram_safe(part),
-                    "parse_mode": "HTML",
-                    "disable_web_page_preview": True
+    "chat_id": chat_id,
+    "text": telegram_safe(part),
+    "parse_mode": "HTML",
+    "disable_web_page_preview": True,
+    "reply_markup": json.dumps({
+        "inline_keyboard": [
+            [
+                {
+                    "text": "🐦 Follow X",
+                    "url": "https://x.com/CatLoafCoin"
                 },
+                {
+                    "text": "📢 Telegram",
+                    "url": "https://t.me/CatLoafCoin"
+                }
+            ]
+        ]
+    })
+},
                 timeout=20
             )
 
