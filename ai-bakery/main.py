@@ -353,23 +353,34 @@ for index, (message, msg_type) in enumerate(zip(messages, message_types), start=
         continue
 
     try:
-        send_telegram(
-    TELEGRAM_TOKEN,
-    TELEGRAM_CHAT_ID,
-    message,
-    msg_type
+
+    if msg_type == "what_if":
+
+        send_poll(
+            TELEGRAM_TOKEN,
+            TELEGRAM_CHAT_ID,
+            data["engagement"]
         )
 
-        sent += 1
+    else:
 
-        print(f"✓ Message {index}/{len(messages)} sent")
+        send_telegram(
+            TELEGRAM_TOKEN,
+            TELEGRAM_CHAT_ID,
+            message,
+            msg_type
+        )
 
-    except Exception as e:
+    sent += 1
 
-        failed += 1
+    print(f"✓ Message {index}/{len(messages)} sent")
 
-        print(f"✗ Message {index} failed")
-        print(e)
+except Exception as e:
+
+    failed += 1
+
+    print(f"✗ Message {index} failed")
+    print(e)
 
 print("\n" + "=" * 50)
 
