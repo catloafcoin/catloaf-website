@@ -25,3 +25,18 @@ def get_queue():
 
 def clear_queue():
     save_queue([])
+
+DAILY_FILE = "daily_content.json"
+
+
+def save_daily(data):
+    with open(DAILY_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+def load_daily():
+    if not os.path.exists(DAILY_FILE):
+        return {}
+
+    with open(DAILY_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
