@@ -152,19 +152,19 @@ def send_telegram(token, chat_id, text, msg_type):
 
         time.sleep(1)
 
-def send_poll(token, chat_id, questions):
+def send_poll(token, chat_id, question, options):
 
-    if not questions:
-        return
-
+    if not question or not options:
+    return
+    
     url = f"https://api.telegram.org/bot{token}/sendPoll"
 
     r = requests.post(
         url,
         data={
             "chat_id": chat_id,
-            "question": "🤔 WHAT IF $CLOAF?",
-            "options": json.dumps(questions[:4]),
+            "question": question,
+            "options": json.dumps(options),
             "is_anonymous": False,
             "allows_multiple_answers": False
         },
