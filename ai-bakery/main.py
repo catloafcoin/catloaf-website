@@ -103,7 +103,12 @@ Return ONLY the three headlines, one per line.
 
 News:
 
-{chr(10).join(news_items)}
+{
+    chr(10).join(
+        f"Title: {a['title']}\nSummary: {a.get('summary', '')}"
+        for a in articles
+    )
+}
 """
 
 ranking = model.generate_content(ranking_prompt)
