@@ -129,6 +129,10 @@ if not hasattr(response, "text") or not response.text:
 
 print("✓ Gemini Response Received")
 
+print("=" * 50)
+print(response.text)
+print("=" * 50)
+
 data = validate_json(response.text)
 
 print("✓ JSON Validated")
