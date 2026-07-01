@@ -342,7 +342,7 @@ print("\nSending Telegram messages...\n")
 sent = 0
 failed = 0
 
-for index, message in enumerate(messages, start=1):
+for index, (message, msg_type) in enumerate(zip(messages, message_types), start=1):
 
     if not message.strip():
         print(f"Skipping empty message #{index}")
