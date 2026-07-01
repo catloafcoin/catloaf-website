@@ -82,7 +82,12 @@ for article in articles:
 
 articles = articles[:12]
 
-ranking_prompt = f"""
+news_for_ranking = "\n".join(
+    "Title: " + a["title"] + "\nSummary: " + a.get("summary", "")
+    for a in articles
+)
+
+ranking_prompt = """
 You are an editor for a top crypto publication.
 
 Below are today's Solana news headlines.
@@ -103,13 +108,7 @@ Return ONLY the three headlines, one per line.
 
 News:
 
-{
-    chr(10).join(
-        f"Title: {a['title']}\nSummary: {a.get('summary', '')}"
-        for a in articles
-    )
-}
-"""
+""" + news_for_ranking
 
 ranking = model.generate_content(ranking_prompt)
 
