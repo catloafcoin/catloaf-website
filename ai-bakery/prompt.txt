@@ -129,18 +129,27 @@ Describe:
 
 Keep prompts under 120 words.
 
-Engagement Rules
+Poll Rules
 
-Generate three community questions.
+Generate ONE community poll.
+
+Generate exactly ONE question.
+
+Generate exactly FOUR answer options.
+
+The answers must naturally fit the question.
+
+The options should be:
+- short
+- funny
+- easy to tap
+- relevant to the question
 
 Avoid yes/no questions.
 
-Encourage discussion.
+Avoid open-ended answers.
 
-Use styles like:
-- What if...
-- Which would you choose...
-- Imagine if...
+Each option should be fewer than 6 words.
 
 Return ONLY valid JSON.
 
@@ -211,11 +220,15 @@ Return exactly this schema.
     "details":""
   },
 
-  "engagement":[
+"poll":{
+  "question":"",
+  "options":[
+    "",
     "",
     "",
     ""
-  ],
+  ]
+},
 
   "best_time":{
     "utc":"",
