@@ -1,9 +1,8 @@
+from scheduler import add_to_queue
 import os
 import json
 import google.generativeai as genai
-
 from rss_reader import get_latest_news
-
 from modules import (
     load_text,
     load_json,
