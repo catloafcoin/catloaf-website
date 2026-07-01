@@ -97,33 +97,45 @@ def send_telegram(token, chat_id, text, msg_type):
 
         for _ in range(3):
 
-            r = requests.post(
-                url,
-                data={
+            reply_markup = None
+
+if msg_type in ["hot_loaf", "art", "cloaf"]:
+
+    reply_markup = json.dumps({
+        "inline_keyboard": [
+            [
+                {
+                    "text": "🐦 Follow X",
+                    "url": "https://x.com/CatLoafCoin"
+                },
+                {
+                    "text": "📢 Telegram",
+                    "url": "https://t.me/CatLoafCoin"
+                }
+            ],
+            [
+                {
+                    "text": "📤 Share",
+                    "switch_inline_query": "Check out @CatLoafCoin 🥖🐱"
+                }
+            ]
+        ]
+    })
+
+payload = {
     "chat_id": chat_id,
     "text": telegram_safe(part),
     "parse_mode": "HTML",
-    "disable_web_page_preview": True,
-    **(
-    {
-        "reply_markup": json.dumps({
-            "inline_keyboard": [
-                [
-                    {
-                        "text": "🐦 Follow X",
-                        "url": "https://x.com/CatLoafCoin"
-                    },
-                    {
-                        "text": "📢 Telegram",
-                        "url": "https://t.me/CatLoafCoin"
-                    }
-                ]
-            ]
-        })
-    }
-    if msg_type in ["hot_loaf", "art", "what_if"]
-    else {}
-},
+    "disable_web_page_preview": True
+}
+
+if reply_markup:
+    payload["reply_markup"] = reply_markup
+
+r = requests.post(
+    url,
+    data=payload,
+    timeout
                 timeout=20
             )
 
