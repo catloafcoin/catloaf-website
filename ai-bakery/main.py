@@ -390,30 +390,38 @@ with open("history.txt", "w", encoding="utf-8") as f:
 
 sections = message.split("===SECTION:")
 
+sections = message.split("===SECTION:")
+
 for section in sections:
     section = section.strip()
 
     if not section:
         continue
-safe_text = escape(section.strip())
 
-safe_text = (
-    safe_text
-    .replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
-    .replace("&lt;i&gt;", "<i>").replace("&lt;/i&gt;", "</i>")
-    .replace("&lt;code&gt;", "<code>").replace("&lt;/code&gt;", "</code>")
-)
+    lines = section.splitlines()
 
-r = requests.post(
-    f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
-    data={
-        "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
-        "text": safe_text,
-        "parse_mode": "HTML",
-        "disable_web_page_preview": True
-    },
-    timeout=20
-)
-print(f"Telegram Status: {r.status_code}")
-print(r.text)
-    
+    if len(lines) > 1:
+        section = "\n".join(lines[1:]).strip()
+
+    safe_text = escape(section)
+
+    safe_text = (
+        safe_text
+        .replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
+        .replace("&lt;i&gt;", "<i>").replace("&lt;/i&gt;", "</i>")
+        .replace("&lt;code&gt;", "<code>").replace("&lt;/code&gt;", "</code>")
+    )
+
+    r = requests.post(
+        f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
+        data={
+            "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
+            "text": safe_text,
+            "parse_mode": "HTML",
+            "disable_web_page_preview": True
+        },
+        timeout=20
+    )
+
+    print(f"Telegram Status: {r.status_code}")
+    print(r.text)
