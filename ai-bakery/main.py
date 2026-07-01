@@ -242,45 +242,6 @@ messages.append(meme_message.strip())
 message_types.append("art")
 
 # --------------------------------------------------
-# IMAGE PROMPT
-# --------------------------------------------------
-
-image = data["image_prompt"]
-
-image_message = f"""
-🎨 <b>IMAGE PROMPT</b>
-
-{divider()}
-
-Style:
-{image["style"]}
-
-Subject:
-{image["subject"]}
-
-Background:
-{image["background"]}
-
-Lighting:
-{image["lighting"]}
-
-Camera:
-{image["camera"]}
-
-Colors:
-{image["colors"]}
-
-Mood:
-{image["mood"]}
-
-Details:
-{image["details"]}
-"""
-
-messages.append(image_message.strip())
-message_types.append("image_prompt")
-
-# --------------------------------------------------
 # ENGAGEMENT
 # --------------------------------------------------
 
