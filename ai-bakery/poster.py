@@ -1,4 +1,4 @@
-from scheduler import get_queue, remove_first, should_post_now
+from scheduler import get_queue, remove_first, should_post_now, load_posted, mark_posted
 from modules import send_telegram, send_poll
 import os
 
@@ -17,11 +17,21 @@ def process_queue():
         return
 
     item = queue[0]
+    post_id = item.get("id", "")
+
+posted = load_posted()
+
+if post_id in posted:
+    print("Already posted.")
+    remove_first()
+    return
 
     print("Processing first queued item...")
 
     send_telegram(item)
     print("✓ Sent to Telegram")
+    mark_posted(post_id)
+    print("✓ Added to posted history")
 
     remove_first()
 
