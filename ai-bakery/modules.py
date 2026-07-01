@@ -85,7 +85,7 @@ def split_message(text, limit=3900):
     return chunks
 
 
-def send_telegram(token, chat_id, text):
+def send_telegram(token, chat_id, text, msg_type):
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
@@ -104,20 +104,25 @@ def send_telegram(token, chat_id, text):
     "text": telegram_safe(part),
     "parse_mode": "HTML",
     "disable_web_page_preview": True,
-    "reply_markup": json.dumps({
-        "inline_keyboard": [
-            [
-                {
-                    "text": "🐦 Follow X",
-                    "url": "https://x.com/CatLoafCoin"
-                },
-                {
-                    "text": "📢 Telegram",
-                    "url": "https://t.me/CatLoafCoin"
-                }
+    **(
+    {
+        "reply_markup": json.dumps({
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "🐦 Follow X",
+                        "url": "https://x.com/CatLoafCoin"
+                    },
+                    {
+                        "text": "📢 Telegram",
+                        "url": "https://t.me/CatLoafCoin"
+                    }
+                ]
             ]
-        ]
-    })
+        })
+    }
+    if msg_type in ["hot_loaf", "art", "what_if"]
+    else {}
 },
                 timeout=20
             )
