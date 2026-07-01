@@ -175,3 +175,13 @@ Focus on clarity over quantity.
 Prioritize originality.
 
 Produce content people genuinely want to forward.
+
+Your response MUST be valid JSON parsable by Python's json.loads().
+
+Do not output Markdown.
+
+Do not output code fences.
+
+Do not explain anything.
+
+Output ONLY the JSON object.
