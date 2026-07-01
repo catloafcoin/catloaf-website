@@ -284,12 +284,11 @@ message_types.append("image_prompt")
 # ENGAGEMENT
 # --------------------------------------------------
 
-engagement = "🤔 <b>WHAT IF $CLOAF?</b>\n\n"
+# --------------------------------------------------
+# POLL
+# --------------------------------------------------
 
-for q in data["engagement"]:
-    engagement += f"• {q}\n\n"
-
-messages.append(engagement.strip())
+messages.append(data["poll"]["question"])
 message_types.append("what_if")
 
 # --------------------------------------------------
@@ -360,9 +359,10 @@ for index, (message, msg_type) in enumerate(zip(messages, message_types), start=
     try:
         if msg_type == "what_if":
             send_poll(
-                TELEGRAM_TOKEN,
-                TELEGRAM_CHAT_ID,
-                data["engagement"]
+    TELEGRAM_TOKEN,
+    TELEGRAM_CHAT_ID,
+    data["poll"]["question"],
+    data["poll"]["options"]
             )
         else:
             send_telegram(
