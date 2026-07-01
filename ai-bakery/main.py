@@ -4,6 +4,7 @@ import os
 import json
 import modules
 from rss_reader import get_latest_news
+from html import escape
 
 print("Starting AI Bakery...")
 
@@ -394,13 +395,6 @@ for section in sections:
 
     if not section:
         continue
-
-    r = requests.post(
-    f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
-    data={
-        "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
-        from html import escape
-
 safe_text = escape(section.strip())
 
 safe_text = (
@@ -410,12 +404,16 @@ safe_text = (
     .replace("&lt;code&gt;", "<code>").replace("&lt;/code&gt;", "</code>")
 )
 
-"text": safe_text,
+r = requests.post(
+    f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
+    data={
+        "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
+        "text": safe_text,
         "parse_mode": "HTML",
         "disable_web_page_preview": True
     },
     timeout=20
 )
-
 print(f"Telegram Status: {r.status_code}")
 print(r.text)
+    
