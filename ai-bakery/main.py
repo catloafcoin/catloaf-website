@@ -80,12 +80,35 @@ for article in articles:
 
     news_items.append(title)
 
-news_items = news_items[:5]
+news_items = news_items[:12]
 
-news_text = "\n".join(
-    f"• {item}"
-    for item in news_items
-)
+ranking_prompt = f"""
+You are an editor for a top crypto publication.
+
+Below are today's Solana news headlines.
+
+Select ONLY the 3 headlines that would be most interesting to the Solana community.
+
+Prioritize:
+- Ecosystem impact
+- Adoption
+- Developers
+- Memecoins
+- Community
+- Virality
+
+Ignore duplicates.
+
+Return ONLY the three headlines, one per line.
+
+News:
+
+{chr(10).join(news_items)}
+"""
+
+ranking = model.generate_content(ranking_prompt)
+
+news_text = ranking.text.strip()
 
 print(f"✓ {len(news_items)} News Articles Loaded")
 
