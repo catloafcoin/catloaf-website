@@ -142,41 +142,6 @@ def divider():
 messages = []
 
 # --------------------------------------------------
-# DAILY ALPHA
-# --------------------------------------------------
-
-daily = data["daily_alpha"]
-ecosystem_updates = "\n".join(
-    f"• {item}" for item in daily["ecosystem"]
-)
-daily_message = f"""
-🍞 <b>CATLOAF DAILY BAKERY</b>
-
-{divider()}
-
-🔥 <b>Top Headline</b>
-
-{daily["headline"]}
-
-🚀 <b>Ecosystem Update</b>
-
-{ecosystem_updates}
-
-🪙 <b>Memecoin Watch</b>
-
-{daily["memecoin"]}
-
-🧠 <b>Why It Matters</b>
-
-{daily["why_it_matters"]}
-
-{divider()}
-🐱 @CatLoafCoin
-""".strip()
-
-messages.append(daily_message)
-
-# --------------------------------------------------
 # X POSTS
 # --------------------------------------------------
 
@@ -308,7 +273,7 @@ messages.append(image_message.strip())
 # ENGAGEMENT
 # --------------------------------------------------
 
-engagement = "💬 <b>COMMUNITY QUESTIONS</b>\n\n"
+engagement = "🤔 <b>WHAT IF $CLOAF?</b>\n\n"
 
 for q in data["engagement"]:
     engagement += f"• {q}\n\n"
