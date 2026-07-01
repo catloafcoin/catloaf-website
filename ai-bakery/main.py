@@ -212,7 +212,7 @@ message_types.append("hot_loaf")
 meme = data["meme"]
 
 meme_message = f"""
-😂 <b>MEME OF THE DAY</b>
+🎨 <b>$CLOAF ART OF THE DAY</b>
 
 {divider()}
 
