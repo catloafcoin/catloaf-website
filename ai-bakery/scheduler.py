@@ -63,7 +63,8 @@ def should_post_now():
     """
 
     return True
-    POSTED_FILE = "posted.json"
+
+POSTED_FILE = "posted.json"
 
 
 def load_posted():
@@ -86,3 +87,43 @@ def mark_posted(post_id):
         posted.append(post_id)
 
     save_posted(posted)
+
+def calculate_score(item):
+    """
+    Calculates whether a piece of content is worth posting.
+    Returns a score from 0–100.
+    """
+
+    score = 0
+
+    title = item.get("title", "").lower()
+    body = item.get("body", "").lower()
+
+    text = f"{title} {body}"
+
+    keywords = [
+        "solana",
+        "jupiter",
+        "phantom",
+        "pump.fun",
+        "raydium",
+        "drift",
+        "sanctum",
+        "backpack",
+        "meme",
+        "airdrop",
+        "defi",
+        "token",
+        "launch",
+        "listing",
+        "partnership",
+        "volume",
+        "record",
+        "breaking"
+    ]
+
+    for word in keywords:
+        if word in text:
+            score += 6
+
+    return min(score, 100)
