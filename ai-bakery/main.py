@@ -1,1 +1,403 @@
+import os
+import json
+import google.generativeai as genai
 
+from rss_reader import get_latest_news
+
+from modules import (
+    load_text,
+    load_json,
+    validate_json,
+    send_telegram
+)
+
+print("=" * 50)
+print("🍞 Starting CatLoaf AI Bakery V2")
+print("=" * 50)
+
+# --------------------------------------------------
+# Load Configuration
+# --------------------------------------------------
+
+config = load_json("config.json")
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+if not GEMINI_API_KEY:
+    raise Exception("Missing GEMINI_API_KEY")
+
+if not TELEGRAM_TOKEN:
+    raise Exception("Missing TELEGRAM_BOT_TOKEN")
+
+if not TELEGRAM_CHAT_ID:
+    raise Exception("Missing TELEGRAM_CHAT_ID")
+
+genai.configure(api_key=GEMINI_API_KEY)
+
+model = genai.GenerativeModel("gemini-2.5-flash")
+
+print("✓ Configuration Loaded")
+
+# --------------------------------------------------
+# Load Prompt Files
+# --------------------------------------------------
+
+brand = load_text("brand.txt")
+
+prompt_template = load_text("prompt.txt")
+
+history = load_text("history.txt")
+
+print("✓ Prompt Loaded")
+
+# --------------------------------------------------
+# Load News
+# --------------------------------------------------
+
+print("Fetching RSS...")
+
+articles = get_latest_news()
+
+seen = set()
+
+news_items = []
+
+for article in articles:
+
+    title = article.get("title", "").strip()
+
+    if not title:
+        continue
+
+    key = title.lower()
+
+    if key in seen:
+        continue
+
+    seen.add(key)
+
+    news_items.append(title)
+
+news_items = news_items[:5]
+
+news_text = "\n".join(
+    f"• {item}"
+    for item in news_items
+)
+
+print(f"✓ {len(news_items)} News Articles Loaded")
+
+# --------------------------------------------------
+# Build Prompt
+# --------------------------------------------------
+
+prompt = f"""
+{brand}
+
+{prompt_template}
+"""
+
+prompt = (
+    prompt
+    .replace("{news}", news_text)
+    .replace("{history}", history)
+)
+
+print("✓ Prompt Built")
+
+# --------------------------------------------------
+# Generate Response
+# --------------------------------------------------
+
+generation_config = {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+}
+
+response = model.generate_content(
+    prompt,
+    generation_config=generation_config
+)
+
+if not hasattr(response, "text") or not response.text:
+    raise Exception("Gemini returned an empty response.")
+
+print("✓ Gemini Response Received")
+
+data = validate_json(response.text)
+
+print("✓ JSON Validated")
+# --------------------------------------------------
+# Telegram Message Builder
+# --------------------------------------------------
+
+def divider():
+    return "━━━━━━━━━━━━━━━━━━━━━━"
+
+
+messages = []
+
+# --------------------------------------------------
+# DAILY ALPHA
+# --------------------------------------------------
+
+daily = data["daily_alpha"]
+
+daily_message = f"""
+🍞 <b>CATLOAF DAILY BAKERY</b>
+
+{divider()}
+
+🔥 <b>Top Headline</b>
+
+{daily["headline"]}
+
+🚀 <b>Ecosystem Update</b>
+
+• {daily["ecosystem"][0]}
+• {daily["ecosystem"][1]}
+• {daily["ecosystem"][2]}
+
+🪙 <b>Memecoin Watch</b>
+
+{daily["memecoin"]}
+
+🧠 <b>Why It Matters</b>
+
+{daily["why_it_matters"]}
+
+{divider()}
+🐱 @CatLoafCoin
+""".strip()
+
+messages.append(daily_message)
+
+# --------------------------------------------------
+# X POSTS
+# --------------------------------------------------
+
+x_text = f"""
+🐦 <b>CATLOAF X POSTS</b>
+
+{divider()}
+"""
+
+for post in data["x_posts"]:
+
+    x_text += f"""
+
+🔥 <b>{post["type"].title()}</b>
+
+{post["content"]}
+"""
+
+messages.append(x_text.strip())
+
+# --------------------------------------------------
+# TELEGRAM POST
+# --------------------------------------------------
+
+tg = data["telegram"]
+
+telegram_message = f"""
+📢 <b>COMMUNITY UPDATE</b>
+
+{divider()}
+
+{tg["opening"]}
+
+🔥 <b>Today's Fresh Alpha</b>
+
+"""
+
+for bullet in tg["bullets"]:
+    telegram_message += f"\n• {bullet}"
+
+telegram_message += f"""
+
+🧠 <b>Why It Matters</b>
+
+{tg["why"]}
+
+💬 <b>Community Question</b>
+
+{tg["question"]}
+
+{divider()}
+🍞 Stay Cozy.
+🐱 @CatLoafCoin
+"""
+
+messages.append(telegram_message.strip())
+
+# --------------------------------------------------
+# MEME
+# --------------------------------------------------
+
+meme = data["meme"]
+
+meme_message = f"""
+😂 <b>MEME OF THE DAY</b>
+
+{divider()}
+
+🎬 <b>Template</b>
+
+{meme["template"]}
+
+🎭 <b>Scene</b>
+
+{meme["scene"]}
+
+💬 <b>Caption</b>
+
+{meme["caption"]}
+
+🤣 <b>Why It Works</b>
+
+{meme["why"]}
+"""
+
+messages.append(meme_message.strip())
+
+# --------------------------------------------------
+# IMAGE PROMPT
+# --------------------------------------------------
+
+image = data["image_prompt"]
+
+image_message = f"""
+🎨 <b>IMAGE PROMPT</b>
+
+{divider()}
+
+Style:
+{image["style"]}
+
+Subject:
+{image["subject"]}
+
+Background:
+{image["background"]}
+
+Lighting:
+{image["lighting"]}
+
+Camera:
+{image["camera"]}
+
+Colors:
+{image["colors"]}
+
+Mood:
+{image["mood"]}
+
+Details:
+{image["details"]}
+"""
+
+messages.append(image_message.strip())
+
+# --------------------------------------------------
+# ENGAGEMENT
+# --------------------------------------------------
+
+engagement = "💬 <b>COMMUNITY QUESTIONS</b>\n\n"
+
+for q in data["engagement"]:
+    engagement += f"• {q}\n\n"
+
+messages.append(engagement.strip())
+
+# --------------------------------------------------
+# BEST TIME
+# --------------------------------------------------
+
+best = data["best_time"]
+
+best_message = f"""
+🕒 <b>BEST TIME TO POST</b>
+
+{divider()}
+
+⏰ {best["utc"]}
+
+🌍 {best["reason"]}
+
+🎯 {best["audience"]}
+"""
+
+messages.append(best_message.strip())
+
+print(f"✓ Built {len(messages)} Telegram Messages")
+
+# --------------------------------------------------
+# Compact History
+# --------------------------------------------------
+
+fingerprint = json.dumps(data["history"], ensure_ascii=False)
+
+entries = [
+    line
+    for line in history.splitlines()
+    if line.strip()
+]
+
+entries.append(fingerprint)
+
+entries = entries[-10:]
+
+with open("history.txt", "w", encoding="utf-8") as f:
+    f.write("\n".join(entries))
+
+print("✓ History Updated")
+# --------------------------------------------------
+# Send Telegram Messages
+# --------------------------------------------------
+
+print("\nSending Telegram messages...\n")
+
+sent = 0
+failed = 0
+
+for index, message in enumerate(messages, start=1):
+
+    if not message.strip():
+        print(f"Skipping empty message #{index}")
+        continue
+
+    try:
+        send_telegram(
+            TELEGRAM_TOKEN,
+            TELEGRAM_CHAT_ID,
+            message
+        )
+
+        sent += 1
+
+        print(f"✓ Message {index}/{len(messages)} sent")
+
+    except Exception as e:
+
+        failed += 1
+
+        print(f"✗ Message {index} failed")
+        print(e)
+
+print("\n" + "=" * 50)
+
+print("🍞 AI Bakery Finished")
+
+print("=" * 50)
+
+print(f"Messages Sent : {sent}")
+
+print(f"Messages Failed : {failed}")
+
+print(f"News Articles : {len(news_items)}")
+
+print("=" * 50)
