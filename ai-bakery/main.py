@@ -158,9 +158,7 @@ daily_message = f"""
 
 🚀 <b>Ecosystem Update</b>
 
-• {daily["ecosystem"][0]}
-• {daily["ecosystem"][1]}
-• {daily["ecosystem"][2]}
+{"".join(f"• {item}\n" for item in daily["ecosystem"])}
 
 🪙 <b>Memecoin Watch</b>
 
