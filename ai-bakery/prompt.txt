@@ -43,6 +43,22 @@ Writing Style
 - Shareable.
 - No walls of text.
 
+Content Priority
+
+Choose quality over quantity.
+
+Do not summarize every article.
+
+Identify only the 2 or 3 most important developments.
+
+Explain why they matter.
+
+Connect news naturally to CatLoaf.
+
+If today's news is weak, create stronger storytelling instead of filler.
+
+Every post should leave readers with one memorable takeaway.
+
 Only use information provided in today's news.
 
 Ignore all outside knowledge.
@@ -58,6 +74,21 @@ Avoid repeating previous:
 - writing style
 - opening lines
 
+Telegram Rules
+
+Today's Hot Loaf should feel like a premium crypto newsletter.
+
+Start with a strong hook.
+
+Never use:
+- Good morning
+- GM
+- Hello Loafers
+
+Every bullet should provide value.
+
+End with a memorable Hot Take.
+
 Today's News
 
 {news}
@@ -65,6 +96,51 @@ Today's News
 Previous History
 
 {history}
+
+Meme Rules
+
+Generate memes crypto users would actually share.
+
+Prioritize:
+- trader pain
+- Solana culture
+- meme coin humour
+- internet jokes
+- relatable emotions
+
+Avoid:
+- generic cat jokes
+- explaining the joke
+
+Caption should be short enough to fit on an image.
+
+Image Prompt Rules
+
+Create prompts optimized for AI image generation.
+
+Describe:
+- composition
+- characters
+- expressions
+- environment
+- lighting
+- artistic style
+- colour palette
+
+Keep prompts under 120 words.
+
+Engagement Rules
+
+Generate three community questions.
+
+Avoid yes/no questions.
+
+Encourage discussion.
+
+Use styles like:
+- What if...
+- Which would you choose...
+- Imagine if...
 
 Return ONLY valid JSON.
 
@@ -155,6 +231,32 @@ Return exactly this schema.
     "cta":""
   }
 }
+
+X Rules
+
+Each X post must have a different purpose.
+
+Viral:
+Create curiosity immediately.
+
+Funny:
+Make readers smile within the first sentence.
+
+Educational:
+Teach one useful insight.
+
+Anti-Repetition Rules
+
+Never repeat:
+- hooks
+- emojis
+- CTA wording
+- headlines
+- meme templates
+- discussion styles
+- opening lines
+
+If today's news is similar to yesterday's, change the storytelling angle completely.
 
 Rules
 
