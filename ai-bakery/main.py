@@ -133,6 +133,9 @@ data = validate_json(response.text)
 
 print("✓ JSON Validated")
 
+save_daily(data)
+print("✓ Daily content saved")
+
 add_to_queue(data)
 print("✓ Saved to Queue")
 
