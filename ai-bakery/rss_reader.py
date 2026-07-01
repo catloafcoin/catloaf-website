@@ -12,10 +12,11 @@ def get_latest_news(feed_file="rss_feeds.txt", max_articles=10):
 
             for entry in feed.entries[:3]:
                 articles.append({
-                    "title": entry.get("title", ""),
-                    "link": entry.get("link", ""),
-                    "source": feed.feed.get("title", url)
-                })
+    "title": entry.get("title", ""),
+    "summary": entry.get("summary", entry.get("description", "")),
+    "link": entry.get("link", ""),
+    "source": feed.feed.get("title", url)
+})
         except Exception:
             continue
 
