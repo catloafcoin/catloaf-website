@@ -5,8 +5,6 @@ HF_API_KEY = os.getenv("HUGGINGFACE")
 
 MODEL = (
     "https://router.huggingface.co/hf-inference/models/"
-MODEL = (
-    "https://router.huggingface.co/hf-inference/models/"
     "black-forest-labs/FLUX.1-dev"
 )
 
