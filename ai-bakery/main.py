@@ -80,7 +80,7 @@ for article in articles:
 
     news_items.append(title)
 
-news_items = news_items[:12]
+articles = articles[:12]
 
 ranking_prompt = f"""
 You are an editor for a top crypto publication.
