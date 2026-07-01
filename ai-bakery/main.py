@@ -81,7 +81,7 @@ for article in articles:
     news_items.append(title)
 
 articles = articles[:12]
- news_text = "\n\n".join(
+news_text = "\n\n".join(
     f"Title: {a['title']}\nSummary: {a.get('summary', '')}"
     for a in articles
  )
