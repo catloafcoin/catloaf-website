@@ -8,7 +8,8 @@ from modules import (
     load_text,
     load_json,
     validate_json,
-    send_telegram
+    send_telegram,
+    send_poll
 )
 
 print("=" * 50)
@@ -352,7 +353,7 @@ for index, (message, msg_type) in enumerate(zip(messages, message_types), start=
         print(f"Skipping internal message: {msg_type}")
         continue
 
-    try:
+try:
 
     if msg_type == "what_if":
 
