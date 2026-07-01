@@ -7,7 +7,6 @@ MODEL = (
     "https://router.huggingface.co/hf-inference/models/"
     "stabilityai/stable-diffusion-xl-base-1.0"
 )
-)
 
 HEADERS = {
     "Authorization": f"Bearer {HF_API_KEY}"
