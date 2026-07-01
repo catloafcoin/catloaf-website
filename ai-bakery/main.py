@@ -350,9 +350,10 @@ for index, (message, msg_type) in enumerate(zip(messages, message_types), start=
 
     try:
         send_telegram(
-            TELEGRAM_TOKEN,
-            TELEGRAM_CHAT_ID,
-            message
+    TELEGRAM_TOKEN,
+    TELEGRAM_CHAT_ID,
+    message,
+    msg_type
         )
 
         sent += 1
