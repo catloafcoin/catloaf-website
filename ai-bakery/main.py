@@ -163,6 +163,7 @@ for post in data["x_posts"]:
 """
 
 messages.append(x_text.strip())
+message_types.append("x_posts")
 
 # --------------------------------------------------
 # TELEGRAM POST
@@ -202,6 +203,7 @@ telegram_message += f"""
 """
 
 messages.append(telegram_message.strip())
+message_types.append("hot_loaf")
 
 # --------------------------------------------------
 # MEME
@@ -232,6 +234,7 @@ meme_message = f"""
 """
 
 messages.append(meme_message.strip())
+message_types.append("art")
 
 # --------------------------------------------------
 # IMAGE PROMPT
@@ -270,6 +273,7 @@ Details:
 """
 
 messages.append(image_message.strip())
+message_types.append("image_prompt")
 
 # --------------------------------------------------
 # ENGAGEMENT
@@ -281,6 +285,7 @@ for q in data["engagement"]:
     engagement += f"• {q}\n\n"
 
 messages.append(engagement.strip())
+message_types.append("what_if")
 
 # --------------------------------------------------
 # BEST TIME
@@ -301,6 +306,7 @@ best_message = f"""
 """
 
 messages.append(best_message.strip())
+message_types.append("best_time")
 
 print(f"✓ Built {len(messages)} Telegram Messages")
 
