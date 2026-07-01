@@ -22,3 +22,6 @@ def process_queue():
     remove_first()
 
     print("✓ Queue updated")
+
+    if __name__ == "__main__":
+    process_queue()
