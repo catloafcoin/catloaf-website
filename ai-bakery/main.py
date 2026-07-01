@@ -1,4 +1,4 @@
-from scheduler import add_to_queue
+from scheduler import add_to_queue, save_daily
 import os
 import json
 import google.generativeai as genai
