@@ -23,9 +23,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Test Image Generator
+        run: python image_generator.py
+        env:
+          HUGGINGFACE: ${{ secrets.HUGGINGFACE }}
+
       - name: Run Poster
         run: python -u poster.py
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          
