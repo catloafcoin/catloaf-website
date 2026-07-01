@@ -146,7 +146,9 @@ messages = []
 # --------------------------------------------------
 
 daily = data["daily_alpha"]
-
+ecosystem_updates = "\n".join(
+    f"• {item}" for item in daily["ecosystem_update"]
+)
 daily_message = f"""
 🍞 <b>CATLOAF DAILY BAKERY</b>
 
@@ -158,7 +160,7 @@ daily_message = f"""
 
 🚀 <b>Ecosystem Update</b>
 
-{"".join(f"• {item}\n" for item in daily["ecosystem"])}
+{ecosystem_updates}
 
 🪙 <b>Memecoin Watch</b>
 
