@@ -151,34 +151,3 @@ def send_telegram(token, chat_id, text, msg_type):
             print("Telegram send failed.")
 
         time.sleep(1)
-
-payload = {
-    "chat_id": chat_id,
-    "text": telegram_safe(part),
-    "parse_mode": "HTML",
-    "disable_web_page_preview": True
-}
-
-if reply_markup:
-    payload["reply_markup"] = reply_markup
-
-r = requests.post(
-    url,
-    data=payload,
-    timeout
-                timeout=20
-            )
-
-            if r.status_code == 200:
-                success = True
-                break
-
-            time.sleep(2)
-
-        print(r.status_code)
-        print(r.text)
-
-        if not success:
-            print("Telegram send failed.")
-
-        time.sleep(1)
