@@ -1,4 +1,4 @@
-from scheduler import add_to_queue, save_daily
+from scheduler import add_to_queue, save_daily, calculate_score
 import os
 import json
 import google.generativeai as genai
@@ -129,15 +129,18 @@ print("=" * 50)
 print(response.text)
 print("=" * 50)
 
-data = validate_json(response.text)
+score = calculate_score(data)
 
-print("✓ JSON Validated")
+print(f"✓ Content Score: {score}/100")
 
-save_daily(data)
-print("✓ Daily content saved")
+if score >= 80:
+    save_daily(data)
+    print("✓ Daily content saved")
 
-add_to_queue(data)
-print("✓ Saved to Queue")
+    add_to_queue(data)
+    print("✓ Saved to Queue")
+else:
+    print("✗ Content score too low. Skipping.")
 
 # --------------------------------------------------
 # Telegram Message Builder
