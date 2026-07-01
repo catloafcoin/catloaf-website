@@ -204,13 +204,15 @@ messages.append(x_text.strip())
 tg = data["telegram"]
 
 telegram_message = f"""
-📢 <b>COMMUNITY UPDATE</b>
+🔥 <b>TODAY'S HOT LOAF</b>
 
 {divider()}
 
+🍞 <i>Fresh from today's oven...</i>
+
 {tg["opening"]}
 
-🔥 <b>Today's Fresh Alpha</b>
+🔥 <b>Fresh Alpha</b>
 
 """
 
@@ -219,11 +221,11 @@ for bullet in tg["bullets"]:
 
 telegram_message += f"""
 
-🧠 <b>Why It Matters</b>
+🧈 <b>Why It's Hot</b>
 
 {tg["why"]}
 
-💬 <b>Community Question</b>
+🥖 <b>Hot Take</b>
 
 {tg["question"]}
 
