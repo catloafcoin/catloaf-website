@@ -3,3 +3,4 @@ requests
 google-generativeai
 python-dotenv
 feedparser
+huggingface_hub>=0.34.0
