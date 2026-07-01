@@ -48,4 +48,19 @@ def remove_first():
         queue.pop(0)
 
     save_queue(queue)
-        
+        from datetime import datetime
+
+def should_post_now():
+    """
+    Placeholder scheduler.
+
+    For now it always returns True.
+
+    Later it will check:
+    - Breaking news score
+    - Best posting windows
+    - Duplicate posts
+    - Daily limits
+    """
+
+    return True
