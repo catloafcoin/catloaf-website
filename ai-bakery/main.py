@@ -11,8 +11,6 @@ from modules import (
     send_telegram,
     send_poll
 )
-from image_generator import generate_image
-
 print("=" * 50)
 print("🍞 Starting CatLoaf AI Bakery V2")
 print("=" * 50)
@@ -138,24 +136,6 @@ data = validate_json(response.text)
 
 print("✓ JSON Validated")
 
-# --------------------------------------------------
-# Generate Meme Image
-# --------------------------------------------------
-
-image_prompt = (
-    f"Style: {data['image_prompt']['style']}\n"
-    f"Subject: {data['image_prompt']['subject']}\n"
-    f"Background: {data['image_prompt']['background']}\n"
-    f"Lighting: {data['image_prompt']['lighting']}\n"
-    f"Camera: {data['image_prompt']['camera']}\n"
-    f"Colors: {data['image_prompt']['colors']}\n"
-    f"Mood: {data['image_prompt']['mood']}\n"
-    f"Details: {data['image_prompt']['details']}"
-)
-
-image_file = generate_image(image_prompt)
-
-print("✓ Meme Image Generated")
 # --------------------------------------------------
 # Telegram Message Builder
 # --------------------------------------------------
