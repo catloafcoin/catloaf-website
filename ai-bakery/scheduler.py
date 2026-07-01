@@ -63,3 +63,26 @@ def should_post_now():
     """
 
     return True
+    POSTED_FILE = "posted.json"
+
+
+def load_posted():
+    if not os.path.exists(POSTED_FILE):
+        return []
+
+    with open(POSTED_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_posted(data):
+    with open(POSTED_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+
+def mark_posted(post_id):
+    posted = load_posted()
+
+    if post_id not in posted:
+        posted.append(post_id)
+
+    save_posted(posted)
