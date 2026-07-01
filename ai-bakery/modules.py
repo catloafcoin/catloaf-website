@@ -25,11 +25,25 @@ def load_json(path):
 
 
 def validate_json(response):
+
+    response = response.strip()
+
+    if response.startswith("```json"):
+        response = response[7:]
+
+    if response.startswith("```"):
+        response = response[3:]
+
+    if response.endswith("```"):
+        response = response[:-3]
+
+    response = response.strip()
+
     try:
         return json.loads(response)
+
     except Exception as e:
         raise Exception(f"Invalid JSON from Gemini:\n{e}")
-
 
 def telegram_safe(text):
 
