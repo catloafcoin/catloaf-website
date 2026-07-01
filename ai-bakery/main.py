@@ -271,12 +271,32 @@ OUTPUT STYLE
 
 Every section should look like it belongs in a premium crypto Telegram channel.
 
-Use HTML formatting:
-<b>Headings</b>
+Return ONLY Telegram-supported HTML.
 
-<i>Emphasis only when useful</i>
+Allowed tags:
+<b>
+<i>
+<code>
+
+Do NOT use:
+<h1>
+<h2>
+<h3>
+<p>
+<div>
+<span>
+<br>
+<center>
+<ul>
+<li>
+
+Never generate any HTML tags except <b>, <i>, and <code>.
+
+Output must be accepted by Telegram Bot API using parse_mode=HTML.
 
 Never overuse formatting.
+
+<i>Emphasis only when useful</i>
 
 Every message should be:
 
@@ -375,7 +395,7 @@ for section in sections:
     if not section:
         continue
 
-    requests.post(
+    r = requests.post(
     f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
     data={
         "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
@@ -385,3 +405,6 @@ for section in sections:
     },
     timeout=20
 )
+
+print(f"Telegram Status: {r.status_code}")
+print(r.text)
