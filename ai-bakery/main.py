@@ -353,34 +353,18 @@ for index, (message, msg_type) in enumerate(zip(messages, message_types), start=
         print(f"Skipping internal message: {msg_type}")
         continue
 
-    try:
-
+try:
     if msg_type == "what_if":
-
-        send_poll(
-            TELEGRAM_TOKEN,
-            TELEGRAM_CHAT_ID,
-            data["engagement"]
-        )
-
+        send_poll(...)
     else:
-
-        send_telegram(
-            TELEGRAM_TOKEN,
-            TELEGRAM_CHAT_ID,
-            message,
-            msg_type
-        )
+        send_telegram(...)
 
     sent += 1
+    print(...)
 
-    print(f"✓ Message {index}/{len(messages)} sent")
-
-    except Exception as e:
-
+except Exception as e:
     failed += 1
-
-    print(f"✗ Message {index} failed")
+    print(...)
     print(e)
 
 print("\n" + "=" * 50)
