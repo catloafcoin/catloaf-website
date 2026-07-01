@@ -52,6 +52,7 @@ Brand personality:
 - Cat + Bread + Solana culture
 
 Generate the following using these EXACT headings.
+
 ===SECTION:DAILY_ALPHA===
 
 Include:
@@ -65,33 +66,211 @@ Include:
 🧠 One sentence explaining why today's news matters.
 
 Keep it concise.
+
 ===SECTION:X_POST===
-Requirements:
-- Maximum 280 characters
-- Viral
-- Funny
-- One call to action
-- 2-4 hashtags maximum
+
+Create THREE different X posts.
+
+① VIRAL
+② FUNNY
+③ EDUCATIONAL
+
+Each post:
+
+• Maximum 280 characters
+• Natural
+• Human
+• Internet-native
+• One call to action
+• Maximum 3 hashtags
+
+Never sound like AI.
+
+Use CatLoaf personality.
+
+Leave one blank line between each post.
+
 
 ===SECTION:TELEGRAM_POST===
-Requirements:
-- Exciting
-- Easy to read
-- Short paragraphs
-- Invite discussion
+
+Write a PREMIUM Telegram announcement.
+
+Formatting:
+
+🍞🐱 CATLOAF DAILY BAKERY
+━━━━━━━━━━━━━━━━━━━━━━
+
+☀️ GM Bakers!
+
+Write ONE warm and exciting opening sentence.
+
+Leave ONE blank line.
+
+🔥 TODAY'S FRESH ALPHA
+
+Summarize today's biggest Solana news in 2-4 short bullet points.
+
+Leave ONE blank line.
+
+🧠 WHY IT MATTERS
+
+Explain why the news is important in 2 short sentences.
+
+Leave ONE blank line.
+
+💬 COMMUNITY QUESTION
+
+Ask ONE engaging question.
+
+Leave ONE blank line.
+
+━━━━━━━━━━━━━━━━━━━━━━
+🍞 Stay Cozy. Stay Curious.
+🐱 @CatLoafCoin
+
+Rules:
+• Maximum 220 words.
+• Never create long paragraphs.
+• Maximum 2 sentences per paragraph.
+• Use emojis only as section headings.
+• Make it look premium and highly readable.
 
 ===SECTION:MEME_IDEA===
-Include:
-- Meme concept
-- Caption
+
+Create a meme using this format.
+
+😂 TEMPLATE
+
+Popular meme format
+
+🎬 SCENE
+
+Describe exactly what happens.
+
+💬 CAPTION
+
+Funny caption.
+
+🤣 WHY IT WORKS
+
+One sentence.
+
+Keep it viral and easy to understand.
+
 
 ===SECTION:IMAGE_PROMPT===
-Create a detailed image prompt suitable for AI image generators.
+
+Create an AI image prompt using this format.
+
+🎨 STYLE
+
+📸 CAMERA
+
+💡 LIGHTING
+
+🌅 BACKGROUND
+
+🐱 SUBJECT
+
+🎨 COLOR PALETTE
+
+😊 MOOD
+
+✨ DETAILS
+
+Ultra detailed
+8K
+Photorealistic
+Professional composition
+Trending on X
+
 ===SECTION:ENGAGEMENT===
-Create ONE question that encourages replies.
+
+Generate THREE community questions.
+
+① Funny
+
+② Crypto
+
+③ Cozy
+
+Maximum one sentence each.
+
+Questions should encourage replies.
+
 
 ===SECTION:BEST_TIME===
-Suggest the best UTC posting time and explain why in one sentence.
+
+Recommend ONE posting time.
+
+Format:
+
+🕒 BEST TIME
+
+Time (UTC)
+
+🌍 WHY
+
+One short explanation.
+
+🎯 AUDIENCE
+
+Who will be online.
+
+==========================
+GLOBAL FORMATTING
+==========================
+
+Every section must look like a premium Telegram channel.
+
+Always use:
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+between major topics.
+
+Leave ONE blank line after every heading.
+
+Leave ONE blank line before every bullet list.
+
+Never write walls of text.
+
+Maximum 3 lines per paragraph.
+
+Use emojis only for headings.
+
+Write like a professional crypto community manager.
+
+Write naturally.
+
+Never sound robotic.
+
+Never repeat previous wording.
+
+Never use generic ChatGPT phrases.
+
+Every output should feel handcrafted.
+
+Use cozy bakery branding whenever appropriate.
+
+Readers should immediately recognize the CatLoaf identity.
+
+The goal is to make every message beautiful, premium, easy to scan, and highly shareable.
+
+QUALITY CHECK
+
+Before finishing, verify:
+
+✅ Beautiful formatting
+✅ Excellent spacing
+✅ Easy to skim
+✅ Premium appearance
+✅ Human writing
+✅ No repeated ideas
+✅ No walls of text
+✅ Fits Telegram perfectly
+
+If any check fails, rewrite the section before responding.
 
 Rules:
 - Never mention guaranteed profits.
@@ -99,6 +278,7 @@ Rules:
 - Never repeat previous ideas.
 - Make every run unique.
 - Keep everything positive and community-driven.
+
 """
 
 response = model.generate_content(prompt)
