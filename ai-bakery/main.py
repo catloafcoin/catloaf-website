@@ -1,3 +1,4 @@
+import time
 import google.generativeai as genai
 import requests
 import os
@@ -388,9 +389,7 @@ history_entries = history_entries[-10:]
 with open("history.txt", "w", encoding="utf-8") as f:
     f.write("\n\n---ENTRY---\n\n".join(history_entries))
 
-sections = message.split("===SECTION:")
-
-sections = message.split("===SECTION:")
+sections = [s.strip() for s in message.split("===SECTION:") if s.strip()]
 
 for section in sections:
     section = section.strip()
@@ -398,10 +397,20 @@ for section in sections:
     if not section:
         continue
 
-    lines = section.splitlines()
-
-    if len(lines) > 1:
-        section = "\n".join(lines[1:]).strip()
+    if section.startswith("DAILY_ALPHA"):
+    section = section.replace("DAILY_ALPHA", "", 1).strip()
+elif section.startswith("X_POST"):
+    section = section.replace("X_POST", "", 1).strip()
+elif section.startswith("TELEGRAM_POST"):
+    section = section.replace("TELEGRAM_POST", "", 1).strip()
+elif section.startswith("MEME_IDEA"):
+    section = section.replace("MEME_IDEA", "", 1).strip()
+elif section.startswith("IMAGE_PROMPT"):
+    section = section.replace("IMAGE_PROMPT", "", 1).strip()
+elif section.startswith("ENGAGEMENT"):
+    section = section.replace("ENGAGEMENT", "", 1).strip()
+elif section.startswith("BEST_TIME"):
+    section = section.replace("BEST_TIME", "", 1).strip()
 
     safe_text = escape(section)
 
@@ -425,3 +434,4 @@ for section in sections:
 
     print(f"Telegram Status: {r.status_code}")
     print(r.text)
+    time.sleep(1)
