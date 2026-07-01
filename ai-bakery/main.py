@@ -217,7 +217,7 @@ meme_message = f"""
 
 {divider()}
 
-🎬 <b>Template</b>
+🖼 <b>Image Prompt</b>
 
 {meme["template"]}
 
