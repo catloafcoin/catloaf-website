@@ -4,8 +4,9 @@ import requests
 HF_API_KEY = os.getenv("HUGGINGFACE")
 
 MODEL = (
-    "https://api-inference.huggingface.co/models/"
+    "https://router.huggingface.co/hf-inference/models/"
     "stabilityai/stable-diffusion-xl-base-1.0"
+)
 )
 
 HEADERS = {
