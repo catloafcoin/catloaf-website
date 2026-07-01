@@ -301,6 +301,7 @@ with open("history.txt", "w", encoding="utf-8") as f:
     f.write("\n".join(entries))
 
 print("✓ History Updated")
+"""
 # --------------------------------------------------
 # Send Telegram Messages
 # --------------------------------------------------
@@ -357,3 +358,4 @@ print(f"Messages Failed : {failed}")
 print(f"News Articles : {len(news_items)}")
 
 print("=" * 50)
+"""
