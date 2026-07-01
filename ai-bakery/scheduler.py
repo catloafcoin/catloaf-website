@@ -48,7 +48,6 @@ def remove_first():
         queue.pop(0)
 
     save_queue(queue)
-        from datetime import datetime
 
 def should_post_now():
     """
