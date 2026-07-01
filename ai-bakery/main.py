@@ -9,10 +9,17 @@ print("Starting AI Bakery...")
 
 news = get_latest_news()
 
+seen = set()
 news_text = ""
 
 for article in news:
-    news_text += f"- {article['title']}\n"
+    title = article["title"].strip()
+
+    if title.lower() in seen:
+        continue
+
+    seen.add(title.lower())
+    news_text += f"• {title}\n"
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
@@ -24,8 +31,11 @@ with open("config.json", "r") as f:
 with open("brand.txt", "r", encoding="utf-8") as f:
     brand_guide = f.read()
 
-with open("history.txt", "r", encoding="utf-8") as f:
-    history = f.read()
+try:
+    with open("history.txt", "r", encoding="utf-8") as f:
+        history = f.read()
+except FileNotFoundError:
+    history = ""
 
 prompt = f"""
 {brand_guide}
@@ -257,6 +267,35 @@ Readers should immediately recognize the CatLoaf identity.
 
 The goal is to make every message beautiful, premium, easy to scan, and highly shareable.
 
+OUTPUT STYLE
+
+Every section should look like it belongs in a premium crypto Telegram channel.
+
+Use HTML formatting:
+<b>Headings</b>
+
+<i>Emphasis only when useful</i>
+
+Never overuse formatting.
+
+Every message should be:
+
+• Beautiful
+
+• Easy to skim
+
+• Premium
+
+• Human
+
+• Cozy
+
+• Shareable
+
+Write like the best crypto social media manager.
+
+Every post should be worth forwarding.
+
 QUALITY CHECK
 
 Before finishing, verify:
@@ -281,11 +320,52 @@ Rules:
 
 """
 
-response = model.generate_content(prompt)
+generation_config = {
+    "temperature": 1.15,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+}
+
+response = model.generate_content(
+    prompt,
+    generation_config=generation_config
+)
+
+if not hasattr(response, "text") or not response.text:
+    raise Exception("Gemini returned an empty response.")
 
 message = response.text
 
 print(message)
+
+try:
+    with open("history.txt", "r", encoding="utf-8") as f:
+        history_entries = f.read().split("\n\n---ENTRY---\n\n")
+except FileNotFoundError:
+    history_entries = []
+
+summary = []
+
+for section in message.split("===SECTION:"):
+    section = section.strip()
+    if not section:
+        continue
+
+    lines = section.splitlines()
+
+    # Keep only the first 3 non-empty lines from each section
+    kept = [line for line in lines if line.strip()][:3]
+
+    summary.append("\n".join(kept))
+
+history_entries.append("\n\n".join(summary))
+
+# Keep only the latest 10 generations
+history_entries = history_entries[-10:]
+
+with open("history.txt", "w", encoding="utf-8") as f:
+    f.write("\n\n---ENTRY---\n\n".join(history_entries))
 
 sections = message.split("===SECTION:")
 
@@ -296,9 +376,12 @@ for section in sections:
         continue
 
     requests.post(
-        f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
-        data={
-            "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
-            "text": section.strip()
-        }
-    )
+    f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/sendMessage",
+    data={
+        "chat_id": os.getenv("TELEGRAM_CHAT_ID"),
+        "text": section.strip(),
+        "parse_mode": "HTML",
+        "disable_web_page_preview": True
+    },
+    timeout=20
+)
