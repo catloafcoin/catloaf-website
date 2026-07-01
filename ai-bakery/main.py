@@ -349,8 +349,8 @@ for index, (message, msg_type) in enumerate(zip(messages, message_types), start=
         continue
 
     if msg_type not in ["hot_loaf", "art", "what_if"]:
-    print(f"Skipping internal message: {msg_type}")
-    continue
+        print(f"Skipping internal message: {msg_type}")
+        continue
 
     try:
         send_telegram(
