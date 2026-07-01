@@ -116,7 +116,7 @@ def send_telegram(token, chat_id, text, msg_type):
                         [
                             {
                                 "text": "📤 Share",
-                                "switch_inline_query": "Check out @CatLoafCoin 🥖🐱"
+                                "switch_inline_query": "Join CatLoafCoin 🥖🐱 https://t.me/CatLoafCoin"
                             }
                         ]
                     ]
