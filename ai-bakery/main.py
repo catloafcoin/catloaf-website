@@ -147,7 +147,7 @@ messages = []
 
 daily = data["daily_alpha"]
 ecosystem_updates = "\n".join(
-    f"• {item}" for item in daily["ecosystem_update"]
+    f"• {item}" for item in daily["ecosystem"]
 )
 daily_message = f"""
 🍞 <b>CATLOAF DAILY BAKERY</b>
