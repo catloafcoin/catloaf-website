@@ -230,7 +230,10 @@ hot_loaf = {
 meme = data["meme"]
 image_path = generate_image(meme["template"])
 
-data["image"] = image_path
+if image_path:
+    data["image"] = image_path
+else:
+    data["image"] = None
 
 print("✓ Artwork Generated")
 
