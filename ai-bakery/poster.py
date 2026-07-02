@@ -17,34 +17,32 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def process_queue():
 
-    while True:
+    if not should_post_now():
+        print("Not time to post yet.")
+        return
 
-        queue = get_queue()
+    queue = get_queue()
 
-        if not queue:
-            print("Queue finished.")
-            break
+    if not queue:
+        print("Queue finished.")
+        return
 
-        if not should_post_now():
-            print("Not time to post yet.")
-            break
+    posted = load_posted()
+    pending = load_pending()
 
-        item = queue[0]
+    for item in queue:
 
         post_id = item.get("id", "")
 
-        posted = load_posted()
-        pending = load_pending()
-
         if post_id in posted:
-            print("Already published.")
+            print(f"Skipping published: {post_id}")
             continue
 
         if post_id in pending:
-            print("Already awaiting approval.")
-            break
+            print(f"Already awaiting approval: {post_id}")
+            continue
 
-        print(f"Posting: {item.get('type')}")
+        print(f"Sending: {post_id}")
 
         reply_markup = json.dumps({
             "inline_keyboard": [
@@ -74,48 +72,47 @@ def process_queue():
         post_type = item.get("type")
         image = item.get("image")
 
-        print(f"Image path: {image}")
-        print(f"Image exists: {os.path.exists(image) if image else False}")
+        try:
 
-        if post_type == "what_if":
+            if post_type == "what_if":
 
-            send_poll(
-                TELEGRAM_BOT_TOKEN,
-                TELEGRAM_CHAT_ID,
-                item["question"],
-                item["options"]
-            )
+                send_poll(
+                    TELEGRAM_BOT_TOKEN,
+                    TELEGRAM_CHAT_ID,
+                    item["question"],
+                    item["options"]
+                )
 
-        elif image and os.path.exists(image):
+            elif image and os.path.exists(image):
 
-            send_photo(
-                TELEGRAM_BOT_TOKEN,
-                TELEGRAM_CHAT_ID,
-                image,
-                item.get("text", ""),
-                reply_markup
-            )
+                send_photo(
+                    TELEGRAM_BOT_TOKEN,
+                    TELEGRAM_CHAT_ID,
+                    image,
+                    item.get("text", ""),
+                    reply_markup
+                )
 
-        else:
+            else:
 
-            send_telegram(
-                TELEGRAM_BOT_TOKEN,
-                TELEGRAM_CHAT_ID,
-                item.get("text", ""),
-                post_type,
-                reply_markup
-            )
+                send_telegram(
+                    TELEGRAM_BOT_TOKEN,
+                    TELEGRAM_CHAT_ID,
+                    item.get("text", ""),
+                    post_type,
+                    reply_markup
+                )
 
-        print("✓ Sent")
+            mark_pending(post_id)
 
-        mark_pending(post_id)
+            print(f"✓ Sent for approval: {post_id}")
 
-        print("✓ Sent for approval")
+        except Exception as e:
 
-        break
+            print(f"Failed sending {post_id}")
 
+            print(e)
 
-# Wait for admin approval before publishing
 
 if __name__ == "__main__":
     process_queue()
