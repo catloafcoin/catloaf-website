@@ -1,8 +1,9 @@
 import os
-import requests
 import time
+import json
+import requests
 
-BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
@@ -13,7 +14,12 @@ def get_updates(offset=None):
     if offset:
         params["offset"] = offset
 
-    r = requests.get(f"{API}/getUpdates", params=params, timeout=30)
+    r = requests.get(
+        f"{API}/getUpdates",
+        params=params,
+        timeout=30
+    )
+
     return r.json()
 
 
@@ -22,24 +28,35 @@ def answer_callback(callback_id, text):
         f"{API}/answerCallbackQuery",
         data={
             "callback_query_id": callback_id,
-            "text": text,
-            "show_alert": False
-        }
-    )
-
-
-def edit_message(chat_id, message_id, text):
-    requests.post(
-        f"{API}/editMessageText",
-        data={
-            "chat_id": chat_id,
-            "message_id": message_id,
             "text": text
         }
     )
 
 
-print("Admin Bot Started")
+def edit_buttons(chat_id, message_id):
+
+    keyboard = {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "✅ Approved",
+                    "callback_data": "done"
+                }
+            ]
+        ]
+    }
+
+    requests.post(
+        f"{API}/editMessageReplyMarkup",
+        data={
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "reply_markup": json.dumps(keyboard)
+        }
+    )
+
+
+print("CatLoaf Approval Bot Running...")
 
 offset = None
 
@@ -62,21 +79,16 @@ while True:
 
         data = callback["data"]
 
-        chat_id = callback["message"]["chat"]["id"]
-
-        message_id = callback["message"]["message_id"]
-
-        print("Button pressed:", data)
+        print("Pressed:", data)
 
         answer_callback(
             callback["id"],
-            f"Received: {data}"
+            "Received 👍"
         )
 
-        edit_message(
-            chat_id,
-            message_id,
-            f"✅ Button received:\n\n{data}"
+        edit_buttons(
+            callback["message"]["chat"]["id"],
+            callback["message"]["message_id"]
         )
 
     time.sleep(1)
