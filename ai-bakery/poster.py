@@ -1,5 +1,5 @@
 from scheduler import get_queue, remove_first, should_post_now, load_posted, mark_posted
-from modules import send_telegram, send_photo
+from modules import send_telegram, send_photo, send_poll
 import os
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -29,24 +29,37 @@ def process_queue():
 
     print("Processing first queued item...")
 
+    post_type = item.get("type")
     image = item.get("image")
 
-    if image:
+    if post_type == "what_if":
+
+        send_poll(
+            TELEGRAM_BOT_TOKEN,
+            TELEGRAM_CHAT_ID,
+            item["question"],
+            item["options"]
+        )
+
+    elif image:
+
         send_photo(
             TELEGRAM_BOT_TOKEN,
             TELEGRAM_CHAT_ID,
             image,
             item.get("text", "")
         )
+
     else:
+
         send_telegram(
             TELEGRAM_BOT_TOKEN,
             TELEGRAM_CHAT_ID,
             item.get("text", ""),
-            item.get("type", "news")
+            post_type
         )
 
-    print("✓ Sent to Telegram")
+    print("✓ Sent")
 
     mark_posted(post_id)
     print("✓ Added to posted history")
