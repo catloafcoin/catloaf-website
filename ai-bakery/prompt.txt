@@ -308,6 +308,20 @@ No explanations.
 
 No code fences.
 
+STRICT JSON REQUIREMENTS
+
+Generate JSON that is directly parsable by Python's json.loads().
+
+Do not place a comma after the last item in an array.
+
+Do not place a comma after the last property in an object.
+
+Every object and array must close correctly.
+
+Do not output incomplete JSON.
+
+Before responding, internally verify that the JSON is valid and contains no syntax errors.
+
 Return exactly this schema.
 
 {
@@ -472,7 +486,7 @@ Prioritize originality.
 
 Produce content people genuinely want to forward.
 
-Your response MUST be valid JSON parsable by Python's json.loads().
+Your response MUST be valid RFC 8259 JSON that parses successfully with Python json.loads() on the first attempt.
 
 Do not output Markdown.
 
