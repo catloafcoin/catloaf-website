@@ -23,6 +23,7 @@ print("=" * 50)
 config = load_json("config.json")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY_2 = os.getenv("GEMINI_API_KEY_2")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
@@ -35,9 +36,10 @@ if not TELEGRAM_TOKEN:
 if not TELEGRAM_CHAT_ID:
     raise Exception("Missing TELEGRAM_CHAT_ID")
 
-genai.configure(api_key=GEMINI_API_KEY)
-
-model = genai.GenerativeModel("gemini-2.5-flash")
+API_KEYS = [
+    GEMINI_API_KEY,
+    GEMINI_API_KEY_2
+]
 
 print("✓ Configuration Loaded")
 
@@ -143,10 +145,34 @@ generation_config = {
     "response_mime_type": "application/json"
 }
 
-response = model.generate_content(
-    prompt,
-    generation_config=generation_config
-)
+response = None
+last_error = None
+
+for api_key in API_KEYS:
+
+    if not api_key:
+        continue
+
+    try:
+        genai.configure(api_key=api_key)
+
+        model = genai.GenerativeModel("gemini-2.5-flash")
+
+        response = model.generate_content(
+            prompt,
+            generation_config=generation_config
+        )
+
+        print("✓ Gemini request successful")
+        break
+
+    except Exception as e:
+
+        print(f"API key failed: {e}")
+        last_error = e
+
+if response is None:
+    raise last_error
 
 if not hasattr(response, "text") or not response.text:
     raise Exception("Gemini returned an empty response.")
