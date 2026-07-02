@@ -98,7 +98,8 @@ def process_queue():
                 TELEGRAM_BOT_TOKEN,
                 TELEGRAM_CHAT_ID,
                 item.get("text", ""),
-                post_type
+                post_type,
+                reply_markup
             )
 
         print("✓ Sent")
