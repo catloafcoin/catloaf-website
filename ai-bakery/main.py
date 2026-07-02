@@ -337,17 +337,44 @@ poll_post = {
     "question": data["poll"]["question"],
     "options": data["poll"]["options"]
 }
+x_viral = {
+    "id": f"x_viral_{len(news_items)}",
+    "type": "x_viral",
+    "text": data["x_posts"][0]["content"],
+    "image": None
+}
 
-# Always send AI Art and Poll
+x_funny = {
+    "id": f"x_funny_{len(news_items)}",
+    "type": "x_funny",
+    "text": data["x_posts"][1]["content"],
+    "image": None
+}
+
+x_educational = {
+    "id": f"x_educational_{len(news_items)}",
+    "type": "x_educational",
+    "text": data["x_posts"][2]["content"],
+    "image": None
+}
+
+# Queue AI Art
 add_to_queue(art_post)
-add_to_queue(poll_post)
 
-# Only send Hot Loaf if today's news is actually fresh
+# Queue Hot Loaf
 if hot_news_found:
     add_to_queue(hot_loaf)
     print("✓ Fresh Hot Loaf queued")
 else:
     print("⚠ No major news today. Skipping Hot Loaf.")
+
+# Queue Poll
+add_to_queue(poll_post)
+
+# Queue X Posts
+add_to_queue(x_viral)
+add_to_queue(x_funny)
+add_to_queue(x_educational)
 
 print("✓ Queue Updated")
 # --------------------------------------------------
