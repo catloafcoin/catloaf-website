@@ -152,30 +152,9 @@ def send_telegram(token, chat_id, text, msg_type):
 
         time.sleep(1)
 
-def send_photo(token, chat_id, photo_path, caption=""):
+def send_photo(token, chat_id, photo_path, caption="", reply_markup=None):
 
     url = f"https://api.telegram.org/bot{token}/sendPhoto"
-
-    reply_markup = json.dumps({
-        "inline_keyboard": [
-            [
-                {
-                    "text": "🐦 Follow X",
-                    "url": "https://x.com/CatLoafCoin"
-                },
-                {
-                    "text": "📢 Telegram",
-                    "url": "https://t.me/CatLoafCoin"
-                }
-            ],
-            [
-                {
-                    "text": "📤 Share",
-                    "switch_inline_query": "Join CatLoafCoin 🥖🐱 https://t.me/CatLoafCoin"
-                }
-            ]
-        ]
-    })
 
     with open(photo_path, "rb") as photo:
 
