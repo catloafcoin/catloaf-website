@@ -36,6 +36,9 @@ def process_queue():
         post_type = item.get("type")
         image = item.get("image")
 
+        print(f"Image path: {image}")
+        print(f"Image exists: {os.path.exists(image) if image else False}")
+
         if post_type == "what_if":
 
             send_poll(
@@ -45,7 +48,7 @@ def process_queue():
                 item["options"]
             )
 
-        elif image:
+        elif image and os.path.exists(image):
 
             send_photo(
                 TELEGRAM_BOT_TOKEN,
@@ -70,5 +73,6 @@ def process_queue():
         remove_first()
 
         print("✓ Queue updated")
+        
 if __name__ == "__main__":
     process_queue()
