@@ -105,6 +105,8 @@ while True:
 
                 mark_posted(post_id)
 
+                remove_pending(post_id)
+
                 remove_first()
 
                 answer_callback(
