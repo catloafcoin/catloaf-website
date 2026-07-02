@@ -105,6 +105,8 @@ def process_queue():
         print("✓ Sent")
 
         print("✓ Sent for approval")
+        
+        break
 
 # Wait for admin approval before publishing
 
