@@ -104,11 +104,9 @@ def process_queue():
 
         print("✓ Sent")
 
-        mark_posted(post_id)
+        print("✓ Sent for approval")
 
-        remove_first()
-
-        print("✓ Queue updated")
+# Wait for admin approval before publishing
 
 
 if __name__ == "__main__":
