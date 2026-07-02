@@ -287,11 +287,9 @@ poll_post = {
 }
 
 if score >= 80:
-    add_to_queue([
-        hot_loaf,
-        art_post,
-        poll_post
-    ])
+    add_to_queue(hot_loaf)
+    add_to_queue(art_post)
+    add_to_queue(poll_post)
     print("✓ Queue Updated")
 
 # --------------------------------------------------
