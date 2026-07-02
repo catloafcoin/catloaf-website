@@ -39,7 +39,7 @@ def process_queue():
             continue
 
         if post_id in pending:
-            print(f"Already awaiting approval: {post_id}")
+            print(f"Skipping pending: {post_id}")
             continue
 
         print(f"Sending: {post_id}")
@@ -72,46 +72,40 @@ def process_queue():
         post_type = item.get("type")
         image = item.get("image")
 
-        try:
+        if post_type == "what_if":
 
-            if post_type == "what_if":
+            send_poll(
+                TELEGRAM_BOT_TOKEN,
+                TELEGRAM_CHAT_ID,
+                item["question"],
+                item["options"]
+            )
 
-                send_poll(
-                    TELEGRAM_BOT_TOKEN,
-                    TELEGRAM_CHAT_ID,
-                    item["question"],
-                    item["options"]
-                )
+        elif image and os.path.exists(image):
 
-            elif image and os.path.exists(image):
+            send_photo(
+                TELEGRAM_BOT_TOKEN,
+                TELEGRAM_CHAT_ID,
+                image,
+                item.get("text", ""),
+                reply_markup
+            )
 
-                send_photo(
-                    TELEGRAM_BOT_TOKEN,
-                    TELEGRAM_CHAT_ID,
-                    image,
-                    item.get("text", ""),
-                    reply_markup
-                )
+        else:
 
-            else:
+            send_telegram(
+                TELEGRAM_BOT_TOKEN,
+                TELEGRAM_CHAT_ID,
+                item.get("text", ""),
+                post_type,
+                reply_markup
+            )
 
-                send_telegram(
-                    TELEGRAM_BOT_TOKEN,
-                    TELEGRAM_CHAT_ID,
-                    item.get("text", ""),
-                    post_type,
-                    reply_markup
-                )
+        mark_pending(post_id)
 
-            mark_pending(post_id)
+        print(f"✓ {post_id} sent for approval")
 
-            print(f"✓ Sent for approval: {post_id}")
-
-        except Exception as e:
-
-            print(f"Failed sending {post_id}")
-
-            print(e)
+    print("Finished sending pending approvals.")
 
 
 if __name__ == "__main__":
