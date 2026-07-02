@@ -140,7 +140,6 @@ print(f"✓ Content Score: {score}/100")
 if score >= 80:
     save_daily(data)
     print("✓ Daily content saved")
-
 else:
     print("✗ Content score too low. Skipping.")
 
