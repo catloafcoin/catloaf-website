@@ -123,12 +123,16 @@ while True:
 
         elif data.startswith("reject_"):
 
-            remove_first()
+        post_id = data.replace("reject_", "")
 
-            answer_callback(
-                callback["id"],
-                "Rejected ❌"
-            )
+        remove_pending(post_id)
+
+        remove_first()
+
+        answer_callback(
+          callback["id"],
+          "Rejected ❌"
+        )
 
         else:
 
