@@ -1,4 +1,5 @@
 from scheduler import add_to_queue, save_daily, calculate_score
+from image_generator import generate_image
 import os
 import json
 import google.generativeai as genai
@@ -128,6 +129,9 @@ print("✓ Gemini Response Received")
 print("=" * 50)
 print(response.text)
 print("=" * 50)
+data = validate_json(response.text)
+
+print("✓ JSON Validated")
 
 score = calculate_score(data)
 
@@ -221,6 +225,11 @@ message_types.append("hot_loaf")
 # --------------------------------------------------
 
 meme = data["meme"]
+image_path = generate_image(meme["template"])
+
+data["image"] = image_path
+
+print("✓ Artwork Generated")
 
 meme_message = f"""
 🎨 <b>$CLOAF ART OF THE DAY</b>
