@@ -176,11 +176,13 @@ Avoid:
 - generic cat jokes
 - explaining the joke
 
-Caption should be short enough to fit on an image.
+Generate a witty quote that sounds memorable.
 
-Caption should be fewer than 15 words.
+Quote must be under 15 words.
 
-Avoid explaining the joke.
+Generate a short art style title (2–4 words).
+
+Generate a one-line CTA encouraging engagement.
 
 Use meme language common on Crypto Twitter.
 
@@ -324,12 +326,12 @@ Return exactly this schema.
     "question":""
   },
 
-  "meme":{
-    "template":"",
-    "scene":"",
-    "caption":"",
-    "why":""
-  },
+"meme":{
+  "template":"",
+  "style":"",
+  "quote":"",
+  "cta":""
+},
 
   "image_prompt":{
     "style":"",
