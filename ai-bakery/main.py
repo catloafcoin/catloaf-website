@@ -86,6 +86,13 @@ news_text = "\n\n".join(
     for a in articles
  )
 print(f"✓ {len(news_items)} News Articles Loaded")
+# --------------------------------------------------
+# Detect if today's news is fresh
+# --------------------------------------------------
+
+hot_news_found = len(news_items) >= 3
+
+print(f"✓ Hot News Found: {hot_news_found}")
 
 # --------------------------------------------------
 # Build Prompt
@@ -279,12 +286,18 @@ poll_post = {
     "options": data["poll"]["options"]
 }
 
-if score >= 80:
-    add_to_queue(hot_loaf)
-    add_to_queue(art_post)
-    add_to_queue(poll_post)
-    print("✓ Queue Updated")
+# Always send AI Art and Poll
+add_to_queue(art_post)
+add_to_queue(poll_post)
 
+# Only send Hot Loaf if today's news is actually fresh
+if hot_news_found:
+    add_to_queue(hot_loaf)
+    print("✓ Fresh Hot Loaf queued")
+else:
+    print("⚠ No major news today. Skipping Hot Loaf.")
+
+print("✓ Queue Updated")
 # --------------------------------------------------
 # BEST TIME
 # --------------------------------------------------
