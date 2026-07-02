@@ -7,66 +7,68 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 
 def process_queue():
-    queue = get_queue()
 
-    if not queue:
-        print("No queued content.")
-        return
+    while True:
 
-    if not should_post_now():
-        print("Not time to post yet.")
-        return
+        queue = get_queue()
 
-    item = queue[0]
-    post_id = item.get("id", "")
+        if not queue:
+            print("Queue finished.")
+            break
 
-    posted = load_posted()
+        if not should_post_now():
+            print("Not time to post yet.")
+            break
 
-    if post_id in posted:
-        print("Already posted.")
+        item = queue[0]
+
+        post_id = item.get("id", "")
+
+        posted = load_posted()
+
+        if post_id in posted:
+            print("Already posted.")
+            remove_first()
+            continue
+
+        print(f"Posting: {item.get('type')}")
+
+        post_type = item.get("type")
+        image = item.get("image")
+
+        if post_type == "what_if":
+
+            send_poll(
+                TELEGRAM_BOT_TOKEN,
+                TELEGRAM_CHAT_ID,
+                item["question"],
+                item["options"]
+            )
+
+        elif image:
+
+            send_photo(
+                TELEGRAM_BOT_TOKEN,
+                TELEGRAM_CHAT_ID,
+                image,
+                item.get("text", "")
+            )
+
+        else:
+
+            send_telegram(
+                TELEGRAM_BOT_TOKEN,
+                TELEGRAM_CHAT_ID,
+                item.get("text", ""),
+                post_type
+            )
+
+        print("✓ Sent")
+
+        mark_posted(post_id)
+
         remove_first()
-        return
 
-    print("Processing first queued item...")
-
-    post_type = item.get("type")
-    image = item.get("image")
-
-    if post_type == "what_if":
-
-        send_poll(
-            TELEGRAM_BOT_TOKEN,
-            TELEGRAM_CHAT_ID,
-            item["question"],
-            item["options"]
-        )
-
-    elif image:
-
-        send_photo(
-            TELEGRAM_BOT_TOKEN,
-            TELEGRAM_CHAT_ID,
-            image,
-            item.get("text", "")
-        )
-
-    else:
-
-        send_telegram(
-            TELEGRAM_BOT_TOKEN,
-            TELEGRAM_CHAT_ID,
-            item.get("text", ""),
-            post_type
-        )
-
-    print("✓ Sent")
-
-    mark_posted(post_id)
-    print("✓ Added to posted history")
-
-    remove_first()
-    print("✓ Queue updated")
-
-
+        print("✓ Queue updated")
 if __name__ == "__main__":
     process_queue()
