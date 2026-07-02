@@ -141,8 +141,6 @@ if score >= 80:
     save_daily(data)
     print("✓ Daily content saved")
 
-    # Queueing will be updated in the next step.
-    print("✓ Ready for Queue")
 else:
     print("✗ Content score too low. Skipping.")
 
@@ -288,6 +286,14 @@ poll_post = {
     "question": data["poll"]["question"],
     "options": data["poll"]["options"]
 }
+
+if score >= 80:
+    add_to_queue([
+        hot_loaf,
+        art_post,
+        poll_post
+    ])
+    print("✓ Queue Updated")
 
 # --------------------------------------------------
 # BEST TIME
