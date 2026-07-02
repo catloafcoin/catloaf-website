@@ -90,16 +90,22 @@ def mark_posted(post_id):
 
 def calculate_score(item):
     """
-    Calculates whether a piece of content is worth posting.
-    Returns a score from 0–100.
+    Scores today's generated content.
     """
 
-    score = 0
+    score = 50
 
-    title = item.get("title", "").lower()
-    body = item.get("body", "").lower()
+    telegram = item.get("telegram", {})
 
-    text = f"{title} {body}"
+    text = (
+        telegram.get("opening", "")
+        + " "
+        + " ".join(telegram.get("bullets", []))
+        + " "
+        + telegram.get("why", "")
+        + " "
+        + telegram.get("question", "")
+    ).lower()
 
     keywords = [
         "solana",
@@ -124,6 +130,12 @@ def calculate_score(item):
 
     for word in keywords:
         if word in text:
-            score += 6
+            score += 5
+
+    if item.get("meme"):
+        score += 10
+
+    if item.get("poll"):
+        score += 10
 
     return min(score, 100)
