@@ -242,21 +242,11 @@ meme_message = f"""
 
 {divider()}
 
-🖼 <b>Image Prompt</b>
+💬 <b>{meme["style"]}</b>
 
-{meme["template"]}
+<i>"{meme["quote"]}"</i>
 
-🎭 <b>Scene</b>
-
-{meme["scene"]}
-
-💬 <b>Caption</b>
-
-{meme["caption"]}
-
-🤣 <b>Why It Works</b>
-
-{meme["why"]}
+🥖 {meme["cta"]}
 """
 
 messages.append(meme_message.strip())
