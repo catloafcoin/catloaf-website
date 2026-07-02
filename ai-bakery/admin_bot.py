@@ -3,6 +3,9 @@ import time
 import json
 import requests
 
+from scheduler import get_queue, remove_first, mark_posted
+from publisher import publish
+
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 API = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -76,15 +79,56 @@ while True:
             continue
 
         callback = update["callback_query"]
-
         data = callback["data"]
 
         print("Pressed:", data)
 
-        answer_callback(
-            callback["id"],
-            "Received 👍"
-        )
+        if data.startswith("approve_"):
+
+            post_id = data.replace("approve_", "")
+
+            queue = get_queue()
+
+            item = next(
+                (q for q in queue if q["id"] == post_id),
+                None
+            )
+
+            if item:
+
+                publish(item)
+
+                mark_posted(post_id)
+
+                remove_first()
+
+                answer_callback(
+                    callback["id"],
+                    "Published ✅"
+                )
+
+            else:
+
+                answer_callback(
+                    callback["id"],
+                    "Post not found."
+                )
+
+        elif data.startswith("reject_"):
+
+            remove_first()
+
+            answer_callback(
+                callback["id"],
+                "Rejected ❌"
+            )
+
+        else:
+
+            answer_callback(
+                callback["id"],
+                "Received 👍"
+            )
 
         edit_buttons(
             callback["message"]["chat"]["id"],
