@@ -121,18 +121,18 @@ while True:
                     "Post not found."
                 )
 
-elif data.startswith("reject_"):
+        elif data.startswith("reject_"):
 
-    post_id = data.replace("reject_", "")
+            post_id = data.replace("reject_", "")
 
-    remove_pending(post_id)
+            remove_pending(post_id)
 
-    remove_first()
+            remove_first()
 
-    answer_callback(
-        callback["id"],
-        "Rejected ❌"
-    )
+            answer_callback(
+                callback["id"],
+                "Rejected ❌"
+            )
 
         else:
 
