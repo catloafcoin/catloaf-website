@@ -5,10 +5,11 @@ import requests
 
 from scheduler import (
     get_queue,
-    remove_first,
+    remove_by_id,
     mark_posted,
     remove_pending
 )
+
 from publisher import publish
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -107,7 +108,7 @@ while True:
 
                 remove_pending(post_id)
 
-                remove_first()
+                remove_by_id(post_id)
 
                 answer_callback(
                     callback["id"],
@@ -127,7 +128,7 @@ while True:
 
             remove_pending(post_id)
 
-            remove_first()
+            remove_by_id(post_id)
 
             answer_callback(
                 callback["id"],
