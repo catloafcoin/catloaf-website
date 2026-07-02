@@ -96,7 +96,11 @@ print(f"✓ {len(news_items)} News Articles Loaded")
 # Detect if today's news is fresh
 # --------------------------------------------------
 
-hot_news_found = len(news_items) >= 3
+highest_score = max((a["score"] for a in articles), default=0)
+
+print(f"Highest News Score: {highest_score}")
+
+hot_news_found = highest_score >= 25
 
 print(f"✓ Hot News Found: {hot_news_found}")
 
@@ -110,12 +114,21 @@ prompt = f"""
 {prompt_template}
 """
 
-prompt = (
-    prompt
-    .replace("{news}", news_text)
-    .replace("{history}", history)
-)
+if hot_news_found:
 
+    prompt = (
+        prompt
+        .replace("{news}", news_text)
+        .replace("{history}", history)
+    )
+
+else:
+
+    prompt = (
+        prompt
+        .replace("{news}", "No major Solana news today.")
+        .replace("{history}", history)
+    )
 print("✓ Prompt Built")
 
 # --------------------------------------------------
