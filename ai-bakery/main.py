@@ -262,6 +262,13 @@ meme_message = f"""
 messages.append(meme_message.strip())
 message_types.append("art")
 
+art_post = {
+    "id": f"art_{len(news_items)}",
+    "type": "art",
+    "text": meme_message.strip(),
+    "image": image_path
+}
+
 # --------------------------------------------------
 # ENGAGEMENT
 # --------------------------------------------------
@@ -272,6 +279,15 @@ message_types.append("art")
 
 messages.append(data["poll"]["question"])
 message_types.append("what_if")
+
+poll_post = {
+    "id": f"poll_{len(news_items)}",
+    "type": "what_if",
+    "text": data["poll"]["question"],
+    "image": None,
+    "question": data["poll"]["question"],
+    "options": data["poll"]["options"]
+}
 
 # --------------------------------------------------
 # BEST TIME
