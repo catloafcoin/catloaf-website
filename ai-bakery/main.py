@@ -141,8 +141,8 @@ if score >= 80:
     save_daily(data)
     print("✓ Daily content saved")
 
-    add_to_queue(data)
-    print("✓ Saved to Queue")
+    # Queueing will be updated in the next step.
+    print("✓ Ready for Queue")
 else:
     print("✗ Content score too low. Skipping.")
 
