@@ -3,7 +3,7 @@ from image_generator import generate_image
 import os
 import json
 import google.generativeai as genai
-from rss_reader import get_latest_news
+from rss_reader import get_latest_news, score_articles
 from poster import process_queue
 from modules import (
     load_text,
@@ -59,7 +59,12 @@ print("✓ Prompt Loaded")
 
 print("Fetching RSS...")
 
-articles = get_latest_news()
+articles = score_articles(get_latest_news())
+
+print("Top News Scores:")
+
+for article in articles[:5]:
+    print(article["score"], "-", article["title"])
 
 seen = set()
 
