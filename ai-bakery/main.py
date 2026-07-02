@@ -4,6 +4,7 @@ import os
 import json
 import google.generativeai as genai
 from rss_reader import get_latest_news
+from poster import process_queue
 from modules import (
     load_text,
     load_json,
@@ -351,6 +352,10 @@ with open("history.txt", "w", encoding="utf-8") as f:
     f.write("\n".join(entries))
 
 print("✓ History Updated")
+
+print("Starting poster...")
+process_queue()
+print("Poster finished.")
 """
 # --------------------------------------------------
 # Send Telegram Messages
