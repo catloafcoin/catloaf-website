@@ -235,6 +235,12 @@ hot_loaf = {
 # --------------------------------------------------
 
 meme = data["meme"]
+
+print("=" * 50)
+print("MEME JSON")
+print(json.dumps(meme, indent=2, ensure_ascii=False))
+print("=" * 50)
+
 image_path = generate_image(meme["template"])
 
 if image_path:
