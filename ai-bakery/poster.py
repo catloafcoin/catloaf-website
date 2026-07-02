@@ -1,9 +1,9 @@
 from scheduler import (
     get_queue,
-    remove_first,
     should_post_now,
     load_posted,
-    mark_posted
+    load_pending,
+    mark_pending
 )
 
 from modules import send_telegram, send_photo, send_poll
@@ -31,14 +31,18 @@ def process_queue():
 
         item = queue[0]
 
-        post_id = item.get("id", "")
+                post_id = item.get("id", "")
 
         posted = load_posted()
+        pending = load_pending()
 
         if post_id in posted:
-            print("Already posted.")
-            remove_first()
+            print("Already published.")
             continue
+
+        if post_id in pending:
+            print("Already awaiting approval.")
+            break
 
         print(f"Posting: {item.get('type')}")
 
