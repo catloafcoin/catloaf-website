@@ -219,6 +219,12 @@ telegram_message += f"""
 
 messages.append(telegram_message.strip())
 message_types.append("hot_loaf")
+hot_loaf = {
+    "id": f"hot_loaf_{len(news_items)}",
+    "type": "hot_loaf",
+    "text": telegram_message.strip(),
+    "image": None
+}
 
 # --------------------------------------------------
 # MEME
