@@ -85,7 +85,7 @@ def split_message(text, limit=3900):
     return chunks
 
 
-def send_telegram(token, chat_id, text, msg_type):
+def send_telegram(token, chat_id, text, msg_type, reply_markup=None):
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
@@ -97,11 +97,20 @@ def send_telegram(token, chat_id, text, msg_type):
 
         for _ in range(3):
 
-            reply_markup = None
+            payload = {
+                "chat_id": chat_id,
+                "text": telegram_safe(part),
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True
+            }
 
-            if msg_type in ["hot_loaf", "art", "cloaf"]:
+            if reply_markup is not None:
 
-                reply_markup = json.dumps({
+                payload["reply_markup"] = reply_markup
+
+            elif msg_type in ["hot_loaf", "art", "cloaf"]:
+
+                payload["reply_markup"] = json.dumps({
                     "inline_keyboard": [
                         [
                             {
@@ -122,16 +131,6 @@ def send_telegram(token, chat_id, text, msg_type):
                     ]
                 })
 
-            payload = {
-                "chat_id": chat_id,
-                "text": telegram_safe(part),
-                "parse_mode": "HTML",
-                "disable_web_page_preview": True
-            }
-
-            if reply_markup:
-                payload["reply_markup"] = reply_markup
-
             r = requests.post(
                 url,
                 data=payload,
@@ -151,6 +150,7 @@ def send_telegram(token, chat_id, text, msg_type):
             print("Telegram send failed.")
 
         time.sleep(1)
+
 
 def send_photo(token, chat_id, photo_path, caption="", reply_markup=None):
 
