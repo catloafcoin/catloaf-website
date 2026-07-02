@@ -3,7 +3,12 @@ import time
 import json
 import requests
 
-from scheduler import get_queue, remove_first, mark_posted
+from scheduler import (
+    get_queue,
+    remove_first,
+    mark_posted,
+    remove_pending
+)
 from publisher import publish
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
