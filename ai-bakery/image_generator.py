@@ -1,5 +1,6 @@
 import requests
 import urllib.parse
+import time
 
 
 def generate_image(prompt, filename="art.png"):
@@ -8,22 +9,36 @@ def generate_image(prompt, filename="art.png"):
 
     prompt = urllib.parse.quote(prompt)
 
-    url = f"https://image.pollinations.ai/prompt/{prompt}"
+    url = f"https://image.pollinations.ai/prompt/{prompt}?width=768&height=768&model=flux&enhance=true"
 
-    response = requests.get(
-        url,
-        timeout=180
-    )
+    for attempt in range(3):
 
-    if response.status_code != 200:
-        raise Exception(response.text)
+        try:
 
-    with open(filename, "wb") as f:
-        f.write(response.content)
+            response = requests.get(
+                url,
+                timeout=180
+            )
 
-    print("✓ Image generated")
+            if response.status_code == 200:
 
-    return filename
+                with open(filename, "wb") as f:
+                    f.write(response.content)
+
+                print("✓ Image generated")
+
+                return filename
+
+            print(f"Attempt {attempt+1} failed: {response.status_code}")
+
+        except Exception as e:
+            print(e)
+
+        time.sleep(15)
+
+    print("⚠ Pollinations unavailable. Skipping image.")
+
+    return None
 
 
 if __name__ == "__main__":
