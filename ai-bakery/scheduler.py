@@ -4,6 +4,7 @@ from datetime import datetime
 
 QUEUE_FILE = "news_queue.json"
 
+
 def load_queue():
     if not os.path.exists(QUEUE_FILE):
         return []
@@ -11,20 +12,25 @@ def load_queue():
     with open(QUEUE_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def save_queue(queue):
     with open(QUEUE_FILE, "w", encoding="utf-8") as f:
         json.dump(queue, f, indent=2)
+
 
 def add_to_queue(item):
     queue = load_queue()
     queue.append(item)
     save_queue(queue)
 
+
 def get_queue():
     return load_queue()
 
+
 def clear_queue():
     save_queue([])
+
 
 DAILY_FILE = "daily_content.json"
 
@@ -41,6 +47,7 @@ def load_daily():
     with open(DAILY_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def remove_first():
     queue = load_queue()
 
@@ -48,6 +55,20 @@ def remove_first():
         queue.pop(0)
 
     save_queue(queue)
+
+
+def remove_by_id(post_id):
+
+    queue = load_queue()
+
+    queue = [
+        item
+        for item in queue
+        if item.get("id") != post_id
+    ]
+
+    save_queue(queue)
+
 
 def should_post_now():
     """
@@ -63,6 +84,7 @@ def should_post_now():
     """
 
     return True
+
 
 POSTED_FILE = "posted.json"
 PENDING_FILE = "pending.json"
@@ -88,7 +110,8 @@ def mark_posted(post_id):
         posted.append(post_id)
 
     save_posted(posted)
-    
+
+
 def load_pending():
     if not os.path.exists(PENDING_FILE):
         return []
@@ -118,6 +141,7 @@ def remove_pending(post_id):
         pending.remove(post_id)
 
     save_pending(pending)
+
 
 def calculate_score(item):
     """
