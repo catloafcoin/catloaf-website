@@ -31,7 +31,7 @@ def process_queue():
 
         item = queue[0]
 
-                post_id = item.get("id", "")
+        post_id = item.get("id", "")
 
         posted = load_posted()
         pending = load_pending()
@@ -108,12 +108,14 @@ def process_queue():
 
         print("✓ Sent")
 
+        mark_pending(post_id)
+
         print("✓ Sent for approval")
-        
+
         break
 
-# Wait for admin approval before publishing
 
+# Wait for admin approval before publishing
 
 if __name__ == "__main__":
     process_queue()
