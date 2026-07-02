@@ -65,6 +65,7 @@ def should_post_now():
     return True
 
 POSTED_FILE = "posted.json"
+PENDING_FILE = "pending.json"
 
 
 def load_posted():
@@ -87,6 +88,36 @@ def mark_posted(post_id):
         posted.append(post_id)
 
     save_posted(posted)
+    
+def load_pending():
+    if not os.path.exists(PENDING_FILE):
+        return []
+
+    with open(PENDING_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_pending(data):
+    with open(PENDING_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+
+def mark_pending(post_id):
+    pending = load_pending()
+
+    if post_id not in pending:
+        pending.append(post_id)
+
+    save_pending(pending)
+
+
+def remove_pending(post_id):
+    pending = load_pending()
+
+    if post_id in pending:
+        pending.remove(post_id)
+
+    save_pending(pending)
 
 def calculate_score(item):
     """
