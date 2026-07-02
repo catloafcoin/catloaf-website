@@ -1,24 +1,25 @@
-import os
-
-from huggingface_hub import InferenceClient
-
-HF_API_KEY = os.getenv("HUGGINGFACE")
-
-client = InferenceClient(
-    api_key=HF_API_KEY
-)
+import requests
+import urllib.parse
 
 
 def generate_image(prompt, filename="art.png"):
 
     print("Generating AI artwork...")
 
-    image = client.text_to_image(
-        prompt,
-        model="black-forest-labs/FLUX.1-dev"
+    prompt = urllib.parse.quote(prompt)
+
+    url = f"https://image.pollinations.ai/prompt/{prompt}"
+
+    response = requests.get(
+        url,
+        timeout=180
     )
 
-    image.save(filename)
+    if response.status_code != 200:
+        raise Exception(response.text)
+
+    with open(filename, "wb") as f:
+        f.write(response.content)
 
     print("✓ Image generated")
 
@@ -28,6 +29,6 @@ def generate_image(prompt, filename="art.png"):
 if __name__ == "__main__":
 
     generate_image(
-        "A majestic orange loaf cat sitting on a throne made of glowing Solana coins, ultra detailed digital art, cinematic lighting, masterpiece",
+        "A majestic orange loaf cat sitting on a throne made of glowing Solana coins, cinematic digital art",
         "test_art.png"
     )
