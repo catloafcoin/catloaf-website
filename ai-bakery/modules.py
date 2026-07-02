@@ -156,6 +156,27 @@ def send_photo(token, chat_id, photo_path, caption=""):
 
     url = f"https://api.telegram.org/bot{token}/sendPhoto"
 
+    reply_markup = json.dumps({
+        "inline_keyboard": [
+            [
+                {
+                    "text": "🐦 Follow X",
+                    "url": "https://x.com/CatLoafCoin"
+                },
+                {
+                    "text": "📢 Telegram",
+                    "url": "https://t.me/CatLoafCoin"
+                }
+            ],
+            [
+                {
+                    "text": "📤 Share",
+                    "switch_inline_query": "Join CatLoafCoin 🥖🐱 https://t.me/CatLoafCoin"
+                }
+            ]
+        ]
+    })
+
     with open(photo_path, "rb") as photo:
 
         r = requests.post(
@@ -163,7 +184,8 @@ def send_photo(token, chat_id, photo_path, caption=""):
             data={
                 "chat_id": chat_id,
                 "caption": telegram_safe(caption),
-                "parse_mode": "HTML"
+                "parse_mode": "HTML",
+                "reply_markup": reply_markup
             },
             files={
                 "photo": photo
