@@ -26,6 +26,13 @@ jobs:
       - name: Test Image Generator
         run: python image_generator.py
 
+      - name: Run Main
+        run: python -u main.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
       - name: Run Poster
         run: python -u poster.py
         env:
