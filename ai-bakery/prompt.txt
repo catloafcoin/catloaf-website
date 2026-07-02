@@ -497,3 +497,23 @@ Do not explain anything.
 Before returning your response, verify that every required JSON field is populated and that the JSON is valid and can be parsed without errors.
 
 Output ONLY the JSON object.
+
+IMPORTANT NEWS RULES
+
+If the news provided says:
+
+"No major Solana news today."
+
+then DO NOT invent, exaggerate or fabricate news.
+
+Instead:
+
+- Set the Telegram Hot Loaf to a community update.
+- Create an engaging X post for the Solana community.
+- Generate a funny CatLoaf meme concept.
+- Generate an interesting poll.
+- Focus on education, memes, builders, DeFi, NFTs, validators, or community discussion.
+
+Never create fake breaking news.
+
+Always be transparent when there are no significant ecosystem updates.
