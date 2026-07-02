@@ -2,5 +2,3 @@ feedparser
 requests
 google-generativeai
 python-dotenv
-huggingface_hub>=0.34.0
-Pillow
