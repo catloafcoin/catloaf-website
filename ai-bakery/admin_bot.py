@@ -17,6 +17,10 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
+# --------------------------------------------------
+# Telegram Helpers
+# --------------------------------------------------
+
 def get_updates(offset=None):
 
     params = {}
@@ -40,9 +44,14 @@ def answer_callback(callback_id, text):
         data={
             "callback_query_id": callback_id,
             "text": text
-        }
+        },
+        timeout=20
     )
 
+
+# --------------------------------------------------
+# Keyboard Helpers
+# --------------------------------------------------
 
 def show_destination_menu(chat_id, message_id, post_id):
 
@@ -52,9 +61,7 @@ def show_destination_menu(chat_id, message_id, post_id):
                 {
                     "text": "📣 Telegram",
                     "callback_data": f"tg_{post_id}"
-                }
-            ],
-            [
+                },
                 {
                     "text": "🐦 X",
                     "callback_data": f"x_{post_id}"
@@ -68,7 +75,7 @@ def show_destination_menu(chat_id, message_id, post_id):
             ],
             [
                 {
-                    "text": "⬅ Cancel",
+                    "text": "⬅ Back",
                     "callback_data": f"cancel_{post_id}"
                 }
             ]
@@ -81,7 +88,46 @@ def show_destination_menu(chat_id, message_id, post_id):
             "chat_id": chat_id,
             "message_id": message_id,
             "reply_markup": json.dumps(keyboard)
-        }
+        },
+        timeout=20
+    )
+
+
+def restore_main_buttons(chat_id, message_id, post_id):
+
+    keyboard = {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "✅ Approve",
+                    "callback_data": f"approve_{post_id}"
+                },
+                {
+                    "text": "❌ Reject",
+                    "callback_data": f"reject_{post_id}"
+                }
+            ],
+            [
+                {
+                    "text": "✏️ Edit",
+                    "callback_data": f"edit_{post_id}"
+                },
+                {
+                    "text": "🔄 Regenerate",
+                    "callback_data": f"regen_{post_id}"
+                }
+            ]
+        ]
+    }
+
+    requests.post(
+        f"{API}/editMessageReplyMarkup",
+        data={
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "reply_markup": json.dumps(keyboard)
+        },
+        timeout=20
     )
 
 
@@ -109,7 +155,9 @@ def edit_buttons(chat_id, message_id, text):
     )
 
 
-print("CatLoaf Approval Bot Running...")
+print("=" * 60)
+print("🍞 CatLoaf Approval Bot Running...")
+print("=" * 60)
 
 offset = None
 
@@ -117,7 +165,8 @@ while True:
 
     updates = get_updates(offset)
 
-    if not updates["ok"]:
+    if not updates.get("ok"):
+
         time.sleep(2)
         continue
 
@@ -129,12 +178,14 @@ while True:
             continue
 
         callback = update["callback_query"]
+
         data = callback["data"]
 
         chat_id = callback["message"]["chat"]["id"]
+
         message_id = callback["message"]["message_id"]
 
-        print("Pressed:", data)
+        print(f"Pressed: {data}")
 
         if data.startswith("approve_"):
 
@@ -148,7 +199,7 @@ while True:
 
             answer_callback(
                 callback["id"],
-                "Choose destination"
+                "Choose where to publish"
             )
 
         elif data.startswith("tg_"):
@@ -156,21 +207,17 @@ while True:
             post_id = data.replace("tg_", "")
 
             queue = get_queue()
-            print("=" * 60)
-            print("QUEUE CONTENTS")
-            print(queue)
-            print("=" * 60)
 
             item = next(
                 (q for q in queue if q["id"] == post_id),
                 None
             )
 
-            if not item:
+            if item is None:
 
                 answer_callback(
                     callback["id"],
-                    "Post not found."
+                    "❌ Post not found."
                 )
 
                 continue
@@ -191,7 +238,7 @@ while True:
 
                 answer_callback(
                     callback["id"],
-                    "Published"
+                    "Published!"
                 )
 
             except Exception as e:
@@ -203,7 +250,7 @@ while True:
 
                 answer_callback(
                     callback["id"],
-                    "❌ Failed"
+                    "❌ Publish failed."
                 )
 
         elif data.startswith("x_"):
@@ -211,25 +258,17 @@ while True:
             post_id = data.replace("x_", "")
 
             queue = get_queue()
-            print("QUEUE:")
-            for q in queue:
-                print(q["id"])
-            print("Looking for:", post_id)
-            print("=" * 60)
-            print("QUEUE CONTENTS")
-            print(queue)
-            print("=" * 60)
 
             item = next(
                 (q for q in queue if q["id"] == post_id),
                 None
             )
 
-            if not item:
+            if item is None:
 
                 answer_callback(
                     callback["id"],
-                    "Post not found."
+                    "❌ Post not found."
                 )
 
                 continue
@@ -238,20 +277,20 @@ while True:
 
                 result = publish(item, "x")
 
-                message = (
-                    "🐦 <b>X POST READY</b>\n\n"
-                    f"{result['x_text']}"
-                )
+                if result.get("x_text"):
 
-                requests.post(
-                    f"{API}/sendMessage",
-                    data={
-                        "chat_id": chat_id,
-                        "text": message,
-                        "parse_mode": "HTML"
-                    },
-                    timeout=20
-                )
+                    requests.post(
+                        f"{API}/sendMessage",
+                        data={
+                            "chat_id": chat_id,
+                            "text": (
+                                "🐦 <b>X POST READY</b>\n\n"
+                                f"{result['x_text']}"
+                            ),
+                            "parse_mode": "HTML"
+                        },
+                        timeout=20
+                    )
 
                 mark_posted(post_id)
                 remove_pending(post_id)
@@ -265,7 +304,7 @@ while True:
 
                 answer_callback(
                     callback["id"],
-                    "X Draft Ready"
+                    "X draft created."
                 )
 
             except Exception as e:
@@ -277,7 +316,7 @@ while True:
 
                 answer_callback(
                     callback["id"],
-                    "❌ Failed"
+                    "❌ Publish failed."
                 )
 
         elif data.startswith("both_"):
@@ -285,21 +324,17 @@ while True:
             post_id = data.replace("both_", "")
 
             queue = get_queue()
-            print("=" * 60)
-            print("QUEUE CONTENTS")
-            print(queue)
-            print("=" * 60)
 
             item = next(
                 (q for q in queue if q["id"] == post_id),
                 None
             )
 
-            if not item:
+            if item is None:
 
                 answer_callback(
                     callback["id"],
-                    "Post not found."
+                    "❌ Post not found."
                 )
 
                 continue
@@ -310,16 +345,14 @@ while True:
 
                 if result.get("x_text"):
 
-                    message = (
-                        "🐦 <b>X POST READY</b>\n\n"
-                        f"{result['x_text']}"
-                    )
-
                     requests.post(
                         f"{API}/sendMessage",
                         data={
                             "chat_id": chat_id,
-                            "text": message,
+                            "text": (
+                                "🐦 <b>X POST READY</b>\n\n"
+                                f"{result['x_text']}"
+                            ),
                             "parse_mode": "HTML"
                         },
                         timeout=20
@@ -337,7 +370,7 @@ while True:
 
                 answer_callback(
                     callback["id"],
-                    "Published"
+                    "Published!"
                 )
 
             except Exception as e:
@@ -349,45 +382,17 @@ while True:
 
                 answer_callback(
                     callback["id"],
-                    "❌ Failed"
+                    "❌ Publish failed."
                 )
 
         elif data.startswith("cancel_"):
 
             post_id = data.replace("cancel_", "")
 
-            keyboard = {
-                "inline_keyboard": [
-                    [
-                        {
-                            "text": "✅ Approve",
-                            "callback_data": f"approve_{post_id}"
-                        },
-                        {
-                            "text": "❌ Reject",
-                            "callback_data": f"reject_{post_id}"
-                        }
-                    ],
-                    [
-                        {
-                            "text": "✏️ Edit",
-                            "callback_data": f"edit_{post_id}"
-                        },
-                        {
-                            "text": "🔄 Regenerate",
-                            "callback_data": f"regen_{post_id}"
-                        }
-                    ]
-                ]
-            }
-
-            requests.post(
-                f"{API}/editMessageReplyMarkup",
-                data={
-                    "chat_id": chat_id,
-                    "message_id": message_id,
-                    "reply_markup": json.dumps(keyboard)
-                }
+            restore_main_buttons(
+                chat_id,
+                message_id,
+                post_id
             )
 
             answer_callback(
@@ -399,8 +404,9 @@ while True:
 
             post_id = data.replace("reject_", "")
 
+            # Remove from pending review only.
+            # Keep it in the queue so it can be edited or regenerated later.
             remove_pending(post_id)
-            remove_by_id(post_id)
 
             edit_buttons(
                 chat_id,
@@ -413,11 +419,25 @@ while True:
                 "Rejected"
             )
 
+        elif data.startswith("edit_"):
+
+            answer_callback(
+                callback["id"],
+                "✏️ Edit will be available in the next update."
+            )
+
+        elif data.startswith("regen_"):
+
+            answer_callback(
+                callback["id"],
+                "🔄 Regenerate will be available in the next update."
+            )
+
         else:
 
             answer_callback(
                 callback["id"],
-                "Received 👍"
+                "Unknown action."
             )
 
     time.sleep(1)
