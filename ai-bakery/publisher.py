@@ -1,4 +1,5 @@
 import os
+import json
 
 from modules import (
     send_telegram,
@@ -26,21 +27,38 @@ def publish(item, destination="telegram"):
 
     handler = handlers.get(destination)
 
-    if not handler:
+    if handler is None:
         raise ValueError(f"Unknown destination: {destination}")
 
     return handler(item)
 
 
+def build_source_button(item):
+
+    source = item.get("source_url", "")
+
+    if not source:
+        return None
+
+    return json.dumps({
+        "inline_keyboard": [
+            [
+                {
+                    "text": "📰 Read Source",
+                    "url": source
+                }
+            ]
+        ]
+    })
+
+
 def publish_to_telegram(item):
+
     print("publish_to_telegram()")
-    print("PUBLIC_CHAT_ID:", PUBLIC_CHAT_ID)
-    print("BOT_TOKEN exists:", bool(BOT_TOKEN))
-    print("Post type:", item.get("type"))
-    print("Text:", item.get("text"))
-    print("Image:", item.get("image"))
 
     post_type = item.get("type")
+
+    reply_markup = build_source_button(item)
 
     if post_type == "what_if":
 
@@ -57,7 +75,8 @@ def publish_to_telegram(item):
             BOT_TOKEN,
             PUBLIC_CHAT_ID,
             item["image"],
-            item.get("text", "")
+            item.get("text", ""),
+            reply_markup
         )
 
     else:
@@ -66,14 +85,15 @@ def publish_to_telegram(item):
             BOT_TOKEN,
             PUBLIC_CHAT_ID,
             item.get("text", ""),
-            post_type
+            post_type,
+            reply_markup
         )
 
     return {
         "success": True,
         "telegram": True,
-        "x_text": None,
-        "image": None
+        "x_text": item.get("text", ""),
+        "image": item.get("image")
     }
 
 
