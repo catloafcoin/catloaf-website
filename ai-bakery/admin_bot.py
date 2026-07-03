@@ -211,6 +211,10 @@ while True:
             post_id = data.replace("x_", "")
 
             queue = get_queue()
+            print("QUEUE:")
+            for q in queue:
+                print(q["id"])
+            print("Looking for:", post_id)
             print("=" * 60)
             print("QUEUE CONTENTS")
             print(queue)
