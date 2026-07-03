@@ -4,8 +4,9 @@ from supabase import create_client
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
-print("SUPABASE_URL =", SUPABASE_URL)
-print("SUPABASE_SERVICE_ROLE_KEY exists:", bool(SUPABASE_KEY))
+print("✓ Connecting to Supabase...")
+print("✓ SUPABASE_URL loaded:", bool(SUPABASE_URL))
+print("✓ SUPABASE_SERVICE_ROLE_KEY loaded:", bool(SUPABASE_KEY))
 if not SUPABASE_URL:
     raise RuntimeError("SUPABASE_URL environment variable is missing")
 
