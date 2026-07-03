@@ -12,6 +12,12 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 def publish(item, destination="telegram"):
 
+    print("=" * 60)
+    print("PUBLISH CALLED")
+    print("Destination:", destination)
+    print("Item:", item)
+    print("=" * 60)
+
     handlers = {
         "telegram": publish_to_telegram,
         "x": publish_to_x,
@@ -27,6 +33,12 @@ def publish(item, destination="telegram"):
 
 
 def publish_to_telegram(item):
+    print("publish_to_telegram()")
+    print("PUBLIC_CHAT_ID:", PUBLIC_CHAT_ID)
+    print("BOT_TOKEN exists:", bool(BOT_TOKEN))
+    print("Post type:", item.get("type"))
+    print("Text:", item.get("text"))
+    print("Image:", item.get("image"))
 
     post_type = item.get("type")
 
