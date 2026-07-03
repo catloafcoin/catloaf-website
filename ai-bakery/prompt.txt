@@ -410,16 +410,34 @@ Return exactly this schema.
     }
   ],
 
-  "telegram": {
-    "opening":"",
-"bullets":[
-  "",
-  "",
-  ""
-],
-    "why":"",
-    "question":""
-  },
+ "telegram": {
+    "persona": "",
+    "category": "",
+    "headline": "",
+    "opening": "",
+    "bullets": [
+      "",
+      "",
+      ""
+    ],
+    "why": "",
+    "loaf_score": {
+      "overall": "",
+      "market_impact": "",
+      "builder_interest": "",
+      "urgency": ""
+    },
+  "header_image": {
+    "prompt": "",
+    "style": "",
+    "aspect_ratio": "16:9"
+},
+    "source": {
+      "title": "",
+      "url": ""
+    },
+    "question": ""
+},
 
 "meme":{
   "template":"",
