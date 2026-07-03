@@ -409,11 +409,16 @@ while len(x_posts) < 3:
         "type": "fallback",
         "content": "🍞 Stay loafy with $CLOAF!"
     })
-x_posts[0]["content"]
-x_posts[1]["content"]
-x_posts[2]["content"]
+
+x_viral = {
+    "id": f"x_viral_{RUN_ID}",
+    "type": "x_viral",
+    "text": x_posts[0]["content"],
+    "image": None
+}
 
 x_funny = {
+
     "id": f"x_funny_{RUN_ID}",
     "type": "x_funny",
     "text": data["x_posts"][1]["content"],
