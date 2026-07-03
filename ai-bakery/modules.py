@@ -45,6 +45,7 @@ def validate_json(response):
     except Exception as e:
         raise Exception(f"Invalid JSON from Gemini:\n{e}")
 
+
 def telegram_safe(text):
 
     safe = escape(text)
@@ -121,15 +122,10 @@ def send_telegram(token, chat_id, text, msg_type, reply_markup=None):
                                 "text": "📢 Telegram",
                                 "url": "https://t.me/CatLoafCoin"
                             }
-                        ],
-                        [
-                            {
-                                "text": "📤 Share",
-                                "switch_inline_query": "Join CatLoafCoin 🥖🐱 https://t.me/CatLoafCoin"
-                            }
                         ]
                     ]
                 })
+
             print("=" * 60)
             print("SENDING MESSAGE")
             print("Chat ID:", chat_id)
@@ -190,11 +186,12 @@ def send_photo(token, chat_id, photo_path, caption="", reply_markup=None):
     if r.status_code != 200:
         raise Exception(r.text)
 
+
 def send_poll(token, chat_id, question, options):
 
     if not question or not options:
         return
-    
+
     url = f"https://api.telegram.org/bot{token}/sendPoll"
 
     r = requests.post(
