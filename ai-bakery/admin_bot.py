@@ -104,7 +104,8 @@ def edit_buttons(chat_id, message_id, text):
             "chat_id": chat_id,
             "message_id": message_id,
             "reply_markup": json.dumps(keyboard)
-        }
+        },
+        timeout=20
     )
 
 
@@ -161,7 +162,16 @@ while True:
                 None
             )
 
-            if item:
+            if not item:
+
+                answer_callback(
+                    callback["id"],
+                    "Post not found."
+                )
+
+                continue
+
+            try:
 
                 publish(item, "telegram")
 
@@ -180,6 +190,18 @@ while True:
                     "Published"
                 )
 
+            except Exception as e:
+
+                print("=" * 60)
+                print("Telegram Publish Error")
+                print(e)
+                print("=" * 60)
+
+                answer_callback(
+                    callback["id"],
+                    "❌ Failed"
+                )
+
         elif data.startswith("x_"):
 
             post_id = data.replace("x_", "")
@@ -191,9 +213,33 @@ while True:
                 None
             )
 
-            if item:
+            if not item:
 
-                publish(item, "x")
+                answer_callback(
+                    callback["id"],
+                    "Post not found."
+                )
+
+                continue
+
+            try:
+
+                result = publish(item, "x")
+
+                message = (
+                    "🐦 <b>X POST READY</b>\n\n"
+                    f"{result['x_text']}"
+                )
+
+                requests.post(
+                    f"{API}/sendMessage",
+                    data={
+                        "chat_id": chat_id,
+                        "text": message,
+                        "parse_mode": "HTML"
+                    },
+                    timeout=20
+                )
 
                 mark_posted(post_id)
                 remove_pending(post_id)
@@ -202,12 +248,24 @@ while True:
                 edit_buttons(
                     chat_id,
                     message_id,
-                    "✅ Published to X"
+                    "✅ X Draft Ready"
                 )
 
                 answer_callback(
                     callback["id"],
-                    "Published"
+                    "X Draft Ready"
+                )
+
+            except Exception as e:
+
+                print("=" * 60)
+                print("X Publish Error")
+                print(e)
+                print("=" * 60)
+
+                answer_callback(
+                    callback["id"],
+                    "❌ Failed"
                 )
 
         elif data.startswith("both_"):
@@ -221,9 +279,35 @@ while True:
                 None
             )
 
-            if item:
+            if not item:
 
-                publish(item, "both")
+                answer_callback(
+                    callback["id"],
+                    "Post not found."
+                )
+
+                continue
+
+            try:
+
+                result = publish(item, "both")
+
+                if result.get("x_text"):
+
+                    message = (
+                        "🐦 <b>X POST READY</b>\n\n"
+                        f"{result['x_text']}"
+                    )
+
+                    requests.post(
+                        f"{API}/sendMessage",
+                        data={
+                            "chat_id": chat_id,
+                            "text": message,
+                            "parse_mode": "HTML"
+                        },
+                        timeout=20
+                    )
 
                 mark_posted(post_id)
                 remove_pending(post_id)
@@ -238,6 +322,18 @@ while True:
                 answer_callback(
                     callback["id"],
                     "Published"
+                )
+
+            except Exception as e:
+
+                print("=" * 60)
+                print("Both Publish Error")
+                print(e)
+                print("=" * 60)
+
+                answer_callback(
+                    callback["id"],
+                    "❌ Failed"
                 )
 
         elif data.startswith("cancel_"):
