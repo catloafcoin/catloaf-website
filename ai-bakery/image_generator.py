@@ -7,15 +7,18 @@ def generate_image(prompt, filename="art.png"):
 
     print("Generating AI artwork...")
 
-if isinstance(prompt, dict):
-    prompt = prompt.get("prompt", "")
+    if isinstance(prompt, dict):
+        prompt = prompt.get("prompt", "")
 
-if not prompt:
-    raise Exception("Image prompt is empty.")
+    if not prompt:
+        raise Exception("Image prompt is empty.")
 
-prompt = urllib.parse.quote(prompt)
+    prompt = urllib.parse.quote(prompt)
 
-    url = f"https://image.pollinations.ai/prompt/{prompt}?width=768&height=768&model=flux&enhance=true"
+    url = (
+        f"https://image.pollinations.ai/prompt/"
+        f"{prompt}?width=768&height=768&model=flux&enhance=true"
+    )
 
     for attempt in range(3):
 
@@ -35,10 +38,10 @@ prompt = urllib.parse.quote(prompt)
 
                 return filename
 
-            print(f"Attempt {attempt+1} failed: {response.status_code}")
+            print(f"Attempt {attempt + 1} failed: {response.status_code}")
 
         except Exception as e:
-            print(e)
+            print(f"Attempt {attempt + 1} failed: {e}")
 
         time.sleep(15)
 
