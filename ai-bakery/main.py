@@ -360,19 +360,21 @@ print("HEADER IMAGE JSON")
 print(json.dumps(header, indent=2, ensure_ascii=False))
 print("=" * 50)
 
-# Generate header image
+# Generate Hot Loaf header image
 header_image_path = generate_image(header)
 
-# Generate art image
+# Generate Art image
 image_path = generate_image(art)
 
 print("✓ Header Image Generated")
 print("✓ Art Image Generated")
 
 meme_message = f"""
-🎨 <b>{art.get("title", "Art of the Day")}</b>
+🎨 <b>$CLOAF ART for You ♥️</b>
 
 {divider()}
+
+<b>{art.get("title", "Art of the Day")}</b>
 
 <i>"{meme.get("quote", "")}"</i>
 
@@ -387,14 +389,15 @@ message_types.append("art")
 art_post = {
     "id": f"art_{RUN_ID}",
     "type": "art",
+    "text": meme_message.strip(),
+    "image": image_path,
     "title": art.get("title", ""),
     "caption": art.get("caption", ""),
     "quote": meme.get("quote", ""),
-    "cta": meme.get("cta", ""),
-    "image": image_path
+    "cta": meme.get("cta", "")
 }
 
-# Update Hot Loaf to use generated header image
+# Save generated header image
 hot_loaf["image"] = header_image_path
 
 # --------------------------------------------------
