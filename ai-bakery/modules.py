@@ -20,8 +20,17 @@ def save_text(path, text):
 
 
 def load_json(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+
+    try:
+
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    except FileNotFoundError:
+        return {}
+
+    except json.JSONDecodeError as e:
+        raise Exception(f"Invalid JSON in {path}: {e}")
 
 
 def validate_json(response):
