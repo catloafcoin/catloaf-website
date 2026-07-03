@@ -72,38 +72,44 @@ def process_queue():
         post_type = item.get("type")
         image = item.get("image")
 
-        if post_type == "what_if":
+        try:
 
-            send_poll(
-                TELEGRAM_BOT_TOKEN,
-                TELEGRAM_CHAT_ID,
-                item["question"],
-                item["options"]
-            )
+            if post_type == "what_if":
 
-        elif image and os.path.exists(image):
+                send_poll(
+                    TELEGRAM_BOT_TOKEN,
+                    TELEGRAM_CHAT_ID,
+                    item["question"],
+                    item["options"]
+                )
 
-            send_photo(
-                TELEGRAM_BOT_TOKEN,
-                TELEGRAM_CHAT_ID,
-                image,
-                item.get("text", ""),
-                reply_markup
-            )
+            elif image and os.path.exists(image):
 
-        else:
+                send_photo(
+                    TELEGRAM_BOT_TOKEN,
+                    TELEGRAM_CHAT_ID,
+                    image,
+                    item.get("text", ""),
+                    reply_markup
+                )
 
-            send_telegram(
-                TELEGRAM_BOT_TOKEN,
-                TELEGRAM_CHAT_ID,
-                item.get("text", ""),
-                post_type,
-                reply_markup
-            )
+            else:
 
-        mark_pending(post_id)
+                send_telegram(
+                    TELEGRAM_BOT_TOKEN,
+                    TELEGRAM_CHAT_ID,
+                    item.get("text", ""),
+                    post_type,
+                    reply_markup
+                )
 
-        print(f"✓ {post_id} sent for approval")
+            mark_pending(post_id)
+
+            print(f"✓ {post_id} sent for approval")
+
+        except Exception as e:
+
+            print(f"✗ Failed to send {post_id}: {e}")
 
     print("Finished sending pending approvals.")
 
