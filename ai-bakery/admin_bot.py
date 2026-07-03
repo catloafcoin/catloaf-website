@@ -156,6 +156,10 @@ while True:
             post_id = data.replace("tg_", "")
 
             queue = get_queue()
+            print("=" * 60)
+            print("QUEUE CONTENTS")
+            print(queue)
+            print("=" * 60)
 
             item = next(
                 (q for q in queue if q["id"] == post_id),
@@ -207,6 +211,10 @@ while True:
             post_id = data.replace("x_", "")
 
             queue = get_queue()
+            print("=" * 60)
+            print("QUEUE CONTENTS")
+            print(queue)
+            print("=" * 60)
 
             item = next(
                 (q for q in queue if q["id"] == post_id),
@@ -273,6 +281,10 @@ while True:
             post_id = data.replace("both_", "")
 
             queue = get_queue()
+            print("=" * 60)
+            print("QUEUE CONTENTS")
+            print(queue)
+            print("=" * 60)
 
             item = next(
                 (q for q in queue if q["id"] == post_id),
