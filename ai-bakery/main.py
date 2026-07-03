@@ -242,10 +242,34 @@ message_types.append("x_posts")
 
 tg = data["telegram"]
 
+persona = tg.get("persona", "CatLoaf")
+
+category = tg.get("category", "Community")
+
+headline = tg.get("headline", "TODAY'S HOT LOAF")
+
+source = tg.get("source", {})
+
+source_title = source.get("title", "")
+
+source_url = source.get("url", "")
+
+loaf_score = tg.get("loaf_score", {})
+
+overall = loaf_score.get("overall", "-")
+
+market = loaf_score.get("market_impact", "-")
+
+builder = loaf_score.get("builder_interest", "-")
+
+urgency = loaf_score.get("urgency", "-")
+
 telegram_message = f"""
-🔥 <b>TODAY'S HOT LOAF</b>
+🔥 <b>{headline}</b>
 
 {divider()}
+
+👤 <b>{persona}</b>
 
 🍞 <i>Fresh from today's oven...</i>
 
@@ -260,16 +284,25 @@ for bullet in tg["bullets"]:
 
 telegram_message += f"""
 
-🧈 <b>Why It's Hot</b>
+🧈 <b>Why It Matters</b>
 
 {tg["why"]}
+
+📊 <b>Loaf Score</b>
+
+🍞 Overall: {overall}/100
+
+📈 Market Impact: {market}
+
+🏗 Builder Interest: {builder}
+
+⚡ Urgency: {urgency}
 
 🥖 <b>Hot Take</b>
 
 {tg["question"]}
 
 {divider()}
-🍞 Stay Cozy.
 🐱 @CatLoafCoin
 """
 
