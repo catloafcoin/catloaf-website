@@ -5,6 +5,10 @@ import os
 DAILY_FILE = "daily_content.json"
 
 
+# --------------------------------------------------
+# Daily Content
+# --------------------------------------------------
+
 def save_daily(data):
     with open(DAILY_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -18,6 +22,10 @@ def load_daily():
         return json.load(f)
 
 
+# --------------------------------------------------
+# Queue
+# --------------------------------------------------
+
 def add_to_queue(item):
     supabase.table("queue").upsert(item).execute()
 
@@ -27,15 +35,25 @@ def add_queue(item):
 
 
 def get_queue():
-    return supabase.table("queue").select("*").execute().data
+    result = (
+        supabase.table("queue")
+        .select("*")
+        .execute()
+    )
+
+    return result.data
 
 
 def remove_by_id(post_id):
-    supabase.table("queue").delete().eq("id", post_id).execute()
+    supabase.table("queue").delete().eq(
+        "id", post_id
+    ).execute()
 
 
 def clear_queue():
-    supabase.table("queue").delete().neq("id", "").execute()
+    supabase.table("queue").delete().neq(
+        "id", ""
+    ).execute()
 
 
 def remove_first():
@@ -44,6 +62,10 @@ def remove_first():
     if queue:
         remove_by_id(queue[0]["id"])
 
+
+# --------------------------------------------------
+# Pending
+# --------------------------------------------------
 
 def add_pending(post_id):
     supabase.table("pending_posts").upsert({
@@ -55,16 +77,40 @@ def mark_pending(post_id):
     add_pending(post_id)
 
 
+def load_pending():
+    result = (
+        supabase.table("pending_posts")
+        .select("id")
+        .execute()
+    )
+
+    return [row["id"] for row in result.data]
+
+
 def remove_pending(post_id):
     supabase.table("pending_posts").delete().eq(
         "id", post_id
     ).execute()
 
 
+# --------------------------------------------------
+# Posted
+# --------------------------------------------------
+
 def mark_posted(post_id):
     supabase.table("posted_posts").upsert({
         "id": post_id
     }).execute()
+
+
+def load_posted():
+    result = (
+        supabase.table("posted_posts")
+        .select("id")
+        .execute()
+    )
+
+    return [row["id"] for row in result.data]
 
 
 def is_posted(post_id):
@@ -78,11 +124,20 @@ def is_posted(post_id):
     return len(result.data) > 0
 
 
+# --------------------------------------------------
+# Scheduler
+# --------------------------------------------------
+
 def should_post_now():
     return True
 
 
+# --------------------------------------------------
+# Content Score
+# --------------------------------------------------
+
 def calculate_score(item):
+
     score = 50
 
     telegram = item.get("telegram", {})
