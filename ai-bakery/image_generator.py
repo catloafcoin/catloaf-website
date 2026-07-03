@@ -7,7 +7,13 @@ def generate_image(prompt, filename="art.png"):
 
     print("Generating AI artwork...")
 
-    prompt = urllib.parse.quote(prompt)
+if isinstance(prompt, dict):
+    prompt = prompt.get("prompt", "")
+
+if not prompt:
+    raise Exception("Image prompt is empty.")
+
+prompt = urllib.parse.quote(prompt)
 
     url = f"https://image.pollinations.ai/prompt/{prompt}?width=768&height=768&model=flux&enhance=true"
 
