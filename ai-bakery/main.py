@@ -299,7 +299,7 @@ telegram_message += f"""
 
 🧈 <b>Why It Matters</b>
 
-tg.get("why", "")
+{tg.get("why", "")}
 
 📊 <b>Loaf Score</b>
 
@@ -313,7 +313,7 @@ tg.get("why", "")
 
 🥖 <b>Hot Take</b>
 
-tg.get("question", "")
+{tg.get("question", "")}
 
 {divider()}
 🐱 @CatLoafCoin
