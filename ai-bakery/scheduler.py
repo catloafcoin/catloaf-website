@@ -32,12 +32,28 @@ def load_daily():
 # --------------------------------------------------
 
 def add_to_queue(item):
-    supabase.table("queue").upsert(item).execute()
+
+    if "id" not in item:
+        raise Exception("Queue item is missing an ID.")
+
+    clean_item = dict(item)
+
+    # Preserve all metadata
+    clean_item.setdefault("image", None)
+    clean_item.setdefault("source_title", "")
+    clean_item.setdefault("source_url", "")
+    clean_item.setdefault("persona", "")
+    clean_item.setdefault("category", "")
+    clean_item.setdefault("title", "")
+    clean_item.setdefault("caption", "")
+    clean_item.setdefault("quote", "")
+    clean_item.setdefault("cta", "")
+
+    supabase.table("queue").upsert(clean_item).execute()
 
 
 def add_queue(item):
     add_to_queue(item)
-
 
 def get_queue():
     result = (
@@ -47,7 +63,6 @@ def get_queue():
     )
 
     return result.data
-
 
 def remove_by_id(post_id):
     supabase.table("queue").delete().eq(
