@@ -2,6 +2,7 @@ from scheduler import add_to_queue, save_daily, calculate_score
 from image_generator import generate_image
 import os
 import json
+import uuid
 import google.generativeai as genai
 from rss_reader import get_latest_news, score_articles
 from poster import process_queue
@@ -46,6 +47,7 @@ API_KEYS = [
 ]
 
 print("✓ Configuration Loaded")
+RUN_ID = uuid.uuid4().hex[:8]
 
 # --------------------------------------------------
 # Load Prompt Files
@@ -274,7 +276,7 @@ telegram_message += f"""
 messages.append(telegram_message.strip())
 message_types.append("hot_loaf")
 hot_loaf = {
-    "id": f"hot_loaf_{len(news_items)}",
+    "id": f"hot_loaf_{RUN_ID}",
     "type": "hot_loaf",
     "text": telegram_message.strip(),
     "image": None
@@ -316,7 +318,7 @@ messages.append(meme_message.strip())
 message_types.append("art")
 
 art_post = {
-    "id": f"art_{len(news_items)}",
+    "id": f"art_{RUN_ID}",
     "type": "art",
     "text": meme_message.strip(),
     "image": image_path
@@ -334,7 +336,7 @@ messages.append(data["poll"]["question"])
 message_types.append("what_if")
 
 poll_post = {
-    "id": f"poll_{len(news_items)}",
+    "id": f"poll_{RUN_ID}",
     "type": "what_if",
     "text": data["poll"]["question"],
     "image": None,
@@ -342,21 +344,21 @@ poll_post = {
     "options": data["poll"]["options"]
 }
 x_viral = {
-    "id": f"x_viral_{len(news_items)}",
+    "id": f"x_viral_{RUN_ID}",
     "type": "x_viral",
     "text": data["x_posts"][0]["content"],
     "image": None
 }
 
 x_funny = {
-    "id": f"x_funny_{len(news_items)}",
+    "id": f"x_funny_{RUN_ID}",
     "type": "x_funny",
     "text": data["x_posts"][1]["content"],
     "image": None
 }
 
 x_educational = {
-    "id": f"x_educational_{len(news_items)}",
+    "id": f"x_educational_{RUN_ID}",
     "type": "x_educational",
     "text": data["x_posts"][2]["content"],
     "image": None
