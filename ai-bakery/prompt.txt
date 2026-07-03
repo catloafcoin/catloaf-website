@@ -446,16 +446,13 @@ Return exactly this schema.
   "cta":""
 },
 
-  "image_prompt":{
-    "style":"",
-    "subject":"",
-    "background":"",
-    "lighting":"",
-    "camera":"",
-    "colors":"",
-    "mood":"",
-    "details":""
-  },
+"art_image": {
+  "title": "",
+  "prompt": "",
+  "caption": "",
+  "style": "",
+  "aspect_ratio": "1:1"
+},
 
 "poll":{
   "question":"",
