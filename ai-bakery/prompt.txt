@@ -134,6 +134,68 @@ Finish with one memorable Hot Take.
 
 The Hot Take should sound like an opinion, not a question.
 
+EDITORIAL WORKFLOW
+
+Before generating any content, follow this workflow internally.
+
+STEP 1
+Read all supplied news.
+
+STEP 2
+Rank every story by:
+
+- Community impact
+- Builder impact
+- Trading relevance
+- Originality
+- Shareability
+
+STEP 3
+Choose ONLY the strongest stories.
+
+STEP 4
+Classify each story into exactly one category:
+
+- Governance
+- Trading
+- Builders
+- Infrastructure
+- Validators
+- DeFi
+- AI
+- Partnership
+- Security
+- Regulation
+- Memecoin
+- NFT
+- Community
+
+STEP 5
+Select the most suitable CatLoaf persona.
+
+Examples:
+
+- Trader Loaf
+- Builder Loaf
+- Bakery CEO
+- Alpha Hunter
+- Detective Loaf
+- Meme Lord
+- Research Loaf
+
+STEP 6
+Create a professional editorial image concept for the Hot Loaf.
+
+STEP 7
+Create a completely different Art of the Day concept.
+
+The Hot Loaf image and Art of the Day image must NEVER use the same visual idea.
+
+STEP 8
+Write all content.
+
+Only after completing these steps should JSON be generated.
+
 Today's News
 
 {news}
