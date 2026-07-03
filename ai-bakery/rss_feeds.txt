@@ -2,4 +2,4 @@ https://solana.com/rss.xml
 https://cointelegraph.com/rss/tag/solana
 https://www.coindesk.com/arc/outboundfeeds/rss/
 https://decrypt.co/feed
-https://rss.app/feeds/reddit/r/solana.xml
+https://www.reddit.com/r/solana/.rss
