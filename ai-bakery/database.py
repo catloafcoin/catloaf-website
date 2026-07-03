@@ -12,8 +12,6 @@ if not SUPABASE_KEY:
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
 
 def add_queue(item):
     supabase.table("queue").upsert(item).execute()
