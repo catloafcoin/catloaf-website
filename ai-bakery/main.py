@@ -282,28 +282,27 @@ telegram_message = f"""
 
 {divider()}
 
-👤 <b>{persona}</b>
-
 🍞 <i>Fresh from today's oven...</i>
 
 {tg.get("opening", "")}
 
 🔥 <b>Fresh Alpha</b>
-
 """
 
 for bullet in tg.get("bullets", []):
     telegram_message += f"\n• {bullet}"
 
+telegram_message += "\n\n🧈 <b>Why It Matters</b>\n\n"
+telegram_message += tg.get("why", "")
+
+telegram_message += "\n\n📊 <b>Loaf Score</b>\n"
+
+if str(overall).isdigit():
+    telegram_message += f"\n🍞 Overall: {overall}/100"
+else:
+    telegram_message += f"\n🍞 Overall: {overall}"
+
 telegram_message += f"""
-
-🧈 <b>Why It Matters</b>
-
-{tg.get("why", "")}
-
-📊 <b>Loaf Score</b>
-
-🍞 Overall: {overall}/100
 
 📈 Market Impact: {market}
 
@@ -321,12 +320,13 @@ telegram_message += f"""
 
 messages.append(telegram_message.strip())
 message_types.append("hot_loaf")
+
 hot_loaf = {
     "id": f"hot_loaf_{RUN_ID}",
     "type": "hot_loaf",
     "text": telegram_message.strip(),
     "image": None,
-    "header_image": tg.get("header_image", {}),
+    "header_image": None,
     "source_title": source_title,
     "source_url": source_url,
     "persona": persona,
@@ -370,15 +370,15 @@ print("✓ Header Image Generated")
 print("✓ Art Image Generated")
 
 meme_message = f"""
-🎨 <b>$CLOAF ART OF THE DAY</b>
+🎨 <b>{art.get("title", "Art of the Day")}</b>
 
 {divider()}
 
-💬 <b>{meme["style"]}</b>
+<i>"{meme.get("quote", "")}"</i>
 
-<i>"{meme["quote"]}"</i>
+{art.get("caption", "")}
 
-🥖 {meme["cta"]}
+🥖 {meme.get("cta", "")}
 """
 
 messages.append(meme_message.strip())
@@ -387,10 +387,11 @@ message_types.append("art")
 art_post = {
     "id": f"art_{RUN_ID}",
     "type": "art",
-    "text": meme_message.strip(),
-    "image": image_path,
     "title": art.get("title", ""),
-    "caption": art.get("caption", "")
+    "caption": art.get("caption", ""),
+    "quote": meme.get("quote", ""),
+    "cta": meme.get("cta", ""),
+    "image": image_path
 }
 
 # Update Hot Loaf to use generated header image
