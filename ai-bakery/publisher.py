@@ -69,14 +69,15 @@ def publish_to_telegram(item):
             item["options"]
         )
 
-    elif item.get("image"):
+        elif item.get("image"):
 
         send_photo(
             BOT_TOKEN,
             PUBLIC_CHAT_ID,
             item["image"],
             item.get("text", ""),
-            reply_markup
+            reply_markup,
+            post_type
         )
 
     else:
