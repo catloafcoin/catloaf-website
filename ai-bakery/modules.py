@@ -130,18 +130,19 @@ def send_telegram(token, chat_id, text, msg_type, reply_markup=None):
                         ]
                     ]
                 })
-             print("=" * 60)
-             print("SENDING MESSAGE")
-             print("Chat ID:", chat_id)
-             print("Payload:")
-             print(payload)
-             print("=" * 60)
+            print("=" * 60)
+            print("SENDING MESSAGE")
+            print("Chat ID:", chat_id)
+            print("Payload:")
+            print(payload)
+            print("=" * 60)
 
             r = requests.post(
                 url,
                 data=payload,
                 timeout=20
             )
+
             print("=" * 60)
             print("TELEGRAM RESPONSE")
             print("Status:", r.status_code)
