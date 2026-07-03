@@ -1,55 +1,89 @@
 import os
 
-from modules import send_telegram, send_photo, send_poll
+from modules import (
+    send_telegram,
+    send_photo,
+    send_poll
+)
 
 PUBLIC_CHAT_ID = os.getenv("TELEGRAM_PUBLIC_CHAT_ID")
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 
 def publish(item, destination="telegram"):
+    """
+    Central publishing dispatcher.
+
+    Supported destinations:
+    - telegram
+    - x
+    - both
+    """
+
+    handlers = {
+        "telegram": publish_to_telegram,
+        "x": publish_to_x,
+        "both": publish_to_both
+    }
+
+    handler = handlers.get(destination)
+
+    if not handler:
+        raise ValueError(f"Unknown destination: {destination}")
+
+    return handler(item)
+
+
+def publish_to_telegram(item):
 
     post_type = item.get("type")
 
-    # -------------------------
-    # Telegram
-    # -------------------------
+    if post_type == "what_if":
 
-    if destination in ["telegram", "both"]:
+        send_poll(
+            BOT_TOKEN,
+            PUBLIC_CHAT_ID,
+            item["question"],
+            item["options"]
+        )
 
-        if post_type == "what_if":
+        return
 
-            send_poll(
-                BOT_TOKEN,
-                PUBLIC_CHAT_ID,
-                item["question"],
-                item["options"]
-            )
+    if item.get("image"):
 
-        elif item.get("image"):
+        send_photo(
+            BOT_TOKEN,
+            PUBLIC_CHAT_ID,
+            item["image"],
+            item.get("text", "")
+        )
 
-            send_photo(
-                BOT_TOKEN,
-                PUBLIC_CHAT_ID,
-                item["image"],
-                item.get("text", "")
-            )
+    else:
 
-        else:
+        send_telegram(
+            BOT_TOKEN,
+            PUBLIC_CHAT_ID,
+            item.get("text", ""),
+            post_type
+        )
 
-            send_telegram(
-                BOT_TOKEN,
-                PUBLIC_CHAT_ID,
-                item.get("text", ""),
-                post_type
-            )
 
-    # -------------------------
-    # X (Coming Next)
-    # -------------------------
+def publish_to_x(item):
+    """
+    Free-mode X publishing.
 
-    if destination in ["x", "both"]:
+    Returns the content instead of posting it.
+    """
 
-        print(f"Publishing to X: {post_type}")
+    return {
+        "title": "🐦 X POST READY",
+        "text": item.get("text", ""),
+        "image": item.get("image")
+    }
 
-        # TODO:
-        # post_to_x(item)
+
+def publish_to_both(item):
+
+    publish_to_telegram(item)
+
+    return publish_to_x(item)
