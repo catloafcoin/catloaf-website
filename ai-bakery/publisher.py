@@ -11,14 +11,6 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 
 def publish(item, destination="telegram"):
-    """
-    Central publishing dispatcher.
-
-    Supported destinations:
-    - telegram
-    - x
-    - both
-    """
 
     handlers = {
         "telegram": publish_to_telegram,
@@ -47,9 +39,7 @@ def publish_to_telegram(item):
             item["options"]
         )
 
-        return
-
-    if item.get("image"):
+    elif item.get("image"):
 
         send_photo(
             BOT_TOKEN,
@@ -67,17 +57,20 @@ def publish_to_telegram(item):
             post_type
         )
 
+    return {
+        "success": True,
+        "telegram": True,
+        "x_text": None,
+        "image": None
+    }
+
 
 def publish_to_x(item):
-    """
-    Free-mode X publishing.
-
-    Returns the content instead of posting it.
-    """
 
     return {
-        "title": "🐦 X POST READY",
-        "text": item.get("text", ""),
+        "success": True,
+        "telegram": False,
+        "x_text": item.get("text", ""),
         "image": item.get("image")
     }
 
@@ -86,4 +79,9 @@ def publish_to_both(item):
 
     publish_to_telegram(item)
 
-    return publish_to_x(item)
+    return {
+        "success": True,
+        "telegram": True,
+        "x_text": item.get("text", ""),
+        "image": item.get("image")
+    }
