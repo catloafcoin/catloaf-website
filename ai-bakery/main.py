@@ -413,8 +413,11 @@ poll_post = {
     "text": data["poll"]["question"],
     "image": None,
     "question": data["poll"]["question"],
-    "options": data["poll"]["options"]
+    "options": data["poll"]["options"],
+    "source_title": source_title,
+    "source_url": source_url
 }
+
 x_posts = data.get("x_posts", [])
 
 while len(x_posts) < 3:
@@ -427,21 +430,27 @@ x_viral = {
     "id": f"x_viral_{RUN_ID}",
     "type": "x_viral",
     "text": x_posts[0]["content"],
-    "image": None
+    "image": None,
+    "source_title": source_title,
+    "source_url": source_url
 }
 
 x_funny = {
     "id": f"x_funny_{RUN_ID}",
     "type": "x_funny",
     "text": x_posts[1]["content"],
-    "image": None
+    "image": None,
+    "source_title": source_title,
+    "source_url": source_url
 }
 
 x_educational = {
     "id": f"x_educational_{RUN_ID}",
     "type": "x_educational",
     "text": x_posts[2]["content"],
-    "image": None
+    "image": None,
+    "source_title": source_title,
+    "source_url": source_url
 }
 
 # Queue AI Art
