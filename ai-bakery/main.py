@@ -312,7 +312,12 @@ hot_loaf = {
     "id": f"hot_loaf_{RUN_ID}",
     "type": "hot_loaf",
     "text": telegram_message.strip(),
-    "image": None
+    "image": None,
+    "header_image": tg.get("header_image", {}),
+    "source_title": source_title,
+    "source_url": source_url,
+    "persona": persona,
+    "category": category
 }
 
 # --------------------------------------------------
