@@ -190,6 +190,19 @@ print(response.text)
 print("=" * 50)
 data = validate_json(response.text)
 
+required_keys = [
+    "telegram",
+    "art_image",
+    "meme",
+    "poll",
+    "x_posts",
+    "best_time"
+]
+
+for key in required_keys:
+    if key not in data:
+        raise Exception(f"Gemini response missing '{key}'.")
+
 print("✓ JSON Validated")
 
 score = calculate_score(data)
@@ -273,20 +286,20 @@ telegram_message = f"""
 
 🍞 <i>Fresh from today's oven...</i>
 
-{tg["opening"]}
+{tg.get("opening", "")}
 
 🔥 <b>Fresh Alpha</b>
 
 """
 
-for bullet in tg["bullets"]:
+for bullet in tg.get("bullets", []):
     telegram_message += f"\n• {bullet}"
 
 telegram_message += f"""
 
 🧈 <b>Why It Matters</b>
 
-{tg["why"]}
+tg.get("why", "")
 
 📊 <b>Loaf Score</b>
 
@@ -300,7 +313,7 @@ telegram_message += f"""
 
 🥖 <b>Hot Take</b>
 
-{tg["question"]}
+tg.get("question", "")
 
 {divider()}
 🐱 @CatLoafCoin
@@ -389,12 +402,16 @@ poll_post = {
     "question": data["poll"]["question"],
     "options": data["poll"]["options"]
 }
-x_viral = {
-    "id": f"x_viral_{RUN_ID}",
-    "type": "x_viral",
-    "text": data["x_posts"][0]["content"],
-    "image": None
-}
+x_posts = data.get("x_posts", [])
+
+while len(x_posts) < 3:
+    x_posts.append({
+        "type": "fallback",
+        "content": "🍞 Stay loafy with $CLOAF!"
+    })
+x_posts[0]["content"]
+x_posts[1]["content"]
+x_posts[2]["content"]
 
 x_funny = {
     "id": f"x_funny_{RUN_ID}",
