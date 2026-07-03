@@ -337,9 +337,18 @@ hot_loaf = {
 # IMAGES
 # --------------------------------------------------
 
-meme = data["meme"]
-art = data["art_image"]
-header = data["telegram"]["header_image"]
+meme = data.get("meme", {})
+art = data.get("art_image", {})
+header = tg.get("header_image", {})
+
+if not art:
+    raise Exception("Missing art_image from Gemini.")
+
+if not header:
+    raise Exception("Missing header_image from Gemini.")
+
+if not meme:
+    raise Exception("Missing meme from Gemini.")
 
 print("=" * 50)
 print("ART IMAGE JSON")
