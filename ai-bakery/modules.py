@@ -6,6 +6,10 @@ from html import escape
 TELEGRAM_LIMIT = 4096
 
 
+# --------------------------------------------------
+# File Helpers
+# --------------------------------------------------
+
 def load_text(path):
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -55,9 +59,13 @@ def validate_json(response):
         raise Exception(f"Invalid JSON from Gemini:\n{e}")
 
 
+# --------------------------------------------------
+# Telegram Helpers
+# --------------------------------------------------
+
 def telegram_safe(text):
 
-    safe = escape(text)
+    safe = escape(str(text))
 
     safe = (
         safe
@@ -73,6 +81,8 @@ def telegram_safe(text):
 
 
 def split_message(text, limit=3900):
+
+    text = str(text)
 
     if len(text) <= limit:
         return [text]
@@ -95,17 +105,70 @@ def split_message(text, limit=3900):
     return chunks
 
 
+# --------------------------------------------------
+# Button Helpers
+# --------------------------------------------------
+
+def default_reply_markup(msg_type):
+
+    if msg_type not in ["hot_loaf", "art", "cloaf"]:
+        return []
+
+    return [
+        [
+            {
+                "text": "🐦 Follow X",
+                "url": "https://x.com/CatLoafCoin"
+            },
+            {
+                "text": "📢 Telegram",
+                "url": "https://t.me/CatLoafCoin"
+            }
+        ]
+    ]
+
+
+def merge_reply_markup(reply_markup, msg_type):
+
+    rows = default_reply_markup(msg_type)
+
+    if reply_markup:
+
+        try:
+
+            custom = json.loads(reply_markup)
+
+            rows.extend(
+                custom.get("inline_keyboard", [])
+            )
+
+        except Exception as e:
+
+            print("Button merge failed:", e)
+
+    if not rows:
+        return None
+
+    return json.dumps({
+        "inline_keyboard": rows
+    })
+
 def send_telegram(token, chat_id, text, msg_type, reply_markup=None):
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
+    merged_markup = merge_reply_markup(
+        reply_markup,
+        msg_type
+    )
+
     parts = split_message(text)
 
-    for part in parts:
+    for index, part in enumerate(parts):
 
         success = False
 
-        for _ in range(3):
+        for attempt in range(3):
 
             payload = {
                 "chat_id": chat_id,
@@ -114,106 +177,142 @@ def send_telegram(token, chat_id, text, msg_type, reply_markup=None):
                 "disable_web_page_preview": True
             }
 
-            if reply_markup is not None:
-
-                payload["reply_markup"] = reply_markup
-
-            elif msg_type in ["hot_loaf", "art", "cloaf"]:
-
-                payload["reply_markup"] = json.dumps({
-                    "inline_keyboard": [
-                        [
-                            {
-                                "text": "🐦 Follow X",
-                                "url": "https://x.com/CatLoafCoin"
-                            },
-                            {
-                                "text": "📢 Telegram",
-                                "url": "https://t.me/CatLoafCoin"
-                            }
-                        ]
-                    ]
-                })
+            # Only attach buttons to the last message
+            if merged_markup and index == len(parts) - 1:
+                payload["reply_markup"] = merged_markup
 
             print("=" * 60)
-            print("SENDING MESSAGE")
+            print("SENDING TELEGRAM MESSAGE")
+            print("Attempt:", attempt + 1)
             print("Chat ID:", chat_id)
+            print("Type:", msg_type)
             print("Payload:")
             print(payload)
             print("=" * 60)
 
-            r = requests.post(
-                url,
-                data=payload,
-                timeout=20
-            )
+            try:
 
-            print("=" * 60)
-            print("TELEGRAM RESPONSE")
-            print("Status:", r.status_code)
-            print("Response:", r.text)
-            print("=" * 60)
+                r = requests.post(
+                    url,
+                    data=payload,
+                    timeout=20
+                )
 
-            if r.status_code == 200:
-                success = True
-                break
+                print("=" * 60)
+                print("TELEGRAM RESPONSE")
+                print("Status:", r.status_code)
+                print("Response:", r.text)
+                print("=" * 60)
+
+                if r.status_code == 200:
+                    success = True
+                    break
+
+            except Exception as e:
+
+                print(f"Telegram Error: {e}")
 
             time.sleep(2)
 
-        print(r.status_code)
-        print(r.text)
-
         if not success:
-            print("Telegram send failed.")
+            print("⚠ Telegram send failed after 3 attempts.")
 
         time.sleep(1)
 
+# --------------------------------------------------
+# Photo Sender
+# --------------------------------------------------
 
-def send_photo(token, chat_id, photo_path, caption="", reply_markup=None):
+def send_photo(
+    token,
+    chat_id,
+    photo_path,
+    caption="",
+    reply_markup=None,
+    msg_type="art"
+):
 
     url = f"https://api.telegram.org/bot{token}/sendPhoto"
 
+    merged_markup = merge_reply_markup(
+    reply_markup,
+    msg_type
+)
+
     with open(photo_path, "rb") as photo:
+
+        payload = {
+            "chat_id": chat_id,
+            "caption": telegram_safe(caption),
+            "parse_mode": "HTML"
+        }
+
+        if merged_markup:
+            payload["reply_markup"] = merged_markup
 
         r = requests.post(
             url,
-            data={
-                "chat_id": chat_id,
-                "caption": telegram_safe(caption),
-                "parse_mode": "HTML",
-                "reply_markup": reply_markup
-            },
+            data=payload,
             files={
                 "photo": photo
             },
             timeout=60
         )
 
+    print("=" * 60)
+    print("PHOTO RESPONSE")
     print(r.status_code)
     print(r.text)
+    print("=" * 60)
 
     if r.status_code != 200:
         raise Exception(r.text)
 
 
-def send_poll(token, chat_id, question, options):
+# --------------------------------------------------
+# Poll Sender
+# --------------------------------------------------
+
+def send_poll(
+    token,
+    chat_id,
+    question,
+    options,
+    reply_markup=None
+):
 
     if not question or not options:
         return
 
     url = f"https://api.telegram.org/bot{token}/sendPoll"
 
+    payload = {
+        "chat_id": chat_id,
+        "question": question,
+        "options": json.dumps(options),
+        "is_anonymous": False,
+        "allows_multiple_answers": False
+    }
+
+    merged_markup = merge_reply_markup(
+        reply_markup,
+        "poll"
+    )
+
+    if merged_markup:
+        payload["reply_markup"] = merged_markup
+
     r = requests.post(
         url,
-        data={
-            "chat_id": chat_id,
-            "question": question,
-            "options": json.dumps(options),
-            "is_anonymous": False,
-            "allows_multiple_answers": False
-        },
+        data=payload,
         timeout=20
     )
+
+    print("=" * 60)
+    print("POLL RESPONSE")
+    print(r.status_code)
+    print(r.text)
+    print("=" * 60)
 
     if r.status_code != 200:
         raise Exception(r.text)
