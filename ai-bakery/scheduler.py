@@ -18,8 +18,13 @@ def load_daily():
     if not os.path.exists(DAILY_FILE):
         return {}
 
-    with open(DAILY_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(DAILY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    except Exception as e:
+        print(f"Failed to load daily content: {e}")
+        return {}
 
 
 # --------------------------------------------------
