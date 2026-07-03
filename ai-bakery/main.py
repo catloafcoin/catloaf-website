@@ -321,24 +321,31 @@ hot_loaf = {
 }
 
 # --------------------------------------------------
-# MEME
+# IMAGES
 # --------------------------------------------------
 
 meme = data["meme"]
+art = data["art_image"]
+header = data["telegram"]["header_image"]
 
 print("=" * 50)
-print("MEME JSON")
-print(json.dumps(meme, indent=2, ensure_ascii=False))
+print("ART IMAGE JSON")
+print(json.dumps(art, indent=2, ensure_ascii=False))
 print("=" * 50)
 
-image_path = generate_image(meme["template"])
+print("=" * 50)
+print("HEADER IMAGE JSON")
+print(json.dumps(header, indent=2, ensure_ascii=False))
+print("=" * 50)
 
-if image_path:
-    data["image"] = image_path
-else:
-    data["image"] = None
+# Generate header image
+header_image_path = generate_image(header)
 
-print("✓ Artwork Generated")
+# Generate art image
+image_path = generate_image(art)
+
+print("✓ Header Image Generated")
+print("✓ Art Image Generated")
 
 meme_message = f"""
 🎨 <b>$CLOAF ART OF THE DAY</b>
@@ -359,12 +366,13 @@ art_post = {
     "id": f"art_{RUN_ID}",
     "type": "art",
     "text": meme_message.strip(),
-    "image": image_path
+    "image": image_path,
+    "title": art.get("title", ""),
+    "caption": art.get("caption", "")
 }
 
-# --------------------------------------------------
-# ENGAGEMENT
-# --------------------------------------------------
+# Update Hot Loaf to use generated header image
+hot_loaf["image"] = header_image_path
 
 # --------------------------------------------------
 # POLL
@@ -471,61 +479,3 @@ print("✓ History Updated")
 print("Starting poster...")
 process_queue()
 print("Poster finished.")
-"""
-# --------------------------------------------------
-# Send Telegram Messages
-# --------------------------------------------------
-
-print("\nSending Telegram messages...\n")
-
-sent = 0
-failed = 0
-
-for index, (message, msg_type) in enumerate(zip(messages, message_types), start=1):
-
-    if not message.strip():
-        print(f"Skipping empty message #{index}")
-        continue
-
-    if msg_type not in ["hot_loaf", "art", "what_if"]:
-        print(f"Skipping internal message: {msg_type}")
-        continue
-
-    try:
-        if msg_type == "what_if":
-            send_poll(
-    TELEGRAM_TOKEN,
-    TELEGRAM_CHAT_ID,
-    data["poll"]["question"],
-    data["poll"]["options"]
-            )
-        else:
-            send_telegram(
-                TELEGRAM_TOKEN,
-                TELEGRAM_CHAT_ID,
-                message,
-                msg_type
-            )
-
-        sent += 1
-        print(f"✓ Message {index}/{len(messages)} sent")
-
-    except Exception as e:
-        failed += 1
-        print(f"✗ Message {index} failed")
-        print(e)
-
-print("\n" + "=" * 50)
-
-print("🍞 AI Bakery Finished")
-
-print("=" * 50)
-
-print(f"Messages Sent : {sent}")
-
-print(f"Messages Failed : {failed}")
-
-print(f"News Articles : {len(news_items)}")
-
-print("=" * 50)
-"""
