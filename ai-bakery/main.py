@@ -40,7 +40,9 @@ if not TELEGRAM_CHAT_ID:
 
 API_KEYS = [
     GEMINI_API_KEY,
-    GEMINI_API_KEY_2
+    GEMINI_API_KEY_2,
+    GEMINI_API_KEY_3,
+    GEMINI_API_KEY_4
 ]
 
 print("✓ Configuration Loaded")
