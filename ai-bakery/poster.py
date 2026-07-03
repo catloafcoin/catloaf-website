@@ -6,13 +6,56 @@ from scheduler import (
     mark_pending
 )
 
-from modules import send_telegram, send_photo, send_poll
+from modules import (
+    send_telegram,
+    send_photo,
+    send_poll
+)
 
 import os
 import json
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+
+def approval_keyboard(post_id, item):
+
+    rows = [
+        [
+            {
+                "text": "✅ Approve",
+                "callback_data": f"approve_{post_id}"
+            },
+            {
+                "text": "❌ Reject",
+                "callback_data": f"reject_{post_id}"
+            }
+        ],
+        [
+            {
+                "text": "✏️ Edit",
+                "callback_data": f"edit_{post_id}"
+            },
+            {
+                "text": "🔄 Regenerate",
+                "callback_data": f"regen_{post_id}"
+            }
+        ]
+    ]
+
+    if item.get("source_url"):
+
+        rows.append([
+            {
+                "text": "📰 Read Source",
+                "url": item["source_url"]
+            }
+        ])
+
+    return json.dumps({
+        "inline_keyboard": rows
+    })
 
 
 def process_queue():
@@ -42,38 +85,22 @@ def process_queue():
             print(f"Skipping pending: {post_id}")
             continue
 
-        print(f"Sending: {post_id}")
+        print(f"Preparing approval: {post_id}")
 
-        reply_markup = json.dumps({
-            "inline_keyboard": [
-                [
-                    {
-                        "text": "✅ Approve",
-                        "callback_data": f"approve_{post_id}"
-                    },
-                    {
-                        "text": "❌ Reject",
-                        "callback_data": f"reject_{post_id}"
-                    }
-                ],
-                [
-                    {
-                        "text": "✏️ Edit",
-                        "callback_data": f"edit_{post_id}"
-                    },
-                    {
-                        "text": "🔄 Regenerate",
-                        "callback_data": f"regen_{post_id}"
-                    }
-                ]
-            ]
-        })
+        reply_markup = approval_keyboard(
+            post_id,
+            item
+        )
 
         post_type = item.get("type")
+
         image = item.get("image")
 
         try:
 
+            # -----------------------------
+            # Poll Approval
+            # -----------------------------
             if post_type == "what_if":
 
                 send_poll(
@@ -83,6 +110,9 @@ def process_queue():
                     item["options"]
                 )
 
+            # -----------------------------
+            # Photo Approval
+            # -----------------------------
             elif image and os.path.exists(image):
 
                 send_photo(
@@ -90,9 +120,13 @@ def process_queue():
                     TELEGRAM_CHAT_ID,
                     image,
                     item.get("text", ""),
-                    reply_markup
+                    reply_markup,
+                    post_type
                 )
 
+            # -----------------------------
+            # Text Approval
+            # -----------------------------
             else:
 
                 send_telegram(
@@ -105,14 +139,21 @@ def process_queue():
 
             mark_pending(post_id)
 
-            print(f"✓ {post_id} sent for approval")
+            print(f"✓ Approval sent: {post_id}")
 
         except Exception as e:
 
-            print(f"✗ Failed to send {post_id}: {e}")
+            print("=" * 60)
+            print("Approval Send Error")
+            print("Post:", post_id)
+            print(e)
+            print("=" * 60)
 
-    print("Finished sending pending approvals.")
+    print("=" * 60)
+    print("✓ Finished sending approval queue.")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
+
     process_queue()
