@@ -418,17 +418,16 @@ x_viral = {
 }
 
 x_funny = {
-
     "id": f"x_funny_{RUN_ID}",
     "type": "x_funny",
-    "text": data["x_posts"][1]["content"],
+    "text": x_posts[1]["content"],
     "image": None
 }
 
 x_educational = {
     "id": f"x_educational_{RUN_ID}",
     "type": "x_educational",
-    "text": data["x_posts"][2]["content"],
+    "text": x_posts[2]["content"],
     "image": None
 }
 
