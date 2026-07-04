@@ -1,13 +1,25 @@
 import feedparser
 
 
-def get_latest_news(feed_file="rss_feeds.txt", max_articles=10):
+# --------------------------------------------------
+# RSS Reader
+# --------------------------------------------------
+
+def get_latest_news(
+    feed_file="rss_feeds.txt",
+    max_articles=20
+):
 
     articles = []
 
     try:
 
-        with open(feed_file, "r", encoding="utf-8") as f:
+        with open(
+            feed_file,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
             feeds = [
                 line.strip()
                 for line in f
@@ -16,8 +28,15 @@ def get_latest_news(feed_file="rss_feeds.txt", max_articles=10):
 
     except FileNotFoundError:
 
-        print(f"RSS feed file not found: {feed_file}")
+        print(
+            f"RSS feed file not found: {feed_file}"
+        )
+
         return []
+
+    # ----------------------------------------
+    # Read every RSS feed
+    # ----------------------------------------
 
     for url in feeds:
 
@@ -25,39 +44,56 @@ def get_latest_news(feed_file="rss_feeds.txt", max_articles=10):
 
             feed = feedparser.parse(url)
 
-            source = feed.feed.get("title", url)
+            source = feed.feed.get(
+                "title",
+                url
+            )
 
-            for entry in feed.entries[:3]:
+            for entry in feed.entries[:5]:
 
                 image = ""
 
-                # RSS media:content
+                # ----------------------------
+                # media:content
+                # ----------------------------
+
                 if (
                     "media_content" in entry
                     and entry.media_content
                 ):
-                    image = entry.media_content[0].get(
-                        "url",
-                        ""
+
+                    image = (
+                        entry.media_content[0]
+                        .get("url", "")
                     )
 
-                # RSS media:thumbnail
+                # ----------------------------
+                # media:thumbnail
+                # ----------------------------
+
                 elif (
                     "media_thumbnail" in entry
                     and entry.media_thumbnail
                 ):
-                    image = entry.media_thumbnail[0].get(
-                        "url",
-                        ""
+
+                    image = (
+                        entry.media_thumbnail[0]
+                        .get("url", "")
                     )
 
-                # RSS enclosure/image
+                # ----------------------------
+                # enclosure
+                # ----------------------------
+
                 elif "links" in entry:
 
                     for link in entry.links:
 
                         if (
-                            link.get("type", "").startswith("image/")
+                            link.get(
+                                "type",
+                                ""
+                            ).startswith("image/")
                             or link.get("rel") == "enclosure"
                         ):
 
@@ -70,73 +106,170 @@ def get_latest_news(feed_file="rss_feeds.txt", max_articles=10):
 
                 articles.append({
 
-                    "title": entry.get(
-                        "title",
-                        ""
-                    ),
-
-                    "summary": entry.get(
-                        "summary",
+                    "title":
                         entry.get(
-                            "description",
+                            "title",
                             ""
-                        )
-                    ),
+                        ),
 
-                    "link": entry.get(
-                        "link",
-                        ""
-                    ),
+                    "summary":
+                        entry.get(
+                            "summary",
+                            entry.get(
+                                "description",
+                                ""
+                            )
+                        ),
 
-                    "source": source,
+                    "link":
+                        entry.get(
+                            "link",
+                            ""
+                        ),
 
-                    "image": image
+                    "source":
+                        source,
+
+                    "image":
+                        image
 
                 })
 
         except Exception as e:
 
             print(
-                f"Failed to read feed {url}: {e}"
+                f"Failed reading {url}: {e}"
             )
 
             continue
 
-    return articles[:max_articles]
+    # ----------------------------------------
+    # Remove duplicate titles
+    # ----------------------------------------
+
+    unique = []
+    seen = set()
+
+    for article in articles:
+
+        key = (
+            article["title"]
+            .strip()
+            .lower()
+        )
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        unique.append(article)
+
+    print(
+        f"Loaded {len(unique)} unique articles."
+    )
+
+    return unique[:max_articles]
+
+# --------------------------------------------------
+# Article Scoring
+# --------------------------------------------------
 
 def score_articles(articles):
 
     keywords = {
 
-        "solana": 20,
-        "jupiter": 15,
-        "pump.fun": 15,
-        "raydium": 15,
-        "backpack": 15,
-        "phantom": 15,
-        "drift": 15,
-        "sanctum": 15,
+        # ----------------------------
+        # Core Solana
+        # ----------------------------
 
-        "airdrop": 10,
-        "listing": 10,
-        "partnership": 10,
-        "integration": 10,
-        "launch": 10,
-        "upgrade": 10,
-        "volume": 10,
+        "solana": 30,
+        "validator": 18,
+        "firedancer": 22,
+        "jupiter": 20,
+        "raydium": 20,
+        "pump.fun": 20,
+        "phantom": 18,
+        "backpack": 18,
+        "drift": 18,
+        "sanctum": 18,
+        "kamino": 18,
+        "marinade": 18,
+
+        # ----------------------------
+        # Builders
+        # ----------------------------
+
+        "builder": 15,
+        "developer": 15,
+        "ecosystem": 15,
+        "infrastructure": 15,
+        "rpc": 12,
+        "sdk": 12,
+
+        # ----------------------------
+        # Trading
+        # ----------------------------
+
+        "launch": 15,
+        "listing": 15,
+        "airdrop": 12,
+        "upgrade": 15,
+        "integration": 15,
+        "volume": 12,
+        "liquidity": 12,
+
+        # ----------------------------
+        # Memecoins
+        # ----------------------------
+
+        "memecoin": 12,
+        "meme": 10,
+        "community": 8,
+
+        # ----------------------------
+        # Security
+        # ----------------------------
 
         "hack": 25,
         "exploit": 25,
         "security": 20,
-        "validator": 15,
 
-        "etf": 25,
-        "institutional": 20,
+        # ----------------------------
+        # Institutional
+        # ----------------------------
 
-        "meme": 5,
-        "memecoin": 5,
-        "community": 5
+        "etf": 20,
+        "institutional": 18,
+        "adoption": 15,
+        "payments": 12,
+        "stablecoin": 12
     }
+
+    trusted_sources = [
+
+        "solana",
+
+        "cointelegraph",
+
+        "coindesk",
+
+        "decrypt",
+
+        "the block",
+
+        "blockworks",
+
+        "messari",
+
+        "helius",
+
+        "jupiter",
+
+        "raydium",
+
+        "phantom"
+
+    ]
 
     scored = []
 
@@ -150,39 +283,109 @@ def score_articles(articles):
             + article.get("summary", "")
         ).lower()
 
+        # ----------------------------------------
+        # Keyword scoring
+        # ----------------------------------------
+
         for word, value in keywords.items():
 
             if word in text:
                 score += value
 
-        # Boost articles with images
+        # ----------------------------------------
+        # Prefer articles with images
+        # ----------------------------------------
+
         if article.get("image"):
-            score += 2
+            score += 8
 
-        # Slight boost for official sources
-        source = article.get("source", "").lower()
+        # ----------------------------------------
+        # Prefer trusted sources
+        # ----------------------------------------
 
-        trusted_sources = [
-            "solana",
-            "cointelegraph",
-            "the block",
-            "decrypt",
-            "coindesk"
-        ]
+        source = article.get(
+            "source",
+            ""
+        ).lower()
 
         for trusted in trusted_sources:
 
             if trusted in source:
-                score += 3
+
+                score += 5
                 break
+
+        # ----------------------------------------
+        # Headline quality bonus
+        # ----------------------------------------
+
+        title = article.get(
+            "title",
+            ""
+        )
+
+        if len(title) > 40:
+            score += 2
+
+        # ----------------------------------------
+        # High-impact phrases
+        # ----------------------------------------
+
+        impact_words = [
+
+            "breaking",
+            "major",
+            "launch",
+            "released",
+            "upgrade",
+            "partnership",
+            "integration",
+            "record",
+            "new"
+
+        ]
+
+        for word in impact_words:
+
+            if word in text:
+                score += 3
+
+        # ----------------------------------------
+        # Ignore weak articles
+        # ----------------------------------------
+
+        if score < 5:
+            continue
 
         article["score"] = score
 
         scored.append(article)
 
+    # ----------------------------------------
+    # Sort by score (highest first)
+    # ----------------------------------------
+
     scored.sort(
-        key=lambda x: x["score"],
+        key=lambda article: (
+            article["score"],
+            bool(article.get("image"))
+        ),
         reverse=True
     )
+
+    print("\n" + "=" * 60)
+    print("TOP SCORED ARTICLES")
+    print("=" * 60)
+
+    for article in scored[:10]:
+
+        print(
+            f"[{article['score']:>3}] "
+            f"{'🖼️' if article.get('image') else '📄'} "
+            f"{article.get('source', 'Unknown')} "
+            f"- {article.get('title', '')}"
+        )
+
+    print("=" * 60)
 
     return scored
