@@ -1,123 +1,203 @@
-import requests
-import urllib.parse
+# ==========================================================
+# CatLoaf AI Bakery V3
+# image_generator.py
+# AI Artwork Generator
+# ==========================================================
+
+import os
 import time
 import uuid
 import random
+import urllib.parse
+
+import requests
+
+from storage import upload_image
+
 
 # --------------------------------------------------
-# Permanent CatLoaf Identity
+# Character Identity (Never Changes)
 # --------------------------------------------------
 
 BASE_CHARACTER = """
-CatLoaf mascot, orange loaf-shaped cat,
+CatLoaf mascot,
+freshly baked orange loaf-shaped cat,
 golden toasted bread body,
 soft fluffy orange fur,
 bright emerald green eyes,
 rounded loaf silhouette,
+small ears,
 tiny paws,
 small tail,
 cute expressive face,
 premium digital illustration,
 consistent mascot design,
+single character,
+adorable,
+clean composition,
+high detail,
+masterpiece,
 no text,
 no logo,
 no watermark,
 no speech bubbles,
-single character,
-high quality
+no UI,
+no extra characters
 """
 
+
 # --------------------------------------------------
-# Automatic Variety
+# Style Rotation
 # --------------------------------------------------
 
-STYLES = [
+ART_STYLES = [
+
     "editorial illustration",
-    "comic illustration",
     "storybook illustration",
-    "sticker artwork",
-    "cinematic digital painting",
-    "animated movie concept art",
     "premium poster illustration",
-    "whimsical artwork"
+    "comic illustration",
+    "animated movie concept art",
+    "cinematic digital painting",
+    "stylised concept art",
+    "collectible sticker artwork",
+    "high-end splash art",
+    "digital painting"
+
 ]
 
-CAMERAS = [
+
+CAMERA_ANGLES = [
+
     "close-up",
     "wide shot",
-    "low angle",
-    "top-down view",
-    "isometric",
-    "dynamic perspective",
+    "portrait composition",
     "three-quarter view",
-    "portrait composition"
+    "top-down view",
+    "low angle",
+    "dynamic perspective",
+    "isometric view"
+
 ]
+
 
 LIGHTING = [
+
     "warm bakery lighting",
-    "golden sunrise",
-    "soft cinematic lighting",
-    "dramatic rim lighting",
-    "cozy indoor lighting",
-    "sunset glow",
     "soft morning light",
-    "volumetric lighting"
+    "golden sunrise",
+    "dramatic rim lighting",
+    "cinematic lighting",
+    "volumetric lighting",
+    "soft sunset glow",
+    "cozy indoor lighting"
+
 ]
+
 
 MOODS = [
+
     "wholesome",
-    "playful",
     "heroic",
+    "playful",
+    "curious",
     "relaxed",
-    "cheerful",
     "cozy",
-    "adventurous",
-    "funny"
+    "cheerful",
+    "adventurous"
+
 ]
 
+
+COLOR_PALETTES = [
+
+    "warm oranges and cream",
+    "golden bakery colours",
+    "soft pastel palette",
+    "rich autumn colours",
+    "bright vibrant colours",
+    "warm cinematic colours"
+
+]
+
+
+# --------------------------------------------------
+# Prompt Builder
+# --------------------------------------------------
 
 def build_prompt(prompt):
 
     if isinstance(prompt, dict):
+
         prompt = prompt.get("prompt", "")
 
-    return (
-        f"{BASE_CHARACTER}, "
-        f"{prompt}, "
-        f"{random.choice(STYLES)}, "
-        f"{random.choice(CAMERAS)}, "
-        f"{random.choice(LIGHTING)}, "
-        f"{random.choice(MOODS)}, "
-        "high detail, ultra quality, vibrant colours"
-    )
+    elif prompt is None:
 
+        prompt = ""
+
+    return ", ".join([
+
+        BASE_CHARACTER,
+
+        prompt,
+
+        random.choice(ART_STYLES),
+
+        random.choice(CAMERA_ANGLES),
+
+        random.choice(LIGHTING),
+
+        random.choice(MOODS),
+
+        random.choice(COLOR_PALETTES),
+
+        "ultra detailed",
+
+        "professional illustration",
+
+        "sharp focus",
+
+        "8k quality",
+
+        "beautiful composition"
+
+    ])
+
+# --------------------------------------------------
+# Pollinations Image Generator
+# --------------------------------------------------
 
 def generate_image(prompt, filename=None):
 
     if filename is None:
+
         filename = f"{uuid.uuid4().hex}.png"
 
-    print("=" * 60)
-    print("Generating AI artwork...")
-    print("=" * 60)
+    final_prompt = build_prompt(prompt)
 
-    prompt = build_prompt(prompt)
-
-    encoded = urllib.parse.quote(prompt)
+    encoded_prompt = urllib.parse.quote(final_prompt)
 
     seed = random.randint(1, 999999999)
 
     url = (
         "https://image.pollinations.ai/prompt/"
-        f"{encoded}"
-        f"?width=768"
-        f"&height=768"
-        f"&model=flux"
-        f"&enhance=true"
+        f"{encoded_prompt}"
+        "?width=1024"
+        "&height=1024"
+        "&model=flux"
+        "&enhance=true"
+        "&nologo=true"
         f"&seed={seed}"
     )
 
-    for attempt in range(3):
+    print("=" * 60)
+    print("GENERATING CATLOAF ARTWORK")
+    print("=" * 60)
+    print("Seed :", seed)
+    print("Prompt:")
+    print(final_prompt)
+    print("=" * 60)
+
+    for attempt in range(1, 4):
 
         try:
 
@@ -126,37 +206,158 @@ def generate_image(prompt, filename=None):
                 timeout=180
             )
 
-            if response.status_code == 200:
+            if response.status_code != 200:
 
-                with open(filename, "wb") as f:
-                    f.write(response.content)
+                print(
+                    f"Attempt {attempt} failed:",
+                    response.status_code
+                )
 
-                print("✓ Image generated")
-                print(filename)
+                time.sleep(10)
 
-                return filename
+                continue
 
-            print(
-                f"Attempt {attempt + 1} failed:",
-                response.status_code
-            )
+            if len(response.content) < 5000:
+
+                print(
+                    f"Attempt {attempt}: image too small."
+                )
+
+                time.sleep(10)
+
+                continue
+
+            with open(filename, "wb") as f:
+
+                f.write(response.content)
+
+            print("✓ Image generated")
+            print(filename)
+
+            print("=" * 60)
+            print("UPLOADING TO SUPABASE")
+            print("=" * 60)
+
+            public_url = upload_image(filename)
+
+            if public_url:
+
+                print("✓ Upload successful")
+                print(public_url)
+
+                try:
+
+                    os.remove(filename)
+
+                    print("✓ Local image removed")
+
+                except Exception:
+
+                    pass
+
+                return public_url
+
+            print("⚠ Upload failed.")
+            print("Using local image.")
+
+            return filename
 
         except Exception as e:
 
             print(
-                f"Attempt {attempt + 1} failed:",
-                e
+                f"Attempt {attempt} exception:"
             )
 
-        time.sleep(15)
+            print(e)
 
-    print("⚠ Pollinations unavailable.")
+            time.sleep(10)
+
+    print("=" * 60)
+    print("IMAGE GENERATION FAILED")
+    print("=" * 60)
 
     return None
 
+# --------------------------------------------------
+# Batch Generator
+# --------------------------------------------------
+
+def generate_images(prompts):
+
+    """
+    Generates multiple images.
+
+    Returns a list of image URLs.
+    """
+
+    results = []
+
+    if not prompts:
+
+        return results
+
+    for prompt in prompts:
+
+        image = generate_image(prompt)
+
+        if image:
+
+            results.append(image)
+
+    return results
+
+
+# --------------------------------------------------
+# Image Validator
+# --------------------------------------------------
+
+def image_exists(image):
+
+    if not image:
+
+        return False
+
+    # Public URL
+    if (
+        isinstance(image, str)
+        and (
+            image.startswith("http://")
+            or image.startswith("https://")
+        )
+    ):
+
+        return True
+
+    # Local file
+    return os.path.exists(image)
+
+
+# --------------------------------------------------
+# Standalone Test
+# --------------------------------------------------
 
 if __name__ == "__main__":
 
-    generate_image(
-        "CatLoaf inspecting fresh Solana alpha inside a futuristic bakery"
-    )
+    test_prompt = {
+        "prompt":
+        (
+            "CatLoaf inspecting fresh Solana alpha "
+            "inside a futuristic bakery full of warm "
+            "bread, glowing monitors and cozy lighting."
+        )
+    }
+
+    image = generate_image(test_prompt)
+
+    print("=" * 60)
+
+    if image:
+
+        print("SUCCESS")
+        print(image)
+
+    else:
+
+        print("FAILED")
+
+    print("=" * 60)
