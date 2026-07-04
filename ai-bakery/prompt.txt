@@ -682,3 +682,107 @@ Nothing else.
 ✓ AI artwork is only generated when no suitable RSS image exists
 
 ✓ Every generated image has a different scene, pose and composition from recent history
+
+=====================================================
+MANDATORY JSON SCHEMA
+=====================================================
+
+Return EXACTLY one JSON object matching this schema.
+
+Do NOT omit any field.
+
+Every field below is REQUIRED.
+
+If information is unavailable, generate an appropriate placeholder that follows CatLoaf's personality.
+
+{
+  "telegram": {
+    "persona": "",
+    "category": "",
+    "headline": "",
+    "opening": "",
+    "bullets": [
+      "",
+      "",
+      ""
+    ],
+    "why": "",
+    "question": "",
+    "header_image": {
+      "prompt": ""
+    },
+    "loaf_score": {
+      "overall": 0,
+      "market_impact": "",
+      "builder_interest": "",
+      "urgency": ""
+    }
+  },
+
+  "art_image": {
+    "title": "",
+    "caption": "",
+    "prompt": ""
+  },
+
+  "meme": {
+    "quote": "",
+    "cta": ""
+  },
+
+  "poll": {
+    "question": "",
+    "options": [
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+
+  "x_posts": [
+    {
+      "type": "viral",
+      "content": ""
+    },
+    {
+      "type": "funny",
+      "content": ""
+    },
+    {
+      "type": "educational",
+      "content": ""
+    }
+  ],
+
+  "best_time": {
+    "utc": "",
+    "reason": "",
+    "audience": ""
+  }
+}
+
+The following objects MUST ALWAYS exist:
+
+- telegram
+- telegram.header_image
+- telegram.loaf_score
+- art_image
+- meme
+- poll
+- x_posts
+- best_time
+
+Never return null.
+
+Never return empty arrays.
+
+Never omit any key.
+
+Always return exactly three Telegram bullets.
+
+Always return exactly three X posts.
+
+Always return exactly four poll options.
+
+The response MUST parse with Python json.loads() without any modification.
