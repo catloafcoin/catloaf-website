@@ -235,34 +235,57 @@ def send_photo(
     url = f"https://api.telegram.org/bot{token}/sendPhoto"
 
     merged_markup = merge_reply_markup(
-    reply_markup,
-    msg_type
-)
+        reply_markup,
+        msg_type
+    )
 
-    with open(photo_path, "rb") as photo:
+    payload = {
+        "chat_id": chat_id,
+        "caption": telegram_safe(caption),
+        "parse_mode": "HTML"
+    }
 
-        payload = {
-            "chat_id": chat_id,
-            "caption": telegram_safe(caption),
-            "parse_mode": "HTML"
-        }
+    if merged_markup:
+        payload["reply_markup"] = merged_markup
 
-        if merged_markup:
-            payload["reply_markup"] = merged_markup
+    # --------------------------------------------------
+    # Remote image (RSS URL)
+    # --------------------------------------------------
+
+    if isinstance(photo_path, str) and (
+        photo_path.startswith("http://")
+        or photo_path.startswith("https://")
+    ):
+
+        payload["photo"] = photo_path
 
         r = requests.post(
             url,
             data=payload,
-            files={
-                "photo": photo
-            },
             timeout=60
         )
 
+    # --------------------------------------------------
+    # Local image (AI generated)
+    # --------------------------------------------------
+
+    else:
+
+        with open(photo_path, "rb") as photo:
+
+            r = requests.post(
+                url,
+                data=payload,
+                files={
+                    "photo": photo
+                },
+                timeout=60
+            )
+
     print("=" * 60)
     print("PHOTO RESPONSE")
-    print(r.status_code)
-    print(r.text)
+    print("Status:", r.status_code)
+    print("Response:", r.text)
     print("=" * 60)
 
     if r.status_code != 200:
