@@ -1,138 +1,992 @@
-body{margin:0;font-family:Arial;background:#1b100b;color:#fff}.hero{text-align:center;padding:60px 20px;background:linear-gradient(135deg,#b56d2e,#f0b35d)}.logo{width:130px;border-radius:50%;border:4px solid #fff}.buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:25px}a,button{background:#ffc766;color:#222;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:bold;border:none}.container{max-width:900px;margin:auto;padding:20px}.banner{width:100%;border-radius:16px}.card{background:#342017;padding:22px;border-radius:18px;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-/* ========= Smooth Scroll ========= */
+/* ==========================================================
+   CatLoaf Website
+   Premium AI Bakery Theme
+========================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+
+    --bg:#0f1117;
+    --bg2:#171b24;
+
+    --card:rgba(255,255,255,.06);
+
+    --border:rgba(255,255,255,.08);
+
+    --text:#f5f5f5;
+
+    --muted:#b6b8c4;
+
+    --primary:#ffb347;
+
+    --secondary:#ff8c42;
+
+    --green:#4ade80;
+
+    --blue:#60a5fa;
+
+    --shadow:0 20px 60px rgba(0,0,0,.35);
+
+    --radius:22px;
+
+}
 
 html{
-scroll-behavior:smooth;
-}
 
-/* ========= Fade Animation ========= */
-
-.hidden{
-opacity:0;
-transform:translateY(30px);
-transition:all .8s ease;
-}
-
-.show{
-opacity:1;
-transform:translateY(0);
-}
-
-/* ========= Floating Background ========= */
-
-.floating-bg{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-overflow:hidden;
-pointer-events:none;
-z-index:0;
-}
-
-.float{
-position:absolute;
-font-size:22px;
-opacity:.08;
-animation:floatUp linear infinite;
-}
-
-@keyframes floatUp{
-
-0%{
-transform:translateY(110vh) rotate(0deg);
-}
-
-100%{
-transform:translateY(-120px) rotate(360deg);
-}
+    scroll-behavior:smooth;
 
 }
 
-/* ========= Cards ========= */
+body{
 
-.card{
-transition:.35s;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+
+    background:
+        radial-gradient(circle at top,#23293b 0%,#0f1117 60%);
+
+    color:var(--text);
+
+    line-height:1.7;
+
 }
 
-.card:hover{
+a{
 
-transform:translateY(-8px);
+    color:inherit;
 
-box-shadow:0 12px 30px rgba(0,0,0,.35);
+    text-decoration:none;
 
 }
 
-/* ========= Buttons ========= */
+.container{
+
+    width:min(1150px,92%);
+
+    margin:auto;
+
+    padding:50px 0 80px;
+
+}
+
+.hero{
+
+    text-align:center;
+
+    padding:70px 20px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,179,71,.12),
+            transparent
+        );
+
+}
+
+.logo{
+
+    width:140px;
+
+    height:140px;
+
+    border-radius:50%;
+
+    border:5px solid rgba(255,255,255,.08);
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:25px;
+
+}
+
+.hero h1{
+
+    font-size:3rem;
+
+    margin-bottom:12px;
+
+}
+
+.tagline{
+
+    font-size:1.35rem;
+
+    color:var(--primary);
+
+    font-weight:700;
+
+}
+
+.subtitle{
+
+    color:var(--muted);
+
+    max-width:700px;
+
+    margin:18px auto;
+
+    font-size:1.05rem;
+
+}
+
+/* ==========================================================
+   Buttons
+========================================================== */
+
+.buttons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:16px;
+
+    flex-wrap:wrap;
+
+    margin-top:35px;
+
+}
 
 .buttons a,
 button{
 
-transition:.3s;
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    color:#111;
+
+    font-weight:700;
+
+    padding:14px 24px;
+
+    border-radius:14px;
+
+    transition:.25s;
+
+    box-shadow:0 8px 24px rgba(255,179,71,.25);
+
+    border:none;
+
+    cursor:pointer;
 
 }
 
 .buttons a:hover,
 button:hover{
 
-transform:translateY(-3px) scale(1.03);
+    transform:translateY(-3px);
 
-box-shadow:0 8px 25px rgba(255,184,77,.35);
-
-}
-
-button:active,
-.buttons a:active{
-
-transform:scale(.96);
+    box-shadow:0 18px 35px rgba(255,179,71,.35);
 
 }
 
-/* ========= Hero ========= */
+/* ==========================================================
+   Banner
+========================================================== */
 
-.hero img{
+.banner{
 
-animation:pop .9s ease;
+    width:100%;
 
-}
+    border-radius:var(--radius);
 
-.hero h1{
+    margin-bottom:35px;
 
-animation:fadeDown .8s ease;
-
-}
-
-.hero p{
-
-animation:fadeDown 1s ease;
+    box-shadow:var(--shadow);
 
 }
 
-@keyframes pop{
+/* ==========================================================
+   Cards
+========================================================== */
 
-0%{
-transform:scale(.7);
-opacity:0;
-}
+.card{
 
-100%{
-transform:scale(1);
-opacity:1;
-}
+    background:var(--card);
 
-}
+    backdrop-filter:blur(18px);
 
-@keyframes fadeDown{
+    border:1px solid var(--border);
 
-0%{
-opacity:0;
-transform:translateY(-25px);
-}
+    border-radius:var(--radius);
 
-100%{
-opacity:1;
-transform:translateY(0);
-}
+    padding:30px;
+
+    margin-bottom:28px;
+
+    box-shadow:var(--shadow);
+
+    transition:.3s;
 
 }
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:rgba(255,179,71,.35);
+
+}
+
+.card h2{
+
+    color:var(--primary);
+
+    margin-bottom:18px;
+
+    font-size:2rem;
+
+}
+
+.card h3{
+
+    margin-bottom:12px;
+
+    color:#fff;
+
+}
+
+.card p{
+
+    color:var(--muted);
+
+}
+
+.hero-intro{
+
+    text-align:center;
+
+}
+
+.hero-intro p{
+
+    max-width:800px;
+
+    margin:auto;
+
+}
+
+/* ==========================================================
+   Grid Layout
+========================================================== */
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+    gap:22px;
+
+    margin:25px 0;
+
+}
+
+/* ==========================================================
+   Status Grid
+========================================================== */
+
+.status-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    margin-top:25px;
+
+}
+
+.status-item{
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:18px;
+
+    padding:22px;
+
+    transition:.3s;
+
+}
+
+.status-item:hover{
+
+    transform:translateY(-4px);
+
+    border-color:var(--primary);
+
+}
+
+.status-item h3{
+
+    margin-bottom:10px;
+
+    font-size:1.05rem;
+
+}
+
+.status-item p{
+
+    font-size:.95rem;
+
+    color:var(--muted);
+
+}
+
+/* ==========================================================
+   Journal
+========================================================== */
+
+.journal-entry{
+
+    padding:18px 0;
+
+}
+
+.journal-entry h3{
+
+    color:var(--primary);
+
+    margin-bottom:12px;
+
+}
+
+hr{
+
+    border:none;
+
+    height:1px;
+
+    background:rgba(255,255,255,.08);
+
+    margin:28px 0;
+
+}
+
+/* ==========================================================
+   Lists
+========================================================== */
+
+ul{
+
+    padding-left:22px;
+
+    margin-top:15px;
+
+}
+
+li{
+
+    margin-bottom:10px;
+
+    color:var(--muted);
+
+}
+
+/* ==========================================================
+   Contract Address
+========================================================== */
+
+code{
+
+    display:block;
+
+    width:100%;
+
+    margin-top:15px;
+
+    padding:18px;
+
+    border-radius:14px;
+
+    background:#0b0d12;
+
+    color:var(--green);
+
+    font-family:Consolas,monospace;
+
+    font-size:.9rem;
+
+    word-break:break-all;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+/* ==========================================================
+   Typography
+========================================================== */
+
+strong{
+
+    color:#fff;
+
+}
+
+p{
+
+    margin-bottom:14px;
+
+}
+
+h2{
+
+    letter-spacing:.3px;
+
+}
+
+h3{
+
+    letter-spacing:.2px;
+
+}
+
+/* ==========================================================
+   Footer
+========================================================== */
+
+footer{
+
+    text-align:center;
+
+    margin-top:60px;
+
+    padding:50px 20px;
+
+    background:rgba(255,255,255,.03);
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+}
+
+footer h3{
+
+    font-size:2rem;
+
+    color:var(--primary);
+
+    margin-bottom:15px;
+
+}
+
+footer p{
+
+    color:var(--muted);
+
+    max-width:750px;
+
+    margin:12px auto;
+
+}
+
+footer code{
+
+    margin:25px auto;
+
+    max-width:900px;
+
+}
+
+/* ==========================================================
+   Hover Effects
+========================================================== */
+
+.card,
+.status-item,
+.buttons a,
+button{
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+
+}
+
+.card:hover{
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.35),
+        0 0 20px rgba(255,179,71,.12);
+
+}
+
+.status-item:hover{
+
+    box-shadow:
+        0 12px 35px rgba(255,179,71,.15);
+
+}
+
+/* ==========================================================
+   Scrollbar
+========================================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#10131a;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--primary);
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--secondary);
+
+}
+
+/* ==========================================================
+   Selection
+========================================================== */
+
+::selection{
+
+    background:var(--primary);
+
+    color:#111;
+
+}
+
+/* ==========================================================
+   Responsive
+========================================================== */
+
+@media(max-width:900px){
+
+    .hero{
+
+        padding:55px 20px;
+
+    }
+
+    .hero h1{
+
+        font-size:2.4rem;
+
+    }
+
+    .card{
+
+        padding:24px;
+
+    }
+
+}
+
+@media(max-width:700px){
+
+    .buttons{
+
+        flex-direction:column;
+
+    }
+
+    .buttons a,
+    button{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+    .logo{
+
+        width:110px;
+
+        height:110px;
+
+    }
+
+    .hero h1{
+
+        font-size:2rem;
+
+    }
+
+    .tagline{
+
+        font-size:1.15rem;
+
+    }
+
+    .subtitle{
+
+        font-size:.98rem;
+
+    }
+
+    .container{
+
+        width:94%;
+
+    }
+
+    .status-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+/* ==========================================================
+   Fade In Animation
+========================================================== */
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.hero,
+.card,
+.status-item{
+
+    animation:fadeUp .7s ease;
+
+}
+
+/* ==========================================================
+   Premium AI Bakery Effects
+========================================================== */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+        radial-gradient(circle at 15% 20%,rgba(255,179,71,.12),transparent 35%),
+        radial-gradient(circle at 85% 15%,rgba(96,165,250,.10),transparent 35%),
+        radial-gradient(circle at 50% 90%,rgba(255,140,66,.08),transparent 40%);
+
+    z-index:-2;
+
+    animation:glowMove 18s ease-in-out infinite alternate;
+
+}
+
+body::after{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    background-image:
+
+        radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+
+    background-size:35px 35px;
+
+    opacity:.35;
+
+    z-index:-1;
+
+}
+
+@keyframes glowMove{
+
+    from{
+
+        transform:translateY(0) scale(1);
+
+    }
+
+    to{
+
+        transform:translateY(-25px) scale(1.08);
+
+    }
+
+}
+
+/* ==========================================================
+   Hero Glow
+========================================================== */
+
+.hero{
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:420px;
+
+    height:420px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+
+            rgba(255,179,71,.18),
+
+            transparent 70%
+
+        );
+
+    top:-180px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    filter:blur(30px);
+
+    z-index:0;
+
+}
+
+.hero>*{
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+/* ==========================================================
+   Premium Card Glow
+========================================================== */
+
+.card{
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.card::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+
+            120deg,
+
+            transparent,
+
+            rgba(255,255,255,.04),
+
+            transparent
+
+        );
+
+    transform:translateX(-120%);
+
+    transition:.8s;
+
+}
+
+.card:hover::before{
+
+    transform:translateX(120%);
+
+}
+
+/* ==========================================================
+   Logo Animation
+========================================================== */
+
+.logo{
+
+    transition:.4s;
+
+}
+
+.logo:hover{
+
+    transform:
+
+        rotate(5deg)
+
+        scale(1.05);
+
+}
+
+/* ==========================================================
+   Button Shine
+========================================================== */
+
+.buttons a{
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.buttons a::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:-100%;
+
+    width:100%;
+
+    height:100%;
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            transparent,
+
+            rgba(255,255,255,.3),
+
+            transparent
+
+        );
+
+    transition:.7s;
+
+}
+
+.buttons a:hover::after{
+
+    left:130%;
+
+}
+
+/* ==========================================================
+   Status Colors
+========================================================== */
+
+.status-item:nth-child(1){
+
+    border-left:4px solid #22c55e;
+
+}
+
+.status-item:nth-child(2){
+
+    border-left:4px solid #3b82f6;
+
+}
+
+.status-item:nth-child(3){
+
+    border-left:4px solid #a855f7;
+
+}
+
+.status-item:nth-child(4){
+
+    border-left:4px solid #f59e0b;
+
+}
+
+.status-item:nth-child(5){
+
+    border-left:4px solid #06b6d4;
+
+}
+
+.status-item:nth-child(6){
+
+    border-left:4px solid #fb7185;
+
+}
+
+.status-item:nth-child(7){
+
+    border-left:4px solid #ef4444;
+
+}
+
+.status-item:nth-child(8){
+
+    border-left:4px solid #84cc16;
+
+}
+
+/* ==========================================================
+   Section Spacing
+========================================================== */
+
+section{
+
+    scroll-margin-top:80px;
+
+}
+
+/* ==========================================================
+   End
+========================================================== */
