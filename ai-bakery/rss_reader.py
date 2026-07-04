@@ -1,11 +1,13 @@
 # ==========================================================
 # CatLoaf AI Bakery V3
 # rss_reader.py
-# RSS Reader & Article Ranking
+# RSS Reader & Smart Ranking Engine
 # ==========================================================
 
 import re
 import html
+import time
+from datetime import datetime, timezone
 
 import feedparser
 
@@ -16,16 +18,85 @@ import feedparser
 
 MAX_ARTICLES_PER_FEED = 5
 
-
-# --------------------------------------------------
-# Image Extraction Helpers
-# --------------------------------------------------
+MAX_ARTICLE_AGE_DAYS = 7
 
 IMG_REGEX = re.compile(
     r'<img[^>]+src=["\']([^"\']+)["\']',
     re.IGNORECASE
 )
 
+BAD_IMAGE_PATTERNS = [
+
+    "avatar",
+    "profile",
+    "icon",
+    "favicon",
+    "emoji",
+    "logo",
+    "placeholder",
+    "default",
+    "blank",
+    "pixel",
+    "spacer"
+
+]
+
+
+# --------------------------------------------------
+# Date Helpers
+# --------------------------------------------------
+
+def parse_article_time(entry):
+
+    """
+    Converts RSS published date into datetime.
+    """
+
+    if getattr(entry, "published_parsed", None):
+
+        try:
+
+            return datetime.fromtimestamp(
+                time.mktime(entry.published_parsed),
+                tz=timezone.utc
+            )
+
+        except Exception:
+
+            pass
+
+    if getattr(entry, "updated_parsed", None):
+
+        try:
+
+            return datetime.fromtimestamp(
+                time.mktime(entry.updated_parsed),
+                tz=timezone.utc
+            )
+
+        except Exception:
+
+            pass
+
+    return None
+
+
+def article_age_days(dt):
+
+    if dt is None:
+
+        return 999
+
+    return (
+
+        datetime.now(timezone.utc) - dt
+
+    ).days
+
+
+# --------------------------------------------------
+# HTML Image Extraction
+# --------------------------------------------------
 
 def extract_html_image(text):
 
@@ -35,51 +106,90 @@ def extract_html_image(text):
 
     match = IMG_REGEX.search(text)
 
-    if match:
+    if not match:
 
-        return html.unescape(match.group(1))
+        return ""
 
-    return ""
+    return html.unescape(
 
+        match.group(1)
+
+    )
+
+
+# --------------------------------------------------
+# Image Validation
+# --------------------------------------------------
+
+def image_is_valid(url):
+
+    if not url:
+
+        return False
+
+    url = url.lower()
+
+    if not (
+
+        url.startswith("http://")
+
+        or url.startswith("https://")
+
+    ):
+
+        return False
+
+    for bad in BAD_IMAGE_PATTERNS:
+
+        if bad in url:
+
+            return False
+
+    return True
+
+
+# --------------------------------------------------
+# RSS Image Extraction
+# --------------------------------------------------
 
 def extract_image(entry):
 
     """
-    Attempts every common RSS image format.
-    Returns the first usable image URL.
+    Attempts every known RSS image format.
+    Returns the first usable image.
     """
 
-    # ------------------------------------
-    # media:content
-    # ------------------------------------
+    # --------------------------
+    # media_content
+    # --------------------------
 
     if getattr(entry, "media_content", None):
 
         for media in entry.media_content:
 
-            url = media.get("url")
+            url = media.get("url", "")
 
-            if url:
+            if image_is_valid(url):
 
                 return url
 
-    # ------------------------------------
-    # media:thumbnail
-    # ------------------------------------
+    # --------------------------
+    # media_thumbnail
+    # --------------------------
 
     if getattr(entry, "media_thumbnail", None):
 
         for media in entry.media_thumbnail:
 
-            url = media.get("url")
+            url = media.get("url", "")
 
-            if url:
+            if image_is_valid(url):
 
                 return url
 
-    # ------------------------------------
-    # enclosures / links
-    # ------------------------------------
+    # --------------------------
+    # links
+    # --------------------------
 
     if getattr(entry, "links", None):
 
@@ -87,23 +197,21 @@ def extract_image(entry):
 
             href = link.get("href", "")
 
-            if not href:
+            if image_is_valid(href):
 
-                continue
+                if (
 
-            if (
+                    link.get("rel") == "enclosure"
 
-                link.get("rel") == "enclosure"
+                    or link.get("type", "").startswith("image/")
 
-                or link.get("type", "").startswith("image/")
+                ):
 
-            ):
+                    return href
 
-                return href
-
-    # ------------------------------------
+    # --------------------------
     # content blocks
-    # ------------------------------------
+    # --------------------------
 
     if getattr(entry, "content", None):
 
@@ -115,13 +223,13 @@ def extract_image(entry):
 
             )
 
-            if image:
+            if image_is_valid(image):
 
                 return image
 
-    # ------------------------------------
+    # --------------------------
     # summary
-    # ------------------------------------
+    # --------------------------
 
     image = extract_html_image(
 
@@ -129,13 +237,13 @@ def extract_image(entry):
 
     )
 
-    if image:
+    if image_is_valid(image):
 
         return image
 
-    # ------------------------------------
+    # --------------------------
     # description
-    # ------------------------------------
+    # --------------------------
 
     image = extract_html_image(
 
@@ -143,12 +251,11 @@ def extract_image(entry):
 
     )
 
-    if image:
+    if image_is_valid(image):
 
         return image
 
     return ""
-
 
 # --------------------------------------------------
 # RSS Reader
@@ -200,10 +307,6 @@ def get_latest_news(
     print("READING RSS FEEDS")
     print("=" * 60)
 
-    # --------------------------------------------------
-    # Read Every Feed
-    # --------------------------------------------------
-
     for feed_url in feeds:
 
         try:
@@ -221,6 +324,10 @@ def get_latest_news(
             )
 
             for entry in feed.entries[:MAX_ARTICLES_PER_FEED]:
+
+                published_dt = parse_article_time(entry)
+
+                age_days = article_age_days(published_dt)
 
                 article = {
 
@@ -274,6 +381,14 @@ def get_latest_news(
 
                         ),
 
+                    "published_dt":
+
+                        published_dt,
+
+                    "age_days":
+
+                        age_days,
+
                     "image":
 
                         extract_image(entry)
@@ -296,9 +411,9 @@ def get_latest_news(
 
     unique = []
 
-    seen_titles = set()
-
     seen_links = set()
+
+    seen_titles = set()
 
     for article in articles:
 
@@ -348,8 +463,43 @@ def get_latest_news(
 
         unique.append(article)
 
+    # --------------------------------------------------
+    # Freshness Sort
+    # --------------------------------------------------
+
+    unique.sort(
+
+        key=lambda article: (
+
+            article.get(
+
+                "age_days",
+
+                999
+
+            ),
+
+            not bool(
+
+                article.get(
+
+                    "image"
+
+                )
+
+            )
+
+        )
+
+    )
+
     print("=" * 60)
-    print(f"Loaded {len(unique)} unique articles.")
+    print(
+
+        f"Loaded {len(unique)} unique articles."
+
+    )
+
     print("=" * 60)
 
     return unique[:max_articles]
@@ -363,69 +513,68 @@ def score_articles(articles):
     KEYWORDS = {
 
         # Core Solana
-        "solana": 30,
-        "validator": 20,
-        "firedancer": 25,
-        "jupiter": 22,
-        "raydium": 22,
+        "solana": 35,
+        "validator": 24,
+        "firedancer": 28,
+        "jupiter": 24,
+        "raydium": 24,
         "pump.fun": 22,
         "phantom": 20,
         "backpack": 20,
         "kamino": 20,
         "drift": 20,
-        "sanctum": 18,
-        "helius": 18,
+        "helius": 20,
         "marinade": 18,
+        "sanctum": 18,
 
-        # Builders
-        "builder": 15,
-        "developer": 15,
+        # Infrastructure
+        "rpc": 16,
+        "sdk": 16,
+        "developer": 18,
+        "builder": 18,
+        "infrastructure": 18,
         "ecosystem": 15,
-        "infrastructure": 15,
-        "rpc": 12,
-        "sdk": 12,
 
-        # Trading
-        "listing": 15,
-        "launch": 15,
-        "integration": 15,
-        "upgrade": 15,
-        "airdrop": 12,
-        "volume": 10,
-        "liquidity": 10,
-
-        # Memecoins
-        "memecoin": 12,
-        "meme": 10,
-        "community": 8,
+        # DeFi
+        "liquidity": 12,
+        "dex": 12,
+        "staking": 12,
+        "yield": 10,
 
         # Security
-        "hack": 25,
-        "exploit": 25,
-        "security": 20,
+        "hack": 30,
+        "exploit": 30,
+        "security": 24,
+        "audit": 16,
 
-        # Institutional
-        "etf": 20,
+        # Adoption
+        "stablecoin": 16,
+        "payments": 15,
+        "adoption": 16,
         "institutional": 18,
-        "adoption": 15,
-        "stablecoin": 15,
-        "payments": 12
+        "etf": 20,
+
+        # Community
+        "memecoin": 14,
+        "community": 10,
+        "governance": 12
 
     }
 
     TRUSTED = [
 
         "solana",
+        "helius",
+        "jupiter",
+        "raydium",
+        "phantom",
+        "backpack",
+        "messari",
+        "blockworks",
         "coindesk",
         "cointelegraph",
         "decrypt",
-        "blockworks",
-        "the block",
-        "messari",
-        "helius",
-        "raydium",
-        "jupiter",
-        "phantom"
+        "the block"
 
     ]
 
@@ -437,9 +586,10 @@ def score_articles(articles):
         "released",
         "upgrade",
         "integration",
-        "partnership",
         "record",
-        "new"
+        "new",
+        "mainnet",
+        "proposal"
 
     ]
 
@@ -467,9 +617,9 @@ def score_articles(articles):
 
         ).lower()
 
-        # ----------------------------
-        # Keyword score
-        # ----------------------------
+        # -------------------------
+        # Keyword Score
+        # -------------------------
 
         for word, value in KEYWORDS.items():
 
@@ -477,32 +627,85 @@ def score_articles(articles):
 
                 score += value
 
-        # ----------------------------
-        # Trusted source
-        # ----------------------------
+        # -------------------------
+        # Trusted Source
+        # -------------------------
 
         if any(
 
-            trusted in source
+            s in source
 
-            for trusted in TRUSTED
+            for s in TRUSTED
 
         ):
 
-            score += 6
+            score += 8
 
-        # ----------------------------
-        # Image bonus
-        # ----------------------------
+        # -------------------------
+        # Solana Bonus
+        # -------------------------
 
-        if article.get("image"):
+        if "solana" in text:
 
-            score += 5
+            score += 12
 
-        # ----------------------------
-        # Longer titles tend to
-        # contain better context.
-        # ----------------------------
+        # -------------------------
+        # High Impact Words
+        # -------------------------
+
+        for word in IMPACT:
+
+            if word in text:
+
+                score += 4
+
+        # -------------------------
+        # Freshness Bonus
+        # -------------------------
+
+        age = article.get(
+
+            "age_days",
+
+            999
+
+        )
+
+        if age <= 0:
+
+            score += 18
+
+        elif age == 1:
+
+            score += 14
+
+        elif age <= 3:
+
+            score += 8
+
+        elif age <= 7:
+
+            score += 2
+
+        else:
+
+            score -= 12
+
+        # -------------------------
+        # Image Bonus
+        # -------------------------
+
+        if image_is_valid(
+
+            article.get("image", "")
+
+        ):
+
+            score += 8
+
+        # -------------------------
+        # Better Titles
+        # -------------------------
 
         title = article.get(
 
@@ -512,33 +715,15 @@ def score_articles(articles):
 
         )
 
-        if len(title) > 45:
+        if len(title) > 50:
 
             score += 2
 
-        # ----------------------------
-        # High-impact wording
-        # ----------------------------
+        # -------------------------
+        # Weak Article Filter
+        # -------------------------
 
-        for word in IMPACT:
-
-            if word in text:
-
-                score += 3
-
-        # ----------------------------
-        # Heavy Solana bonus
-        # ----------------------------
-
-        if "solana" in text:
-
-            score += 10
-
-        # ----------------------------
-        # Skip weak articles
-        # ----------------------------
-
-        if score < 8:
+        if score < 10:
 
             continue
 
@@ -548,13 +733,39 @@ def score_articles(articles):
 
     scored.sort(
 
-        key=lambda x: (
+        key=lambda article: (
 
-            x["score"],
+            article["score"],
 
-            bool(x.get("image")),
+            -article.get(
 
-            len(x.get("summary", ""))
+                "age_days",
+
+                999
+
+            ),
+
+            bool(
+
+                article.get(
+
+                    "image"
+
+                )
+
+            ),
+
+            len(
+
+                article.get(
+
+                    "summary",
+
+                    ""
+
+                )
+
+            )
 
         ),
 
@@ -577,12 +788,24 @@ def print_top_articles(articles, limit=10):
     if not articles:
 
         print("No scored articles.")
-
         print("=" * 60)
-
         return
 
-    for index, article in enumerate(articles[:limit], start=1):
+    for index, article in enumerate(
+
+        articles[:limit],
+
+        start=1
+
+    ):
+
+        age = article.get(
+
+            "age_days",
+
+            "?"
+
+        )
 
         print(f"#{index}")
 
@@ -590,7 +813,21 @@ def print_top_articles(articles, limit=10):
 
             "Score :",
 
-            article.get("score", 0)
+            article.get(
+
+                "score",
+
+                0
+
+            )
+
+        )
+
+        print(
+
+            "Age   :",
+
+            f"{age} day(s)"
 
         )
 
@@ -598,7 +835,11 @@ def print_top_articles(articles, limit=10):
 
             "Image :",
 
-            "YES" if article.get("image") else "NO"
+            "YES"
+
+            if article.get("image")
+
+            else "NO"
 
         )
 
@@ -606,7 +847,13 @@ def print_top_articles(articles, limit=10):
 
             "Source:",
 
-            article.get("source", "Unknown")
+            article.get(
+
+                "source",
+
+                "Unknown"
+
+            )
 
         )
 
@@ -614,7 +861,13 @@ def print_top_articles(articles, limit=10):
 
             "Title :",
 
-            article.get("title", "")
+            article.get(
+
+                "title",
+
+                ""
+
+            )
 
         )
 
@@ -624,14 +877,17 @@ def print_top_articles(articles, limit=10):
 
                 "Date  :",
 
-                article.get("published")
+                article.get(
+
+                    "published"
+
+                )
 
             )
 
         print("-" * 60)
 
     print("=" * 60)
-
 
 # --------------------------------------------------
 # Convenience Wrapper
@@ -645,16 +901,117 @@ def get_ranked_articles(
 
 ):
 
+    # Load extra articles so duplicates can be filtered
     articles = get_latest_news(
 
         feed_file=feed_file,
 
-        max_articles=max_articles
+        max_articles=max_articles * 2
 
     )
 
+    if not articles:
+
+        return []
+
     ranked = score_articles(articles)
 
-    print_top_articles(ranked)
+    # Fallback if every article scores too low
+    if not ranked:
 
-    return ranked
+        print("=" * 60)
+        print("No high-scoring articles found.")
+        print("Falling back to newest articles.")
+        print("=" * 60)
+
+        ranked = sorted(
+
+            articles,
+
+            key=lambda article: (
+
+                article.get("age_days", 999),
+
+                not bool(article.get("image"))
+
+            )
+
+        )
+
+    # --------------------------------------
+    # Diversity Filter
+    # --------------------------------------
+
+    final = []
+
+    seen_topics = set()
+
+    for article in ranked:
+
+        title = article.get(
+
+            "title",
+
+            ""
+
+        ).lower()
+
+        topic = " ".join(
+
+            title.split()[:4]
+
+        )
+
+        if topic in seen_topics:
+
+            continue
+
+        seen_topics.add(topic)
+
+        final.append(article)
+
+        if len(final) >= max_articles:
+
+            break
+
+    print_top_articles(final)
+
+    print("=" * 60)
+    print("SMART ARTICLE SUMMARY")
+    print("=" * 60)
+
+    for index, article in enumerate(final[:5], start=1):
+
+        print(
+
+            f"{index}. "
+
+            f"[{article.get('score', 0)}] "
+
+            f"{article.get('title', '')}"
+
+        )
+
+        print(
+
+            f"   Age    : {article.get('age_days', '?')} day(s)"
+
+        )
+
+        print(
+
+            f"   Image  : {'YES' if article.get('image') else 'NO'}"
+
+        )
+
+        print(
+
+            f"   Source : {article.get('source', '')}"
+
+        )
+
+        print()
+
+    print("=" * 60)
+
+    return final
