@@ -64,13 +64,140 @@ def validate_json(response):
 
     try:
 
-        return json.loads(response)
+        data = json.loads(response)
 
     except Exception as e:
 
         raise Exception(
             f"Invalid JSON from Gemini:\n{e}"
         )
+
+    # --------------------------------------------------
+    # Required top-level objects
+    # --------------------------------------------------
+
+    data.setdefault("telegram", {})
+    data.setdefault("art_image", {})
+    data.setdefault("meme", {})
+    data.setdefault("poll", {})
+    data.setdefault("x_posts", [])
+    data.setdefault("best_time", {})
+
+    # --------------------------------------------------
+    # Telegram defaults
+    # --------------------------------------------------
+
+    telegram = data["telegram"]
+
+    telegram.setdefault("persona", "CatLoaf")
+    telegram.setdefault("category", "Community")
+    telegram.setdefault("headline", "Today's Hot Loaf")
+    telegram.setdefault("opening", "")
+    telegram.setdefault("bullets", [])
+    telegram.setdefault("why", "")
+    telegram.setdefault("question", "")
+    telegram.setdefault("header_image", {})
+    telegram.setdefault("loaf_score", {})
+
+    telegram["header_image"].setdefault(
+        "prompt",
+        ""
+    )
+
+    loaf = telegram["loaf_score"]
+
+    loaf.setdefault("overall", 50)
+    loaf.setdefault("market_impact", "Medium")
+    loaf.setdefault("builder_interest", "Medium")
+    loaf.setdefault("urgency", "Medium")
+
+    # --------------------------------------------------
+    # Art defaults
+    # --------------------------------------------------
+
+    art = data["art_image"]
+
+    art.setdefault(
+        "title",
+        "CatLoaf Artwork"
+    )
+
+    art.setdefault(
+        "caption",
+        ""
+    )
+
+    art.setdefault(
+        "prompt",
+        "Cute CatLoaf digital illustration."
+    )
+
+    # --------------------------------------------------
+    # Meme defaults
+    # --------------------------------------------------
+
+    meme = data["meme"]
+
+    meme.setdefault("quote", "")
+    meme.setdefault("cta", "Stay loafy.")
+
+    # --------------------------------------------------
+    # Poll defaults
+    # --------------------------------------------------
+
+    poll = data["poll"]
+
+    poll.setdefault(
+        "question",
+        "What are we baking today?"
+    )
+
+    poll.setdefault(
+        "options",
+        [
+            "Builders",
+            "Memecoins",
+            "DeFi",
+            "Validators"
+        ]
+    )
+
+    # --------------------------------------------------
+    # X post defaults
+    # --------------------------------------------------
+
+    while len(data["x_posts"]) < 3:
+
+        data["x_posts"].append({
+
+            "type": "fallback",
+
+            "content": "🍞 Stay loafy."
+
+        })
+
+    # --------------------------------------------------
+    # Best time defaults
+    # --------------------------------------------------
+
+    best = data["best_time"]
+
+    best.setdefault(
+        "utc",
+        "12:00 UTC"
+    )
+
+    best.setdefault(
+        "reason",
+        "General engagement"
+    )
+
+    best.setdefault(
+        "audience",
+        "Crypto Community"
+    )
+
+    return data
 
 
 # --------------------------------------------------
