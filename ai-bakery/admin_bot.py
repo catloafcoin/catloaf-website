@@ -16,7 +16,6 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-
 # --------------------------------------------------
 # Telegram Helpers
 # --------------------------------------------------
@@ -46,6 +45,83 @@ def answer_callback(callback_id, text):
             "text": text
         },
         timeout=20
+    )
+
+
+def send_admin_message(chat_id, text):
+
+    requests.post(
+        f"{API}/sendMessage",
+        data={
+            "chat_id": chat_id,
+            "text": text,
+            "parse_mode": "HTML"
+        },
+        timeout=20
+    )
+
+
+def send_admin_photo(chat_id, image, caption=""):
+
+    if not image:
+        return
+
+    payload = {
+        "chat_id": chat_id,
+        "caption": caption,
+        "parse_mode": "HTML"
+    }
+
+    # Remote URL
+    if isinstance(image, str) and (
+        image.startswith("http://")
+        or image.startswith("https://")
+    ):
+
+        payload["photo"] = image
+
+        requests.post(
+            f"{API}/sendPhoto",
+            data=payload,
+            timeout=60
+        )
+
+        return
+
+    # Local file
+    try:
+
+        with open(image, "rb") as photo:
+
+            requests.post(
+                f"{API}/sendPhoto",
+                data=payload,
+                files={
+                    "photo": photo
+                },
+                timeout=60
+            )
+
+    except Exception as e:
+
+        print("Admin image failed:", e)
+
+
+# --------------------------------------------------
+# Queue Helper
+# --------------------------------------------------
+
+def find_queue_item(post_id):
+
+    queue = get_queue()
+
+    return next(
+        (
+            item
+            for item in queue
+            if item["id"] == post_id
+        ),
+        None
     )
 
 
@@ -154,12 +230,11 @@ def edit_buttons(chat_id, message_id, text):
         timeout=20
     )
 
+offset = None
 
 print("=" * 60)
 print("🍞 CatLoaf Approval Bot Running...")
 print("=" * 60)
-
-offset = None
 
 while True:
 
@@ -185,7 +260,13 @@ while True:
 
         message_id = callback["message"]["message_id"]
 
-        print(f"Pressed: {data}")
+        print("=" * 60)
+        print("Pressed:", data)
+        print("=" * 60)
+
+        # ------------------------------------------
+        # APPROVE
+        # ------------------------------------------
 
         if data.startswith("approve_"):
 
@@ -202,16 +283,15 @@ while True:
                 "Choose where to publish"
             )
 
+        # ------------------------------------------
+        # TELEGRAM
+        # ------------------------------------------
+
         elif data.startswith("tg_"):
 
             post_id = data.replace("tg_", "")
 
-            queue = get_queue()
-
-            item = next(
-                (q for q in queue if q["id"] == post_id),
-                None
-            )
+            item = find_queue_item(post_id)
 
             if item is None:
 
@@ -224,7 +304,10 @@ while True:
 
             try:
 
-                publish(item, "telegram")
+                publish(
+                    item,
+                    "telegram"
+                )
 
                 mark_posted(post_id)
                 remove_pending(post_id)
@@ -253,16 +336,15 @@ while True:
                     "❌ Publish failed."
                 )
 
+        # ------------------------------------------
+        # X
+        # ------------------------------------------
+
         elif data.startswith("x_"):
 
             post_id = data.replace("x_", "")
 
-            queue = get_queue()
-
-            item = next(
-                (q for q in queue if q["id"] == post_id),
-                None
-            )
+            item = find_queue_item(post_id)
 
             if item is None:
 
@@ -275,36 +357,54 @@ while True:
 
             try:
 
-                result = publish(item, "x")
+                result = publish(
+                    item,
+                    "x"
+                )
 
-                if result.get("x_text"):
+                # Show image first if available
 
-                    requests.post(
-                        f"{API}/sendMessage",
-                        data={
-                            "chat_id": chat_id,
-                            "text": (
-                                "🐦 <b>X POST READY</b>\n\n"
-                                f"{result['x_text']}"
-                            ),
-                            "parse_mode": "HTML"
-                        },
-                        timeout=20
+                if result.get("image"):
+
+                    send_admin_photo(
+                        chat_id,
+                        result["image"],
+                        "🐦 Image for X Post"
                     )
 
+                send_admin_message(
+
+                    chat_id,
+
+                    (
+                        "🐦 <b>X POST READY</b>\n\n"
+                        f"{result['x_text']}"
+                    )
+
+                )
+
                 mark_posted(post_id)
+
                 remove_pending(post_id)
+
                 remove_by_id(post_id)
 
                 edit_buttons(
+
                     chat_id,
+
                     message_id,
+
                     "✅ X Draft Ready"
+
                 )
 
                 answer_callback(
+
                     callback["id"],
+
                     "X draft created."
+
                 )
 
             except Exception as e:
@@ -319,16 +419,15 @@ while True:
                     "❌ Publish failed."
                 )
 
+        # ------------------------------------------
+        # BOTH
+        # ------------------------------------------
+
         elif data.startswith("both_"):
 
             post_id = data.replace("both_", "")
 
-            queue = get_queue()
-
-            item = next(
-                (q for q in queue if q["id"] == post_id),
-                None
-            )
+            item = find_queue_item(post_id)
 
             if item is None:
 
@@ -341,21 +440,32 @@ while True:
 
             try:
 
-                result = publish(item, "both")
+                result = publish(
+                    item,
+                    "both"
+                )
+
+                # Show X image for manual posting
+
+                if result.get("image"):
+
+                    send_admin_photo(
+                        chat_id,
+                        result["image"],
+                        "🐦 Image for X Post"
+                    )
 
                 if result.get("x_text"):
 
-                    requests.post(
-                        f"{API}/sendMessage",
-                        data={
-                            "chat_id": chat_id,
-                            "text": (
-                                "🐦 <b>X POST READY</b>\n\n"
-                                f"{result['x_text']}"
-                            ),
-                            "parse_mode": "HTML"
-                        },
-                        timeout=20
+                    send_admin_message(
+
+                        chat_id,
+
+                        (
+                            "🐦 <b>X POST READY</b>\n\n"
+                            f"{result['x_text']}"
+                        )
+
                     )
 
                 mark_posted(post_id)
@@ -385,6 +495,10 @@ while True:
                     "❌ Publish failed."
                 )
 
+        # ------------------------------------------
+        # BACK
+        # ------------------------------------------
+
         elif data.startswith("cancel_"):
 
             post_id = data.replace("cancel_", "")
@@ -400,12 +514,14 @@ while True:
                 "Cancelled"
             )
 
+        # ------------------------------------------
+        # REJECT
+        # ------------------------------------------
+
         elif data.startswith("reject_"):
 
             post_id = data.replace("reject_", "")
 
-            # Remove from pending review only.
-            # Keep it in the queue so it can be edited or regenerated later.
             remove_pending(post_id)
 
             edit_buttons(
@@ -419,19 +535,31 @@ while True:
                 "Rejected"
             )
 
+        # ------------------------------------------
+        # EDIT
+        # ------------------------------------------
+
         elif data.startswith("edit_"):
 
             answer_callback(
                 callback["id"],
-                "✏️ Edit will be available in the next update."
+                "✏️ Editing coming soon."
             )
+
+        # ------------------------------------------
+        # REGENERATE
+        # ------------------------------------------
 
         elif data.startswith("regen_"):
 
             answer_callback(
                 callback["id"],
-                "🔄 Regenerate will be available in the next update."
+                "🔄 Regeneration coming soon."
             )
+
+        # ------------------------------------------
+        # UNKNOWN
+        # ------------------------------------------
 
         else:
 
