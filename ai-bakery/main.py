@@ -221,19 +221,64 @@ else:
     print("Skipped Daily Save")
 
 # --------------------------------------------------
-# Primary RSS Article
+# Primary RSS Article Selection
 # --------------------------------------------------
 
-real_article = articles[0]
+def choose_primary_article(articles):
+
+    if not articles:
+        raise Exception("No RSS articles found.")
+
+    print("\nSelecting primary article...\n")
+
+    # Prefer articles with images.
+    # If multiple have images, use the highest scored one.
+
+    image_articles = [
+        article
+        for article in articles
+        if article.get("image")
+    ]
+
+    if image_articles:
+
+        image_articles = sorted(
+            image_articles,
+            key=lambda x: x.get("score", 0),
+            reverse=True
+        )
+
+        selected = image_articles[0]
+
+        print("✓ Selected article WITH image")
+
+    else:
+
+        selected = max(
+            articles,
+            key=lambda x: x.get("score", 0)
+        )
+
+        print("✓ No RSS image found.")
+        print("✓ Selected highest scored article.")
+
+    print("=" * 60)
+    print("PRIMARY ARTICLE")
+    print("=" * 60)
+    print("Title :", selected.get("title", ""))
+    print("Score :", selected.get("score", 0))
+    print("Source:", selected.get("source", ""))
+    print("Image :", bool(selected.get("image")))
+    print("=" * 60)
+
+    return selected
+
+
+real_article = choose_primary_article(articles)
 
 source_title = real_article.get("title", "")
 source_url = real_article.get("link", "")
 rss_image = real_article.get("image", "")
-
-print("\nPrimary Article")
-print(source_title)
-print(source_url)
-print(rss_image)
 
 # --------------------------------------------------
 # Telegram Message Builder
