@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import requests
 from html import escape
@@ -11,14 +12,19 @@ TELEGRAM_LIMIT = 4096
 # --------------------------------------------------
 
 def load_text(path):
+
     try:
+
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
+
     except FileNotFoundError:
+
         return ""
 
 
 def save_text(path, text):
+
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
 
@@ -31,10 +37,14 @@ def load_json(path):
             return json.load(f)
 
     except FileNotFoundError:
+
         return {}
 
     except json.JSONDecodeError as e:
-        raise Exception(f"Invalid JSON in {path}: {e}")
+
+        raise Exception(
+            f"Invalid JSON in {path}: {e}"
+        )
 
 
 def validate_json(response):
@@ -53,10 +63,14 @@ def validate_json(response):
     response = response.strip()
 
     try:
+
         return json.loads(response)
 
     except Exception as e:
-        raise Exception(f"Invalid JSON from Gemini:\n{e}")
+
+        raise Exception(
+            f"Invalid JSON from Gemini:\n{e}"
+        )
 
 
 # --------------------------------------------------
@@ -91,12 +105,18 @@ def split_message(text, limit=3900):
 
     while len(text) > limit:
 
-        split = text.rfind("\n", 0, limit)
+        split = text.rfind(
+            "\n",
+            0,
+            limit
+        )
 
         if split == -1:
             split = limit
 
-        chunks.append(text[:split])
+        chunks.append(
+            text[:split]
+        )
 
         text = text[split:].lstrip()
 
@@ -104,14 +124,17 @@ def split_message(text, limit=3900):
 
     return chunks
 
-
 # --------------------------------------------------
-# Button Helpers
+# Buttons
 # --------------------------------------------------
 
 def default_reply_markup(msg_type):
 
-    if msg_type not in ["hot_loaf", "art", "cloaf"]:
+    if msg_type not in [
+        "hot_loaf",
+        "art",
+        "cloaf"
+    ]:
         return []
 
     return [
@@ -139,7 +162,10 @@ def merge_reply_markup(reply_markup, msg_type):
             custom = json.loads(reply_markup)
 
             rows.extend(
-                custom.get("inline_keyboard", [])
+                custom.get(
+                    "inline_keyboard",
+                    []
+                )
             )
 
         except Exception as e:
@@ -153,7 +179,18 @@ def merge_reply_markup(reply_markup, msg_type):
         "inline_keyboard": rows
     })
 
-def send_telegram(token, chat_id, text, msg_type, reply_markup=None):
+
+# --------------------------------------------------
+# Telegram Text
+# --------------------------------------------------
+
+def send_telegram(
+    token,
+    chat_id,
+    text,
+    msg_type,
+    reply_markup=None
+):
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
@@ -177,45 +214,43 @@ def send_telegram(token, chat_id, text, msg_type, reply_markup=None):
                 "disable_web_page_preview": True
             }
 
-            # Only attach buttons to the last message
-            if merged_markup and index == len(parts) - 1:
+            # Buttons only on final chunk
+            if (
+                merged_markup
+                and index == len(parts) - 1
+            ):
                 payload["reply_markup"] = merged_markup
-
-            print("=" * 60)
-            print("SENDING TELEGRAM MESSAGE")
-            print("Attempt:", attempt + 1)
-            print("Chat ID:", chat_id)
-            print("Type:", msg_type)
-            print("Payload:")
-            print(payload)
-            print("=" * 60)
 
             try:
 
-                r = requests.post(
+                response = requests.post(
                     url,
                     data=payload,
-                    timeout=20
+                    timeout=30
                 )
 
                 print("=" * 60)
-                print("TELEGRAM RESPONSE")
-                print("Status:", r.status_code)
-                print("Response:", r.text)
+                print("SEND MESSAGE")
+                print("Attempt :", attempt + 1)
+                print("Chat ID :", chat_id)
+                print("Type    :", msg_type)
+                print("Status  :", response.status_code)
+                print(response.text)
                 print("=" * 60)
 
-                if r.status_code == 200:
+                if response.status_code == 200:
                     success = True
                     break
 
             except Exception as e:
 
-                print(f"Telegram Error: {e}")
+                print("Telegram Error:", e)
 
             time.sleep(2)
 
         if not success:
-            print("⚠ Telegram send failed after 3 attempts.")
+
+            print("⚠ Telegram message failed after 3 attempts.")
 
         time.sleep(1)
 
@@ -232,15 +267,26 @@ def send_photo(
     msg_type="art"
 ):
 
+    if not photo_path:
+
+        print("⚠ No image supplied. Sending text instead.")
+
+        send_telegram(
+            token,
+            chat_id,
+            caption,
+            msg_type,
+            reply_markup
+        )
+
+        return
+
     url = f"https://api.telegram.org/bot{token}/sendPhoto"
 
     merged_markup = merge_reply_markup(
         reply_markup,
         msg_type
     )
-
-    # Telegram only allows captions up to 1024 chars.
-    # Long captions will be sent as a separate message.
 
     caption_text = caption
     followup_text = None
@@ -263,52 +309,116 @@ def send_photo(
     if merged_markup:
         payload["reply_markup"] = merged_markup
 
-    # --------------------------------------------------
-    # Remote RSS image
-    # --------------------------------------------------
+    success = False
+    local_image = None
 
-    if isinstance(photo_path, str) and (
-        photo_path.startswith("http://")
-        or photo_path.startswith("https://")
-    ):
+    for attempt in range(3):
 
-        payload["photo"] = photo_path
+        try:
 
-        r = requests.post(
-            url,
-            data=payload,
-            timeout=60
+            print("=" * 60)
+            print("PHOTO SEND")
+            print("Attempt :", attempt + 1)
+            print("Image   :", photo_path)
+            print("=" * 60)
+
+            # -----------------------------------
+            # RSS Image URL
+            # -----------------------------------
+
+            if (
+                isinstance(photo_path, str)
+                and (
+                    photo_path.startswith("http://")
+                    or photo_path.startswith("https://")
+                )
+            ):
+
+                local_image = download_image(photo_path)
+
+                if local_image:
+
+                    with open(local_image, "rb") as photo:
+
+                        response = requests.post(
+                            url,
+                            data=payload,
+                            files={
+                                "photo": photo
+                            },
+                            timeout=90
+                        )
+
+                else:
+
+                    payload["photo"] = photo_path
+
+                    response = requests.post(
+                        url,
+                        data=payload,
+                        timeout=90
+                    )
+
+            # -----------------------------------
+            # Local AI Image
+            # -----------------------------------
+
+            else:
+
+                with open(photo_path, "rb") as photo:
+
+                    response = requests.post(
+                        url,
+                        data=payload,
+                        files={
+                            "photo": photo
+                        },
+                        timeout=90
+                    )
+
+            print("=" * 60)
+            print("PHOTO RESPONSE")
+            print("Status :", response.status_code)
+            print(response.text)
+            print("=" * 60)
+
+            if response.status_code == 200:
+
+                if local_image:
+
+                    import os
+
+                    try:
+
+                        if os.path.exists(local_image):
+                            os.remove(local_image)
+
+                    except Exception:
+                        pass
+
+                success = True
+                break
+
+        except Exception as e:
+
+            print("Photo Error:", e)
+
+        time.sleep(3)
+
+    if not success:
+
+        print("⚠ Photo upload failed.")
+        print("Sending text instead...")
+
+        send_telegram(
+            token,
+            chat_id,
+            caption,
+            msg_type,
+            reply_markup
         )
 
-    # --------------------------------------------------
-    # Local AI image
-    # --------------------------------------------------
-
-    else:
-
-        with open(photo_path, "rb") as photo:
-
-            r = requests.post(
-                url,
-                data=payload,
-                files={
-                    "photo": photo
-                },
-                timeout=60
-            )
-
-    print("=" * 60)
-    print("PHOTO RESPONSE")
-    print("Status:", r.status_code)
-    print("Response:", r.text)
-    print("=" * 60)
-
-    if r.status_code != 200:
-        raise Exception(r.text)
-
-    # --------------------------------------------------
-    # Send remaining caption if too long
-    # --------------------------------------------------
+        return
 
     if followup_text:
 
@@ -332,38 +442,126 @@ def send_poll(
     reply_markup=None
 ):
 
-    if not question or not options:
+    if not question:
+
+        print("⚠ Empty poll question.")
+        return
+
+    if not options or len(options) < 2:
+
+        print("⚠ Invalid poll options.")
         return
 
     url = f"https://api.telegram.org/bot{token}/sendPoll"
 
     payload = {
         "chat_id": chat_id,
-        "question": question,
+        "question": question[:300],
         "options": json.dumps(options),
         "is_anonymous": False,
         "allows_multiple_answers": False
     }
 
-    merged_markup = merge_reply_markup(
-        reply_markup,
+    for attempt in range(3):
+
+        try:
+
+            print("=" * 60)
+            print("SENDING POLL")
+            print("Attempt :", attempt + 1)
+            print("Question:", question)
+            print("Options :", options)
+            print("=" * 60)
+
+            response = requests.post(
+                url,
+                data=payload,
+                timeout=30
+            )
+
+            print("=" * 60)
+            print("POLL RESPONSE")
+            print("Status :", response.status_code)
+            print(response.text)
+            print("=" * 60)
+
+            if response.status_code == 200:
+
+                return True
+
+        except Exception as e:
+
+            print("Poll Error:", e)
+
+        time.sleep(2)
+
+    print("⚠ Poll failed after 3 attempts.")
+
+    send_telegram(
+        token,
+        chat_id,
+        f"<b>Poll could not be published.</b>\n\n{question}",
         "poll"
     )
 
-    if merged_markup:
-        payload["reply_markup"] = merged_markup
+    return False
 
-    r = requests.post(
-        url,
-        data=payload,
-        timeout=20
-    )
 
-    print("=" * 60)
-    print("POLL RESPONSE")
-    print(r.status_code)
-    print(r.text)
-    print("=" * 60)
+# --------------------------------------------------
+# RSS Image Downloader
+# --------------------------------------------------
 
-    if r.status_code != 200:
-        raise Exception(r.text)
+def download_image(url):
+
+    try:
+
+        print("=" * 60)
+        print("DOWNLOADING RSS IMAGE")
+        print(url)
+        print("=" * 60)
+
+        response = requests.get(
+            url,
+            timeout=60,
+            headers={
+                "User-Agent": "Mozilla/5.0"
+            }
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "Download failed:",
+                response.status_code
+            )
+
+            return None
+
+        extension = ".jpg"
+
+        content_type = response.headers.get(
+            "Content-Type",
+            ""
+        ).lower()
+
+        if "png" in content_type:
+            extension = ".png"
+
+        filename = (
+            f"rss_{int(time.time())}"
+            f"{extension}"
+        )
+
+        with open(filename, "wb") as f:
+
+            f.write(response.content)
+
+        print("✓ RSS image downloaded")
+
+        return filename
+
+    except Exception as e:
+
+        print("RSS download failed:", e)
+
+        return None
