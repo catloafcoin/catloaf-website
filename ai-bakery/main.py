@@ -138,6 +138,7 @@ prompt = (
     prompt
     .replace("{news}", news_text)
     .replace("{history}", history)
+    .replace("{news_mode}", news_mode)
 )
 
 print("✓ Prompt Built")
