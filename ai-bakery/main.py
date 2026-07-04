@@ -191,8 +191,36 @@ URL:
 
 news_text = "\n".join(news_sections)
 
+time_context = f"""
+CURRENT DATE & TIME
+
+Date: {CURRENT_TIME["date"]}
+Day: {CURRENT_TIME["day"]}
+Month: {CURRENT_TIME["month"]}
+Year: {CURRENT_TIME["year"]}
+
+Current UTC Time:
+{CURRENT_TIME["utc"]}
+
+Current Day Period:
+{CURRENT_TIME["day_period"]}
+
+EDITORIAL RULES
+
+- Treat this as the current moment.
+- Never always start with "Good Morning".
+- Rotate greetings naturally.
+- Sometimes don't use a greeting at all.
+- Match the greeting to the current day period.
+- If recent history already used a greeting, begin differently.
+- Avoid saying "today" for older news.
+- If an article is not from today, mention it naturally without pretending it just happened.
+"""
+
 prompt = f"""
 {brand}
+
+{time_context}
 
 {prompt_template}
 """
