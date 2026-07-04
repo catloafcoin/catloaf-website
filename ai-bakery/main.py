@@ -398,7 +398,7 @@ art_post = {
 }
 
 # Save generated header image
-hot_loaf["image"] = header_image_path
+hot_loaf["text"] = telegram_message.strip()
 
 # --------------------------------------------------
 # POLL
