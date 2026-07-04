@@ -12,9 +12,11 @@ from scheduler import (
 
 from publisher import publish
 
+
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 API = f"https://api.telegram.org/bot{BOT_TOKEN}"
+
 
 # --------------------------------------------------
 # Telegram Helpers
@@ -24,41 +26,69 @@ def get_updates(offset=None):
 
     params = {}
 
-    if offset:
+    if offset is not None:
         params["offset"] = offset
 
-    r = requests.get(
-        f"{API}/getUpdates",
-        params=params,
-        timeout=30
-    )
+    try:
 
-    return r.json()
+        response = requests.get(
+            f"{API}/getUpdates",
+            params=params,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except Exception as e:
+
+        print("=" * 60)
+        print("GET UPDATES FAILED")
+        print(e)
+        print("=" * 60)
+
+        return {
+            "ok": False,
+            "result": []
+        }
 
 
 def answer_callback(callback_id, text):
 
-    requests.post(
-        f"{API}/answerCallbackQuery",
-        data={
-            "callback_query_id": callback_id,
-            "text": text
-        },
-        timeout=20
-    )
+    try:
+
+        requests.post(
+            f"{API}/answerCallbackQuery",
+            data={
+                "callback_query_id": callback_id,
+                "text": text
+            },
+            timeout=20
+        )
+
+    except Exception as e:
+
+        print("Callback answer failed:", e)
 
 
 def send_admin_message(chat_id, text):
 
-    requests.post(
-        f"{API}/sendMessage",
-        data={
-            "chat_id": chat_id,
-            "text": text,
-            "parse_mode": "HTML"
-        },
-        timeout=20
-    )
+    try:
+
+        requests.post(
+            f"{API}/sendMessage",
+            data={
+                "chat_id": chat_id,
+                "text": text,
+                "parse_mode": "HTML"
+            },
+            timeout=20
+        )
+
+    except Exception as e:
+
+        print("Admin message failed:", e)
 
 
 def send_admin_photo(chat_id, image, caption=""):
@@ -72,23 +102,38 @@ def send_admin_photo(chat_id, image, caption=""):
         "parse_mode": "HTML"
     }
 
-    # Remote URL
-    if isinstance(image, str) and (
-        image.startswith("http://")
-        or image.startswith("https://")
+    # ------------------------------------------
+    # Remote image
+    # ------------------------------------------
+
+    if (
+        isinstance(image, str)
+        and (
+            image.startswith("http://")
+            or image.startswith("https://")
+        )
     ):
 
         payload["photo"] = image
 
-        requests.post(
-            f"{API}/sendPhoto",
-            data=payload,
-            timeout=60
-        )
+        try:
+
+            requests.post(
+                f"{API}/sendPhoto",
+                data=payload,
+                timeout=60
+            )
+
+        except Exception as e:
+
+            print("Remote admin image failed:", e)
 
         return
 
-    # Local file
+    # ------------------------------------------
+    # Local image
+    # ------------------------------------------
+
     try:
 
         with open(image, "rb") as photo:
@@ -104,7 +149,7 @@ def send_admin_photo(chat_id, image, caption=""):
 
     except Exception as e:
 
-        print("Admin image failed:", e)
+        print("Local admin image failed:", e)
 
 
 # --------------------------------------------------
@@ -113,17 +158,30 @@ def send_admin_photo(chat_id, image, caption=""):
 
 def find_queue_item(post_id):
 
-    queue = get_queue()
+    try:
 
-    return next(
-        (
-            item
-            for item in queue
-            if item["id"] == post_id
-        ),
-        None
-    )
+        queue = get_queue()
 
+        return next(
+
+            (
+                item
+                for item in queue
+                if item["id"] == post_id
+            ),
+
+            None
+
+        )
+
+    except Exception as e:
+
+        print("=" * 60)
+        print("QUEUE LOOKUP FAILED")
+        print(e)
+        print("=" * 60)
+
+        return None
 
 # --------------------------------------------------
 # Keyboard Helpers
@@ -132,7 +190,9 @@ def find_queue_item(post_id):
 def show_destination_menu(chat_id, message_id, post_id):
 
     keyboard = {
+
         "inline_keyboard": [
+
             [
                 {
                     "text": "📣 Telegram",
@@ -143,36 +203,52 @@ def show_destination_menu(chat_id, message_id, post_id):
                     "callback_data": f"x_{post_id}"
                 }
             ],
+
             [
                 {
                     "text": "🌍 Both",
                     "callback_data": f"both_{post_id}"
                 }
             ],
+
             [
                 {
                     "text": "⬅ Back",
                     "callback_data": f"cancel_{post_id}"
                 }
             ]
+
         ]
+
     }
 
-    requests.post(
-        f"{API}/editMessageReplyMarkup",
-        data={
-            "chat_id": chat_id,
-            "message_id": message_id,
-            "reply_markup": json.dumps(keyboard)
-        },
-        timeout=20
-    )
+    try:
+
+        requests.post(
+
+            f"{API}/editMessageReplyMarkup",
+
+            data={
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "reply_markup": json.dumps(keyboard)
+            },
+
+            timeout=20
+
+        )
+
+    except Exception as e:
+
+        print("Destination menu failed:", e)
 
 
 def restore_main_buttons(chat_id, message_id, post_id):
 
     keyboard = {
+
         "inline_keyboard": [
+
             [
                 {
                     "text": "✅ Approve",
@@ -183,6 +259,7 @@ def restore_main_buttons(chat_id, message_id, post_id):
                     "callback_data": f"reject_{post_id}"
                 }
             ],
+
             [
                 {
                     "text": "✏️ Edit",
@@ -193,42 +270,73 @@ def restore_main_buttons(chat_id, message_id, post_id):
                     "callback_data": f"regen_{post_id}"
                 }
             ]
+
         ]
+
     }
 
-    requests.post(
-        f"{API}/editMessageReplyMarkup",
-        data={
-            "chat_id": chat_id,
-            "message_id": message_id,
-            "reply_markup": json.dumps(keyboard)
-        },
-        timeout=20
-    )
+    try:
+
+        requests.post(
+
+            f"{API}/editMessageReplyMarkup",
+
+            data={
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "reply_markup": json.dumps(keyboard)
+            },
+
+            timeout=20
+
+        )
+
+    except Exception as e:
+
+        print("Restore keyboard failed:", e)
 
 
 def edit_buttons(chat_id, message_id, text):
 
     keyboard = {
+
         "inline_keyboard": [
+
             [
                 {
                     "text": text,
                     "callback_data": "done"
                 }
             ]
+
         ]
+
     }
 
-    requests.post(
-        f"{API}/editMessageReplyMarkup",
-        data={
-            "chat_id": chat_id,
-            "message_id": message_id,
-            "reply_markup": json.dumps(keyboard)
-        },
-        timeout=20
-    )
+    try:
+
+        requests.post(
+
+            f"{API}/editMessageReplyMarkup",
+
+            data={
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "reply_markup": json.dumps(keyboard)
+            },
+
+            timeout=20
+
+        )
+
+    except Exception as e:
+
+        print("Edit keyboard failed:", e)
+
+
+# --------------------------------------------------
+# Main Loop
+# --------------------------------------------------
 
 offset = None
 
@@ -245,72 +353,82 @@ while True:
         time.sleep(2)
         continue
 
-    for update in updates["result"]:
+    for update in updates.get("result", []):
 
-        offset = update["update_id"] + 1
+        try:
 
-        if "callback_query" not in update:
-            continue
+            offset = update["update_id"] + 1
 
-        callback = update["callback_query"]
+            if "callback_query" not in update:
+                continue
 
-        data = callback["data"]
+            callback = update["callback_query"]
 
-        chat_id = callback["message"]["chat"]["id"]
+            data = callback["data"]
 
-        message_id = callback["message"]["message_id"]
+            chat_id = callback["message"]["chat"]["id"]
 
-        print("=" * 60)
-        print("Pressed:", data)
-        print("=" * 60)
+            message_id = callback["message"]["message_id"]
 
-        # ------------------------------------------
-        # APPROVE
-        # ------------------------------------------
+            print("=" * 60)
+            print("BUTTON PRESSED")
+            print("Data :", data)
+            print("Chat :", chat_id)
+            print("=" * 60)
 
-        if data.startswith("approve_"):
+            # ------------------------------------------
+            # APPROVE
+            # ------------------------------------------
 
-            post_id = data.replace("approve_", "")
+            if data.startswith("approve_"):
 
-            show_destination_menu(
-                chat_id,
-                message_id,
-                post_id
-            )
+                post_id = data.replace(
+                    "approve_",
+                    ""
+                )
 
-            answer_callback(
-                callback["id"],
-                "Choose where to publish"
-            )
-
-        # ------------------------------------------
-        # TELEGRAM
-        # ------------------------------------------
-
-        elif data.startswith("tg_"):
-
-            post_id = data.replace("tg_", "")
-
-            item = find_queue_item(post_id)
-
-            if item is None:
+                show_destination_menu(
+                    chat_id,
+                    message_id,
+                    post_id
+                )
 
                 answer_callback(
                     callback["id"],
-                    "❌ Post not found."
+                    "Choose where to publish"
                 )
 
-                continue
+            # ------------------------------------------
+            # TELEGRAM
+            # ------------------------------------------
 
-            try:
+            elif data.startswith("tg_"):
 
-                publish(
+                post_id = data.replace(
+                    "tg_",
+                    ""
+                )
+
+                item = find_queue_item(post_id)
+
+                if item is None:
+
+                    answer_callback(
+                        callback["id"],
+                        "❌ Post not found."
+                    )
+
+                    continue
+
+                result = publish(
                     item,
                     "telegram"
                 )
 
                 mark_posted(post_id)
+
                 remove_pending(post_id)
+
                 remove_by_id(post_id)
 
                 edit_buttons(
@@ -324,128 +442,32 @@ while True:
                     "Published!"
                 )
 
-            except Exception as e:
+            # ------------------------------------------
+            # X
+            # ------------------------------------------
 
-                print("=" * 60)
-                print("Telegram Publish Error")
-                print(e)
-                print("=" * 60)
+            elif data.startswith("x_"):
 
-                answer_callback(
-                    callback["id"],
-                    "❌ Publish failed."
+                post_id = data.replace(
+                    "x_",
+                    ""
                 )
 
-        # ------------------------------------------
-        # X
-        # ------------------------------------------
+                item = find_queue_item(post_id)
 
-        elif data.startswith("x_"):
+                if item is None:
 
-            post_id = data.replace("x_", "")
+                    answer_callback(
+                        callback["id"],
+                        "❌ Post not found."
+                    )
 
-            item = find_queue_item(post_id)
-
-            if item is None:
-
-                answer_callback(
-                    callback["id"],
-                    "❌ Post not found."
-                )
-
-                continue
-
-            try:
+                    continue
 
                 result = publish(
                     item,
                     "x"
                 )
-
-                # Show image first if available
-
-                if result.get("image"):
-
-                    send_admin_photo(
-                        chat_id,
-                        result["image"],
-                        "🐦 Image for X Post"
-                    )
-
-                send_admin_message(
-
-                    chat_id,
-
-                    (
-                        "🐦 <b>X POST READY</b>\n\n"
-                        f"{result['x_text']}"
-                    )
-
-                )
-
-                mark_posted(post_id)
-
-                remove_pending(post_id)
-
-                remove_by_id(post_id)
-
-                edit_buttons(
-
-                    chat_id,
-
-                    message_id,
-
-                    "✅ X Draft Ready"
-
-                )
-
-                answer_callback(
-
-                    callback["id"],
-
-                    "X draft created."
-
-                )
-
-            except Exception as e:
-
-                print("=" * 60)
-                print("X Publish Error")
-                print(e)
-                print("=" * 60)
-
-                answer_callback(
-                    callback["id"],
-                    "❌ Publish failed."
-                )
-
-        # ------------------------------------------
-        # BOTH
-        # ------------------------------------------
-
-        elif data.startswith("both_"):
-
-            post_id = data.replace("both_", "")
-
-            item = find_queue_item(post_id)
-
-            if item is None:
-
-                answer_callback(
-                    callback["id"],
-                    "❌ Post not found."
-                )
-
-                continue
-
-            try:
-
-                result = publish(
-                    item,
-                    "both"
-                )
-
-                # Show X image for manual posting
 
                 if result.get("image"):
 
@@ -458,18 +480,79 @@ while True:
                 if result.get("x_text"):
 
                     send_admin_message(
-
                         chat_id,
-
                         (
                             "🐦 <b>X POST READY</b>\n\n"
                             f"{result['x_text']}"
                         )
-
                     )
 
                 mark_posted(post_id)
+
                 remove_pending(post_id)
+
+                remove_by_id(post_id)
+
+                edit_buttons(
+                    chat_id,
+                    message_id,
+                    "✅ X Draft Ready"
+                )
+
+                answer_callback(
+                    callback["id"],
+                    "X draft created."
+                )
+
+            # ------------------------------------------
+            # BOTH
+            # ------------------------------------------
+
+            elif data.startswith("both_"):
+
+                post_id = data.replace(
+                    "both_",
+                    ""
+                )
+
+                item = find_queue_item(post_id)
+
+                if item is None:
+
+                    answer_callback(
+                        callback["id"],
+                        "❌ Post not found."
+                    )
+
+                    continue
+
+                result = publish(
+                    item,
+                    "both"
+                )
+
+                if result.get("image"):
+
+                    send_admin_photo(
+                        chat_id,
+                        result["image"],
+                        "🐦 Image for X Post"
+                    )
+
+                if result.get("x_text"):
+
+                    send_admin_message(
+                        chat_id,
+                        (
+                            "🐦 <b>X POST READY</b>\n\n"
+                            f"{result['x_text']}"
+                        )
+                    )
+
+                mark_posted(post_id)
+
+                remove_pending(post_id)
+
                 remove_by_id(post_id)
 
                 edit_buttons(
@@ -483,89 +566,106 @@ while True:
                     "Published!"
                 )
 
-            except Exception as e:
+            # ------------------------------------------
+            # BACK
+            # ------------------------------------------
 
-                print("=" * 60)
-                print("Both Publish Error")
-                print(e)
-                print("=" * 60)
+            elif data.startswith("cancel_"):
+
+                post_id = data.replace(
+                    "cancel_",
+                    ""
+                )
+
+                restore_main_buttons(
+                    chat_id,
+                    message_id,
+                    post_id
+                )
 
                 answer_callback(
                     callback["id"],
-                    "❌ Publish failed."
+                    "Cancelled"
                 )
 
-        # ------------------------------------------
-        # BACK
-        # ------------------------------------------
+            # ------------------------------------------
+            # REJECT
+            # ------------------------------------------
 
-        elif data.startswith("cancel_"):
+            elif data.startswith("reject_"):
 
-            post_id = data.replace("cancel_", "")
+                post_id = data.replace(
+                    "reject_",
+                    ""
+                )
 
-            restore_main_buttons(
-                chat_id,
-                message_id,
-                post_id
-            )
+                remove_pending(post_id)
 
-            answer_callback(
-                callback["id"],
-                "Cancelled"
-            )
+                remove_by_id(post_id)
 
-        # ------------------------------------------
-        # REJECT
-        # ------------------------------------------
+                edit_buttons(
+                    chat_id,
+                    message_id,
+                    "❌ Rejected"
+                )
 
-        elif data.startswith("reject_"):
+                answer_callback(
+                    callback["id"],
+                    "Rejected"
+                )
 
-            post_id = data.replace("reject_", "")
+                print(
+                    f"Rejected: {post_id}"
+                )
 
-            remove_pending(post_id)
+            # ------------------------------------------
+            # EDIT
+            # ------------------------------------------
 
-            edit_buttons(
-                chat_id,
-                message_id,
-                "❌ Rejected"
-            )
+            elif data.startswith("edit_"):
 
-            answer_callback(
-                callback["id"],
-                "Rejected"
-            )
+                answer_callback(
+                    callback["id"],
+                    "✏️ Editing coming soon."
+                )
 
-        # ------------------------------------------
-        # EDIT
-        # ------------------------------------------
+            # ------------------------------------------
+            # REGENERATE
+            # ------------------------------------------
 
-        elif data.startswith("edit_"):
+            elif data.startswith("regen_"):
 
-            answer_callback(
-                callback["id"],
-                "✏️ Editing coming soon."
-            )
+                answer_callback(
+                    callback["id"],
+                    "🔄 Regeneration coming soon."
+                )
 
-        # ------------------------------------------
-        # REGENERATE
-        # ------------------------------------------
+            # ------------------------------------------
+            # UNKNOWN
+            # ------------------------------------------
 
-        elif data.startswith("regen_"):
+            else:
 
-            answer_callback(
-                callback["id"],
-                "🔄 Regeneration coming soon."
-            )
+                answer_callback(
+                    callback["id"],
+                    "Unknown action."
+                )
 
-        # ------------------------------------------
-        # UNKNOWN
-        # ------------------------------------------
+        except Exception as e:
 
-        else:
+            print("=" * 60)
+            print("UNHANDLED CALLBACK ERROR")
+            print(e)
+            print("=" * 60)
 
-            answer_callback(
-                callback["id"],
-                "Unknown action."
-            )
+            try:
+
+                answer_callback(
+                    callback["id"],
+                    "❌ Something went wrong."
+                )
+
+            except Exception:
+                pass
 
     time.sleep(1)
