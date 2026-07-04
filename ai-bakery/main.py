@@ -5,6 +5,7 @@ from scheduler import (
 )
 
 from image_generator import generate_image
+
 from rss_reader import (
     get_latest_news,
     score_articles
@@ -70,6 +71,12 @@ articles = score_articles(
 if not articles:
     raise Exception("No RSS articles found.")
 
+articles = sorted(
+    articles,
+    key=lambda x: x.get("score", 0),
+    reverse=True
+)
+
 articles = articles[:12]
 
 print("\nTop Articles\n")
@@ -77,9 +84,9 @@ print("\nTop Articles\n")
 for article in articles[:5]:
 
     print(
-        article["score"],
+        article.get("score", 0),
         "-",
-        article["title"]
+        article.get("title", "")
     )
 
 # --------------------------------------------------
@@ -87,7 +94,7 @@ for article in articles[:5]:
 # --------------------------------------------------
 
 highest_score = max(
-    article["score"]
+    article.get("score", 0)
     for article in articles
 )
 
@@ -107,7 +114,7 @@ print(f"Highest Score : {highest_score}")
 print(f"News Mode     : {news_mode}")
 
 # --------------------------------------------------
-# Build News Context
+# Build Gemini Context
 # --------------------------------------------------
 
 news_text = ""
@@ -117,7 +124,7 @@ for article in articles:
     news_text += f"""
 
 TITLE:
-{article['title']}
+{article.get('title','')}
 
 SUMMARY:
 {article.get('summary','')}
@@ -221,64 +228,104 @@ else:
     print("Skipped Daily Save")
 
 # --------------------------------------------------
-# Primary RSS Article Selection
+# Article Selection
 # --------------------------------------------------
 
-def choose_primary_article(articles):
+def article_has_image(article):
 
-    if not articles:
-        raise Exception("No RSS articles found.")
+    return bool(article.get("image"))
 
-    print("\nSelecting primary article...\n")
 
-    # Prefer articles with images.
-    # If multiple have images, use the highest scored one.
+def choose_hot_loaf_article(articles):
 
-    image_articles = [
-        article
-        for article in articles
-        if article.get("image")
+    print("\nSelecting Hot Loaf article...\n")
+
+    with_image = [
+        a for a in articles
+        if article_has_image(a)
     ]
 
-    if image_articles:
+    if with_image:
 
-        image_articles = sorted(
-            image_articles,
-            key=lambda x: x.get("score", 0),
-            reverse=True
+        article = max(
+            with_image,
+            key=lambda x: x.get("score", 0)
         )
 
-        selected = image_articles[0]
-
-        print("✓ Selected article WITH image")
+        print("✓ Hot Loaf uses RSS image")
 
     else:
 
-        selected = max(
+        article = max(
             articles,
             key=lambda x: x.get("score", 0)
         )
 
-        print("✓ No RSS image found.")
-        print("✓ Selected highest scored article.")
+        print("✓ Hot Loaf will use AI header")
 
-    print("=" * 60)
-    print("PRIMARY ARTICLE")
-    print("=" * 60)
-    print("Title :", selected.get("title", ""))
-    print("Score :", selected.get("score", 0))
-    print("Source:", selected.get("source", ""))
-    print("Image :", bool(selected.get("image")))
-    print("=" * 60)
-
-    return selected
+    return article
 
 
-real_article = choose_primary_article(articles)
+def choose_secondary_article(articles, exclude_id):
 
-source_title = real_article.get("title", "")
-source_url = real_article.get("link", "")
-rss_image = real_article.get("image", "")
+    remaining = [
+
+        a for a in articles
+
+        if a.get("link") != exclude_id
+
+    ]
+
+    if not remaining:
+
+        return choose_hot_loaf_article(articles)
+
+    return max(
+        remaining,
+        key=lambda x: x.get("score", 0)
+    )
+
+
+# --------------------------------------------------
+# Pick Articles
+# --------------------------------------------------
+
+hot_article = choose_hot_loaf_article(articles)
+
+secondary_article = choose_secondary_article(
+    articles,
+    hot_article.get("link")
+)
+
+print("=" * 60)
+print("HOT LOAF ARTICLE")
+print("=" * 60)
+print(hot_article.get("title"))
+print(hot_article.get("link"))
+print("=" * 60)
+
+print("=" * 60)
+print("SECONDARY ARTICLE")
+print("=" * 60)
+print(secondary_article.get("title"))
+print(secondary_article.get("link"))
+print("=" * 60)
+
+# --------------------------------------------------
+# Hot Loaf Sources
+# --------------------------------------------------
+
+source_title = hot_article.get("title", "")
+source_url = hot_article.get("link", "")
+rss_image = hot_article.get("image", "")
+
+# --------------------------------------------------
+# Secondary Sources
+# --------------------------------------------------
+
+secondary_title = secondary_article.get("title", "")
+secondary_url = secondary_article.get("link", "")
+secondary_image = secondary_article.get("image", "")
 
 # --------------------------------------------------
 # Telegram Message Builder
@@ -318,16 +365,13 @@ for bullet in tg.get("bullets", []):
     telegram_message += f"\n• {bullet}"
 
 telegram_message += "\n\n🧈 <b>Why It Matters</b>\n\n"
-telegram_message += tg.get("why","")
+telegram_message += tg.get("why", "")
 
 telegram_message += "\n\n📊 <b>Loaf Score</b>\n"
 
 if str(overall).isdigit():
-
     telegram_message += f"\n🍞 Overall: {overall}/100"
-
 else:
-
     telegram_message += f"\n🍞 Overall: {overall}"
 
 telegram_message += f"""
@@ -347,6 +391,8 @@ telegram_message += f"""
 📰 Source:
 {source_title}
 
+🔗 {source_url}
+
 🐱 @CatLoafCoin
 """
 
@@ -362,38 +408,21 @@ print("=" * 60)
 print("IMAGE SELECTION")
 print("=" * 60)
 
-# -----------------------------
-# Hot Loaf
-# -----------------------------
-
 if rss_image:
 
-    print("Using RSS article image.")
+    print("Using RSS image for Hot Loaf.")
     hot_loaf_image = rss_image
 
 else:
 
-    print("RSS has no image.")
-    print("Generating AI header...")
-
+    print("Generating AI Hot Loaf image.")
     hot_loaf_image = generate_image(header)
 
-# -----------------------------
-# AI Art
-# -----------------------------
-
 print("Generating AI artwork...")
-
 art_image = generate_image(art)
 
-# -----------------------------
-# X Images
-# -----------------------------
-
-x_news_image = hot_loaf_image
-
+x_news_image = secondary_image or hot_loaf_image
 x_funny_image = art_image
-
 x_education_image = hot_loaf_image
 
 # --------------------------------------------------
@@ -434,12 +463,12 @@ art_post = {
     "type": "art",
     "text": meme_message,
     "image": art_image,
-    "title": art.get("title",""),
-    "caption": art.get("caption",""),
-    "quote": meme.get("quote",""),
-    "cta": meme.get("cta",""),
-    "source_title": source_title,
-    "source_url": source_url
+    "title": art.get("title", ""),
+    "caption": art.get("caption", ""),
+    "quote": meme.get("quote", ""),
+    "cta": meme.get("cta", ""),
+    "source_title": "",
+    "source_url": ""
 }
 
 poll_post = {
@@ -449,13 +478,9 @@ poll_post = {
     "question": data["poll"]["question"],
     "options": data["poll"]["options"],
     "image": None,
-    "source_title": source_title,
-    "source_url": source_url
+    "source_title": "",
+    "source_url": ""
 }
-
-# --------------------------------------------------
-# X Posts
-# --------------------------------------------------
 
 posts = data.get("x_posts", [])
 
@@ -471,8 +496,8 @@ x_viral = {
     "type": "x_viral",
     "text": posts[0]["content"],
     "image": x_news_image,
-    "source_title": source_title,
-    "source_url": source_url
+    "source_title": secondary_title,
+    "source_url": secondary_url
 }
 
 x_funny = {
@@ -480,8 +505,8 @@ x_funny = {
     "type": "x_funny",
     "text": posts[1]["content"],
     "image": x_funny_image,
-    "source_title": source_title,
-    "source_url": source_url
+    "source_title": "",
+    "source_url": ""
 }
 
 x_educational = {
@@ -524,17 +549,19 @@ print("Audience :", best.get("audience", "Crypto Community"))
 # --------------------------------------------------
 
 history_entry = {
+
     "headline": headline,
+
+    "theme": news_mode,
+
     "source": source_title,
-    "url": source_url,
-    "news_mode": news_mode,
-    "art": art.get("title", ""),
-    "poll": data["poll"]["question"],
-    "x_posts": [
-        posts[0]["content"],
-        posts[1]["content"],
-        posts[2]["content"]
-    ]
+
+    "meme": meme.get("quote", "")[:50],
+
+    "poll": data["poll"]["question"][:50],
+
+    "cta": meme.get("cta", "")[:50]
+
 }
 
 history_lines = []
@@ -548,22 +575,33 @@ for line in history.splitlines():
         history_lines.append(line)
 
 history_lines.append(
+
     json.dumps(
+
         history_entry,
+
         ensure_ascii=False
+
     )
+
 )
 
 history_lines = history_lines[-10:]
 
 with open(
+
     "history.txt",
+
     "w",
+
     encoding="utf-8"
+
 ) as f:
 
     f.write(
+
         "\n".join(history_lines)
+
     )
 
 print("✓ History Updated")
@@ -576,35 +614,43 @@ print("\n" + "=" * 60)
 print("🍞 DAILY CONTENT SUMMARY")
 print("=" * 60)
 
-print(f"Headline      : {headline}")
-print(f"News Mode     : {news_mode}")
-print(f"Source        : {source_title}")
-print(f"RSS Image     : {'Yes' if rss_image else 'No'}")
-print(f"Hot Loaf Img  : {'RSS' if rss_image else 'AI'}")
-print(f"AI Art        : Generated")
-print(f"Posts Queued  : 6")
+print(f"Headline          : {headline}")
+print(f"News Mode         : {news_mode}")
+print(f"Primary Article   : {source_title}")
+print(f"Secondary Article : {secondary_title}")
+print(f"RSS Image         : {'Yes' if rss_image else 'No'}")
+print(f"Hot Loaf Image    : {'RSS' if rss_image else 'AI'}")
+print(f"Art Image         : {'Generated' if art_image else 'Missing'}")
+print(f"Posts Queued      : 6")
 
 print("=" * 60)
 
-print("Queued Posts")
-
 for item in [
+
     hot_loaf,
+
     art_post,
+
     poll_post,
+
     x_viral,
+
     x_funny,
+
     x_educational
+
 ]:
 
     print(
-        f" • {item['type']} -> {item['id']}"
+
+        f"{item['type']:15} -> {item['id']}"
+
     )
 
 print("=" * 60)
 
 # --------------------------------------------------
-# Send Approval Queue
+# Approval Queue
 # --------------------------------------------------
 
 print("\nStarting Approval Queue...\n")
