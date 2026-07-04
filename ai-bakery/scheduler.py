@@ -158,49 +158,92 @@ def should_post_now():
 
 def calculate_score(item):
 
-    score = 50
+    score = 0
 
     telegram = item.get("telegram", {})
 
-    text = (
-        telegram.get("opening", "")
-        + " "
-        + " ".join(telegram.get("bullets", []))
-        + " "
-        + telegram.get("why", "")
-        + " "
-        + telegram.get("question", "")
-    ).lower()
+    # --------------------------------------------------
+    # Telegram Quality
+    # --------------------------------------------------
 
-    keywords = [
-        "solana",
-        "jupiter",
-        "phantom",
-        "pump.fun",
-        "raydium",
-        "drift",
-        "sanctum",
-        "backpack",
-        "meme",
-        "airdrop",
-        "defi",
-        "token",
-        "launch",
-        "listing",
-        "partnership",
-        "volume",
-        "record",
-        "breaking"
-    ]
+    opening = telegram.get("opening", "")
+    bullets = telegram.get("bullets", [])
+    why = telegram.get("why", "")
+    hot_take = telegram.get("question", "")
 
-    for word in keywords:
-        if word in text:
-            score += 5
+    if opening:
+        score += 10
+
+    if len(bullets) == 3:
+        score += 15
+
+    if why:
+        score += 10
+
+    if hot_take:
+        score += 10
+
+    # --------------------------------------------------
+    # Images
+    # --------------------------------------------------
+
+    if item.get("art_image"):
+        score += 10
+
+    if telegram.get("header_image"):
+        score += 10
+
+    # --------------------------------------------------
+    # Engagement
+    # --------------------------------------------------
+
+    if item.get("poll"):
+        score += 10
 
     if item.get("meme"):
         score += 10
 
-    if item.get("poll"):
-        score += 10
+    x_posts = item.get("x_posts", [])
+
+    if len(x_posts) >= 3:
+        score += 15
+
+    # --------------------------------------------------
+    # News Relevance
+    # --------------------------------------------------
+
+    text = (
+        opening
+        + " "
+        + " ".join(bullets)
+        + " "
+        + why
+        + " "
+        + hot_take
+    ).lower()
+
+    important = [
+        "solana",
+        "pump.fun",
+        "raydium",
+        "jupiter",
+        "phantom",
+        "backpack",
+        "validator",
+        "builder",
+        "ecosystem",
+        "defi",
+        "launch",
+        "listing"
+    ]
+
+    score += min(
+        10,
+        sum(
+            1
+            for word in important
+            if word in text
+        )
+    )
 
     return min(score, 100)
