@@ -66,13 +66,41 @@ print("✓ Configuration Loaded")
 # Prompt Files
 # ==========================================================
 
+from datetime import datetime, timezone
+
 brand = load_text("brand.txt")
 
 prompt_template = load_text("prompt.txt")
 
 history = load_text("history.txt")
 
+utc_now = datetime.now(timezone.utc)
+
+CURRENT_TIME = {
+    "iso": utc_now.isoformat(),
+    "date": utc_now.strftime("%Y-%m-%d"),
+    "day": utc_now.strftime("%A"),
+    "month": utc_now.strftime("%B"),
+    "year": utc_now.strftime("%Y"),
+    "hour": utc_now.hour,
+    "minute": utc_now.minute,
+    "utc": utc_now.strftime("%H:%M UTC")
+}
+
+if CURRENT_TIME["hour"] < 5:
+    CURRENT_TIME["day_period"] = "late night"
+elif CURRENT_TIME["hour"] < 12:
+    CURRENT_TIME["day_period"] = "morning"
+elif CURRENT_TIME["hour"] < 17:
+    CURRENT_TIME["day_period"] = "afternoon"
+elif CURRENT_TIME["hour"] < 21:
+    CURRENT_TIME["day_period"] = "evening"
+else:
+    CURRENT_TIME["day_period"] = "night"
+
 print("✓ Prompt Files Loaded")
+print("Current Time:", CURRENT_TIME["utc"])
+print("Day Period :", CURRENT_TIME["day_period"])
 
 # ==========================================================
 # RSS
