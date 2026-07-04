@@ -3,7 +3,12 @@ import urllib.parse
 import time
 
 
-def generate_image(prompt, filename="art.png"):
+import uuid
+
+def generate_image(prompt, filename=None):
+
+    if filename is None:
+        filename = f"{uuid.uuid4().hex}.png"
 
     print("Generating AI artwork...")
 
