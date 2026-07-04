@@ -60,6 +60,9 @@ def publish_to_telegram(item):
 
     reply_markup = build_source_button(item)
 
+    # -----------------------------
+    # Telegram Poll
+    # -----------------------------
     if post_type == "what_if":
 
         send_poll(
@@ -69,7 +72,10 @@ def publish_to_telegram(item):
             item["options"]
         )
 
-        elif item.get("image"):
+    # -----------------------------
+    # Telegram Photo
+    # -----------------------------
+    elif item.get("image"):
 
         send_photo(
             BOT_TOKEN,
@@ -80,6 +86,9 @@ def publish_to_telegram(item):
             post_type
         )
 
+    # -----------------------------
+    # Telegram Text
+    # -----------------------------
     else:
 
         send_telegram(
