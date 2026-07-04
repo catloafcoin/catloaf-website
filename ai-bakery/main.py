@@ -81,15 +81,29 @@ for article in articles[:5]:
         article["title"]
     )
 
+# --------------------------------------------------
+# News Strength
+# --------------------------------------------------
+
 highest_score = max(
     article["score"]
     for article in articles
 )
 
-hot_news_found = highest_score >= 25
+if highest_score >= 25:
 
-print(f"\nHighest Score: {highest_score}")
-print(f"Hot News: {hot_news_found}")
+    news_mode = "breaking"
+
+elif highest_score >= 15:
+
+    news_mode = "trending"
+
+else:
+
+    news_mode = "fallback"
+
+print(f"\nHighest Score : {highest_score}")
+print(f"News Mode     : {news_mode}")
 
 # --------------------------------------------------
 # Build Gemini News Context
