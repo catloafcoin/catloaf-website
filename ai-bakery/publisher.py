@@ -75,7 +75,7 @@ def publish_to_telegram(item):
     # -----------------------------
     # Telegram Photo
     # -----------------------------
-    elif item.get("image"):
+    elif item.get("image") is not None:
 
         send_photo(
             BOT_TOKEN,
