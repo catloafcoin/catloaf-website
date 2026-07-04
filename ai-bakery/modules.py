@@ -1,63 +1,87 @@
+# ==========================================================
+# CatLoaf AI Bakery V3
+# modules.py
+# Utilities
+# ==========================================================
+
 import json
 import os
 import time
-import requests
 from html import escape
 
+import requests
+
 TELEGRAM_LIMIT = 4096
+MESSAGE_LIMIT = 3900
+
+REQUEST_TIMEOUT = 30
+PHOTO_TIMEOUT = 90
+
+MAX_RETRIES = 3
+
+USER_AGENT = {
+    "User-Agent": "Mozilla/5.0 CatLoaf AI Bakery"
+}
 
 
-# --------------------------------------------------
-# File Helpers
-# --------------------------------------------------
+# ==========================================================
+# FILE HELPERS
+# ==========================================================
 
 def load_text(path):
 
-    try:
-
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-
-    except FileNotFoundError:
-
+    if not os.path.exists(path):
         return ""
+
+    with open(path, "r", encoding="utf-8") as f:
+
+        return f.read()
 
 
 def save_text(path, text):
 
     with open(path, "w", encoding="utf-8") as f:
+
         f.write(text)
 
 
 def load_json(path):
 
+    if not os.path.exists(path):
+
+        return {}
+
     try:
 
         with open(path, "r", encoding="utf-8") as f:
+
             return json.load(f)
-
-    except FileNotFoundError:
-
-        return {}
 
     except json.JSONDecodeError as e:
 
         raise Exception(
-            f"Invalid JSON in {path}: {e}"
+            f"Invalid JSON in {path}\n{e}"
         )
 
+
+# ==========================================================
+# JSON VALIDATION
+# ==========================================================
 
 def validate_json(response):
 
     response = response.strip()
 
     if response.startswith("```json"):
+
         response = response[7:]
 
     if response.startswith("```"):
+
         response = response[3:]
 
     if response.endswith("```"):
+
         response = response[:-3]
 
     response = response.strip()
@@ -69,102 +93,142 @@ def validate_json(response):
     except Exception as e:
 
         raise Exception(
-            f"Invalid JSON from Gemini:\n{e}"
+            f"Gemini returned invalid JSON\n\n{e}"
         )
 
-    # --------------------------------------------------
-    # Required top-level objects
-    # --------------------------------------------------
+    # ------------------------------------------------------
+    # Required Objects
+    # ------------------------------------------------------
 
-    data.setdefault("telegram", {})
-    data.setdefault("art_image", {})
-    data.setdefault("meme", {})
-    data.setdefault("poll", {})
-    data.setdefault("x_posts", [])
-    data.setdefault("best_time", {})
+    defaults = {
 
-    # --------------------------------------------------
-    # Telegram defaults
-    # --------------------------------------------------
+        "telegram": {},
 
-    telegram = data["telegram"]
+        "art_image": {},
 
-    telegram.setdefault("persona", "CatLoaf")
-    telegram.setdefault("category", "Community")
-    telegram.setdefault("headline", "Today's Hot Loaf")
-    telegram.setdefault("opening", "")
-    telegram.setdefault("bullets", [])
-    telegram.setdefault("why", "")
-    telegram.setdefault("question", "")
-    telegram.setdefault("header_image", {})
-    telegram.setdefault("loaf_score", {})
+        "meme": {},
 
-    telegram["header_image"].setdefault(
+        "poll": {},
+
+        "x_posts": [],
+
+        "best_time": {}
+
+    }
+
+    for key, value in defaults.items():
+
+        data.setdefault(key, value)
+
+    tg = data["telegram"]
+
+    tg.setdefault("persona", "CatLoaf")
+
+    tg.setdefault("category", "Community")
+
+    tg.setdefault("headline", "Today's Hot Loaf")
+
+    tg.setdefault("opening", "")
+
+    tg.setdefault("bullets", [])
+
+    tg.setdefault("why", "")
+
+    tg.setdefault("question", "")
+
+    tg.setdefault("header_image", {})
+
+    tg.setdefault("loaf_score", {})
+
+    tg["header_image"].setdefault(
+
         "prompt",
+
         ""
+
     )
 
-    loaf = telegram["loaf_score"]
+    score = tg["loaf_score"]
 
-    loaf.setdefault("overall", 50)
-    loaf.setdefault("market_impact", "Medium")
-    loaf.setdefault("builder_interest", "Medium")
-    loaf.setdefault("urgency", "Medium")
+    score.setdefault("overall", 50)
 
-    # --------------------------------------------------
-    # Art defaults
-    # --------------------------------------------------
+    score.setdefault("market_impact", "Medium")
+
+    score.setdefault("builder_interest", "Medium")
+
+    score.setdefault("urgency", "Medium")
 
     art = data["art_image"]
 
     art.setdefault(
+
         "title",
+
         "CatLoaf Artwork"
+
     )
 
     art.setdefault(
+
         "caption",
+
         ""
+
     )
 
     art.setdefault(
-        "prompt",
-        "Cute CatLoaf digital illustration."
-    )
 
-    # --------------------------------------------------
-    # Meme defaults
-    # --------------------------------------------------
+        "prompt",
+
+        "Cute CatLoaf artwork."
+
+    )
 
     meme = data["meme"]
 
-    meme.setdefault("quote", "")
-    meme.setdefault("cta", "Stay loafy.")
+    meme.setdefault(
 
-    # --------------------------------------------------
-    # Poll defaults
-    # --------------------------------------------------
+        "quote",
+
+        ""
+
+    )
+
+    meme.setdefault(
+
+        "cta",
+
+        "Stay loafy."
+
+    )
 
     poll = data["poll"]
 
     poll.setdefault(
+
         "question",
+
         "What are we baking today?"
+
     )
 
     poll.setdefault(
-        "options",
-        [
-            "Builders",
-            "Memecoins",
-            "DeFi",
-            "Validators"
-        ]
-    )
 
-    # --------------------------------------------------
-    # X post defaults
-    # --------------------------------------------------
+        "options",
+
+        [
+
+            "Builders",
+
+            "Memecoins",
+
+            "DeFi",
+
+            "Validators"
+
+        ]
+
+    )
 
     while len(data["x_posts"]) < 3:
 
@@ -176,56 +240,83 @@ def validate_json(response):
 
         })
 
-    # --------------------------------------------------
-    # Best time defaults
-    # --------------------------------------------------
-
     best = data["best_time"]
 
     best.setdefault(
+
         "utc",
+
         "12:00 UTC"
+
     )
 
     best.setdefault(
+
         "reason",
-        "General engagement"
+
+        "Highest engagement"
+
     )
 
     best.setdefault(
+
         "audience",
+
         "Crypto Community"
+
     )
 
     return data
 
-
-# --------------------------------------------------
-# Telegram Helpers
-# --------------------------------------------------
+# ==========================================================
+# TELEGRAM HELPERS
+# ==========================================================
 
 def telegram_safe(text):
 
+    """
+    Escapes HTML while preserving
+    supported Telegram tags.
+    """
+
     safe = escape(str(text))
 
-    safe = (
-        safe
-        .replace("&lt;b&gt;", "<b>")
-        .replace("&lt;/b&gt;", "</b>")
-        .replace("&lt;i&gt;", "<i>")
-        .replace("&lt;/i&gt;", "</i>")
-        .replace("&lt;code&gt;", "<code>")
-        .replace("&lt;/code&gt;", "</code>")
-    )
+    replacements = {
+
+        "&lt;b&gt;": "<b>",
+        "&lt;/b&gt;": "</b>",
+
+        "&lt;i&gt;": "<i>",
+        "&lt;/i&gt;": "</i>",
+
+        "&lt;u&gt;": "<u>",
+        "&lt;/u&gt;": "</u>",
+
+        "&lt;code&gt;": "<code>",
+        "&lt;/code&gt;": "</code>",
+
+        "&lt;pre&gt;": "<pre>",
+        "&lt;/pre&gt;": "</pre>"
+
+    }
+
+    for old, new in replacements.items():
+
+        safe = safe.replace(old, new)
 
     return safe
 
 
-def split_message(text, limit=3900):
+# ==========================================================
+# MESSAGE SPLITTER
+# ==========================================================
+
+def split_message(text, limit=MESSAGE_LIMIT):
 
     text = str(text)
 
     if len(text) <= limit:
+
         return [text]
 
     chunks = []
@@ -233,48 +324,86 @@ def split_message(text, limit=3900):
     while len(text) > limit:
 
         split = text.rfind(
+
             "\n",
+
             0,
+
             limit
+
         )
 
         if split == -1:
+
+            split = text.rfind(
+
+                " ",
+
+                0,
+
+                limit
+
+            )
+
+        if split == -1:
+
             split = limit
 
         chunks.append(
+
             text[:split]
+
         )
 
         text = text[split:].lstrip()
 
-    chunks.append(text)
+    if text:
+
+        chunks.append(text)
 
     return chunks
 
-# --------------------------------------------------
-# Buttons
-# --------------------------------------------------
+
+# ==========================================================
+# BUTTON HELPERS
+# ==========================================================
 
 def default_reply_markup(msg_type):
 
     if msg_type not in [
+
         "hot_loaf",
+
         "art",
+
         "cloaf"
+
     ]:
+
         return []
 
     return [
+
         [
+
             {
+
                 "text": "🐦 Follow X",
+
                 "url": "https://x.com/CatLoafCoin"
+
             },
+
             {
+
                 "text": "📢 Telegram",
+
                 "url": "https://t.me/CatLoafCoin"
+
             }
+
         ]
+
     ]
 
 
@@ -289,27 +418,64 @@ def merge_reply_markup(reply_markup, msg_type):
             custom = json.loads(reply_markup)
 
             rows.extend(
+
                 custom.get(
+
                     "inline_keyboard",
+
                     []
+
                 )
+
             )
 
         except Exception as e:
 
-            print("Button merge failed:", e)
+            print("=" * 60)
+            print("BUTTON MERGE ERROR")
+            print(e)
+            print("=" * 60)
 
     if not rows:
+
         return None
 
     return json.dumps({
+
         "inline_keyboard": rows
+
     })
 
 
-# --------------------------------------------------
-# Telegram Text
-# --------------------------------------------------
+# ==========================================================
+# TELEGRAM REQUEST LOGGER
+# ==========================================================
+
+def log_request(title, payload):
+
+    print("=" * 60)
+
+    print(title)
+
+    print("=" * 60)
+
+    for key, value in payload.items():
+
+        if key == "text":
+
+            preview = str(value)[:250]
+
+            print(f"{key}: {preview}")
+
+        else:
+
+            print(f"{key}: {value}")
+
+    print("=" * 60)
+
+# ==========================================================
+# TELEGRAM MESSAGE SENDER
+# ==========================================================
 
 def send_telegram(
     token,
@@ -319,71 +485,114 @@ def send_telegram(
     reply_markup=None
 ):
 
+    if not text:
+
+        print("⚠ Empty Telegram message.")
+
+        return False
+
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
-    merged_markup = merge_reply_markup(
+    keyboard = merge_reply_markup(
         reply_markup,
         msg_type
     )
 
     parts = split_message(text)
 
+    total = len(parts)
+
     for index, part in enumerate(parts):
+
+        payload = {
+
+            "chat_id": chat_id,
+
+            "text": telegram_safe(part),
+
+            "parse_mode": "HTML",
+
+            "disable_web_page_preview": True
+
+        }
+
+        # Only attach buttons to final chunk
+
+        if keyboard and index == total - 1:
+
+            payload["reply_markup"] = keyboard
 
         success = False
 
-        for attempt in range(3):
-
-            payload = {
-                "chat_id": chat_id,
-                "text": telegram_safe(part),
-                "parse_mode": "HTML",
-                "disable_web_page_preview": True
-            }
-
-            # Buttons only on final chunk
-            if (
-                merged_markup
-                and index == len(parts) - 1
-            ):
-                payload["reply_markup"] = merged_markup
+        for attempt in range(1, MAX_RETRIES + 1):
 
             try:
 
-                response = requests.post(
-                    url,
-                    data=payload,
-                    timeout=30
+                log_request(
+
+                    f"TELEGRAM MESSAGE ({attempt}/{MAX_RETRIES})",
+
+                    payload
+
                 )
 
-                print("=" * 60)
-                print("SEND MESSAGE")
-                print("Attempt :", attempt + 1)
-                print("Chat ID :", chat_id)
-                print("Type    :", msg_type)
-                print("Status  :", response.status_code)
-                print(response.text)
-                print("=" * 60)
+                response = requests.post(
+
+                    url,
+
+                    data=payload,
+
+                    timeout=REQUEST_TIMEOUT
+
+                )
+
+                print(
+
+                    "Status:",
+
+                    response.status_code
+
+                )
 
                 if response.status_code == 200:
+
                     success = True
+
                     break
+
+                print(response.text)
 
             except Exception as e:
 
-                print("Telegram Error:", e)
+                print(
+
+                    "Telegram Error:",
+
+                    e
+
+                )
 
             time.sleep(2)
 
         if not success:
 
-            print("⚠ Telegram message failed after 3 attempts.")
+            print("=" * 60)
+            print("FAILED TO SEND MESSAGE")
+            print("=" * 60)
 
-        time.sleep(1)
+            return False
 
-# --------------------------------------------------
-# Photo Sender
-# --------------------------------------------------
+        time.sleep(0.5)
+
+    print("=" * 60)
+    print("✓ TELEGRAM MESSAGE SENT")
+    print("=" * 60)
+
+    return True
+
+# ==========================================================
+# PHOTO SENDER
+# ==========================================================
 
 def send_photo(
     token,
@@ -396,9 +605,9 @@ def send_photo(
 
     if not photo_path:
 
-        print("⚠ No image supplied. Sending text instead.")
+        print("⚠ No image supplied.")
 
-        send_telegram(
+        return send_telegram(
             token,
             chat_id,
             caption,
@@ -406,21 +615,19 @@ def send_photo(
             reply_markup
         )
 
-        return
-
-    url = f"https://api.telegram.org/bot{token}/sendPhoto"
-
-    merged_markup = merge_reply_markup(
+    keyboard = merge_reply_markup(
         reply_markup,
         msg_type
     )
 
+    url = f"https://api.telegram.org/bot{token}/sendPhoto"
+
     caption_text = caption
-    followup_text = None
+    followup = None
 
     if len(caption_text) > 1000:
 
-        followup_text = caption_text
+        followup = caption_text
 
         caption_text = (
             "🍞 <b>Preview</b>\n\n"
@@ -428,52 +635,60 @@ def send_photo(
         )
 
     payload = {
+
         "chat_id": chat_id,
+
         "caption": telegram_safe(caption_text),
+
         "parse_mode": "HTML"
+
     }
 
-    if merged_markup:
-        payload["reply_markup"] = merged_markup
+    if keyboard:
+
+        payload["reply_markup"] = keyboard
+
+    temp_file = None
 
     success = False
-    local_image = None
 
-    for attempt in range(3):
+    for attempt in range(1, MAX_RETRIES + 1):
 
         try:
 
             print("=" * 60)
-            print("PHOTO SEND")
-            print("Attempt :", attempt + 1)
-            print("Image   :", photo_path)
+            print("PHOTO UPLOAD")
             print("=" * 60)
+            print("Attempt :", attempt)
+            print("Image   :", photo_path)
 
-            # -----------------------------------
-            # RSS Image URL
-            # -----------------------------------
+            # ----------------------------------------
+            # Remote Image
+            # ----------------------------------------
 
             if (
                 isinstance(photo_path, str)
-                and (
-                    photo_path.startswith("http://")
-                    or photo_path.startswith("https://")
-                )
+                and photo_path.startswith("http")
             ):
 
-                local_image = download_image(photo_path)
+                temp_file = download_image(photo_path)
 
-                if local_image:
+                if temp_file:
 
-                    with open(local_image, "rb") as photo:
+                    with open(temp_file, "rb") as photo:
 
                         response = requests.post(
+
                             url,
+
                             data=payload,
+
                             files={
                                 "photo": photo
                             },
-                            timeout=90
+
+                            timeout=120
+
                         )
 
                 else:
@@ -481,85 +696,125 @@ def send_photo(
                     payload["photo"] = photo_path
 
                     response = requests.post(
+
                         url,
+
                         data=payload,
-                        timeout=90
+
+                        timeout=120
+
                     )
 
-            # -----------------------------------
-            # Local AI Image
-            # -----------------------------------
+            # ----------------------------------------
+            # Local Image
+            # ----------------------------------------
 
             else:
 
                 with open(photo_path, "rb") as photo:
 
                     response = requests.post(
+
                         url,
+
                         data=payload,
+
                         files={
                             "photo": photo
                         },
-                        timeout=90
+
+                        timeout=120
+
                     )
 
-            print("=" * 60)
-            print("PHOTO RESPONSE")
             print("Status :", response.status_code)
+
             print(response.text)
-            print("=" * 60)
 
             if response.status_code == 200:
 
-                if local_image:
-
-                    import os
-
-                    try:
-
-                        if os.path.exists(local_image):
-                            os.remove(local_image)
-
-                    except Exception:
-                        pass
-
                 success = True
+
                 break
 
         except Exception as e:
 
-            print("Photo Error:", e)
+            print("Photo upload failed:")
+
+            print(e)
 
         time.sleep(3)
 
+    # ----------------------------------------
+    # Cleanup
+    # ----------------------------------------
+
+    if temp_file:
+
+        try:
+
+            if os.path.exists(temp_file):
+
+                os.remove(temp_file)
+
+        except Exception:
+
+            pass
+
+    # ----------------------------------------
+    # Fallback
+    # ----------------------------------------
+
     if not success:
 
-        print("⚠ Photo upload failed.")
-        print("Sending text instead...")
+        print("=" * 60)
+        print("PHOTO FAILED")
+        print("Sending text instead.")
+        print("=" * 60)
 
-        send_telegram(
+        return send_telegram(
+
             token,
+
             chat_id,
+
             caption,
+
             msg_type,
+
             reply_markup
+
         )
 
-        return
+    # ----------------------------------------
+    # Long caption follow-up
+    # ----------------------------------------
 
-    if followup_text:
+    if followup:
 
         send_telegram(
+
             token,
+
             chat_id,
-            followup_text,
+
+            followup,
+
             msg_type,
+
             reply_markup
+
         )
 
-# --------------------------------------------------
-# Poll Sender
-# --------------------------------------------------
+    print("=" * 60)
+    print("✓ PHOTO SENT")
+    print("=" * 60)
+
+    return True
+
+# ==========================================================
+# POLL SENDER
+# ==========================================================
 
 def send_poll(
     token,
@@ -571,50 +826,65 @@ def send_poll(
 
     if not question:
 
-        print("⚠ Empty poll question.")
-        return
+        print("⚠ Poll question missing.")
+
+        return False
 
     if not options or len(options) < 2:
 
-        print("⚠ Invalid poll options.")
-        return
+        print("⚠ Poll requires at least two options.")
+
+        return False
 
     url = f"https://api.telegram.org/bot{token}/sendPoll"
 
     payload = {
+
         "chat_id": chat_id,
+
         "question": question[:300],
+
         "options": json.dumps(options),
+
         "is_anonymous": False,
+
         "allows_multiple_answers": False
+
     }
 
-    for attempt in range(3):
+    for attempt in range(1, MAX_RETRIES + 1):
 
         try:
 
-            print("=" * 60)
-            print("SENDING POLL")
-            print("Attempt :", attempt + 1)
-            print("Question:", question)
-            print("Options :", options)
-            print("=" * 60)
+            log_request(
 
-            response = requests.post(
-                url,
-                data=payload,
-                timeout=30
+                f"POLL ({attempt}/{MAX_RETRIES})",
+
+                payload
+
             )
 
-            print("=" * 60)
-            print("POLL RESPONSE")
-            print("Status :", response.status_code)
-            print(response.text)
-            print("=" * 60)
+            response = requests.post(
+
+                url,
+
+                data=payload,
+
+                timeout=REQUEST_TIMEOUT
+
+            )
+
+            print("Status:", response.status_code)
 
             if response.status_code == 200:
 
+                print("=" * 60)
+                print("✓ POLL SENT")
+                print("=" * 60)
+
                 return True
+
+            print(response.text)
 
         except Exception as e:
 
@@ -622,17 +892,23 @@ def send_poll(
 
         time.sleep(2)
 
-    print("⚠ Poll failed after 3 attempts.")
+    print("=" * 60)
+    print("⚠ POLL FAILED")
+    print("=" * 60)
 
     send_telegram(
+
         token,
+
         chat_id,
+
         f"<b>Poll could not be published.</b>\n\n{question}",
+
         "poll"
+
     )
 
     return False
-
 
 # --------------------------------------------------
 # RSS Image Downloader
@@ -640,55 +916,96 @@ def send_poll(
 
 def download_image(url):
 
-    try:
+    if not url:
+        return None
 
-        print("=" * 60)
-        print("DOWNLOADING RSS IMAGE")
-        print(url)
-        print("=" * 60)
+    print("=" * 60)
+    print("DOWNLOADING RSS IMAGE")
+    print(url)
+    print("=" * 60)
 
-        response = requests.get(
-            url,
-            timeout=60,
-            headers={
-                "User-Agent": "Mozilla/5.0"
-            }
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 "
+            "(Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 "
+            "Chrome/131 Safari/537.36"
         )
+    }
 
-        if response.status_code != 200:
+    for attempt in range(1, 4):
 
-            print(
-                "Download failed:",
-                response.status_code
+        try:
+
+            response = requests.get(
+                url,
+                headers=headers,
+                timeout=90,
+                stream=True
             )
 
-            return None
+            if response.status_code != 200:
 
-        extension = ".jpg"
+                print(
+                    f"Attempt {attempt}:",
+                    response.status_code
+                )
 
-        content_type = response.headers.get(
-            "Content-Type",
-            ""
-        ).lower()
+                time.sleep(3)
 
-        if "png" in content_type:
-            extension = ".png"
+                continue
 
-        filename = (
-            f"rss_{int(time.time())}"
-            f"{extension}"
-        )
+            content_type = response.headers.get(
+                "Content-Type",
+                ""
+            ).lower()
 
-        with open(filename, "wb") as f:
+            extension = ".jpg"
 
-            f.write(response.content)
+            if "png" in content_type:
+                extension = ".png"
 
-        print("✓ RSS image downloaded")
+            elif "webp" in content_type:
+                extension = ".webp"
 
-        return filename
+            filename = (
+                f"rss_{int(time.time())}"
+                f"{extension}"
+            )
 
-    except Exception as e:
+            with open(filename, "wb") as f:
 
-        print("RSS download failed:", e)
+                for chunk in response.iter_content(8192):
 
-        return None
+                    if chunk:
+
+                        f.write(chunk)
+
+            if os.path.getsize(filename) < 5000:
+
+                print("Downloaded image too small.")
+
+                os.remove(filename)
+
+                time.sleep(3)
+
+                continue
+
+            print("✓ RSS image downloaded")
+            print(filename)
+
+            return filename
+
+        except Exception as e:
+
+            print(
+                f"Attempt {attempt} failed:"
+            )
+
+            print(e)
+
+            time.sleep(3)
+
+    print("⚠ RSS image download failed.")
+
+    return None
