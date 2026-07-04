@@ -183,11 +183,17 @@ SUMMARY:
 SOURCE:
 {article.get("source","")}
 
+PUBLISHED:
+{article.get("published","Unknown")}
+
+AGE:
+{article.get("age_days","?")} day(s) old
+
 URL:
 {article.get("link","")}
 """
 
-    )
+)
 
 news_text = "\n".join(news_sections)
 
@@ -215,6 +221,15 @@ EDITORIAL RULES
 - If recent history already used a greeting, begin differently.
 - Avoid saying "today" for older news.
 - If an article is not from today, mention it naturally without pretending it just happened.
+
+ARTICLE AGE RULES
+
+- Use the AGE field to determine freshness.
+- AGE 0 means the story happened today.
+- AGE 1 means it happened yesterday.
+- AGE 2 or more means refer to it as recent, earlier this week, or this month.
+- Never describe AGE 2+ articles as today's news.
+- Prioritize the newest high-scoring stories.
 """
 
 prompt = f"""
