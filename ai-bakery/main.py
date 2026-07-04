@@ -48,7 +48,7 @@ if not API_KEYS[0]:
 print("✓ Configuration Loaded")
 
 # --------------------------------------------------
-# Load Prompt Files
+# Prompt Files
 # --------------------------------------------------
 
 brand = load_text("brand.txt")
@@ -58,7 +58,7 @@ history = load_text("history.txt")
 print("✓ Prompt Loaded")
 
 # --------------------------------------------------
-# RSS News
+# RSS
 # --------------------------------------------------
 
 print("Fetching RSS...")
@@ -78,11 +78,12 @@ for article in articles[:5]:
 
     print(
         article["score"],
+        "-",
         article["title"]
     )
 
 # --------------------------------------------------
-# News Strength
+# News Mode
 # --------------------------------------------------
 
 highest_score = max(
@@ -102,11 +103,11 @@ else:
 
     news_mode = "fallback"
 
-print(f"\nHighest Score : {highest_score}")
+print(f"Highest Score : {highest_score}")
 print(f"News Mode     : {news_mode}")
 
 # --------------------------------------------------
-# Build Gemini News Context
+# Build News Context
 # --------------------------------------------------
 
 news_text = ""
@@ -116,16 +117,16 @@ for article in articles:
     news_text += f"""
 
 TITLE:
-{article["title"]}
+{article['title']}
 
 SUMMARY:
-{article.get("summary","")}
+{article.get('summary','')}
 
 SOURCE:
-{article.get("source","")}
+{article.get('source','')}
 
 URL:
-{article.get("link","")}
+{article.get('link','')}
 """
 
 prompt = f"""
@@ -220,23 +221,19 @@ else:
     print("Skipped Daily Save")
 
 # --------------------------------------------------
-# REAL ARTICLE
+# Primary RSS Article
 # --------------------------------------------------
 
 real_article = articles[0]
 
-real_title = real_article.get("title", "")
-
-real_url = real_article.get("link", "")
-
-real_image = real_article.get("image", "")
-
-real_source = real_article.get("source", "")
+source_title = real_article.get("title", "")
+source_url = real_article.get("link", "")
+rss_image = real_article.get("image", "")
 
 print("\nPrimary Article")
-print(real_title)
-print(real_url)
-print(real_image)
+print(source_title)
+print(source_url)
+print(rss_image)
 
 # --------------------------------------------------
 # Telegram Message Builder
@@ -251,17 +248,6 @@ tg = data["telegram"]
 persona = tg.get("persona", "CatLoaf")
 category = tg.get("category", "Community")
 headline = tg.get("headline", "TODAY'S HOT LOAF")
-
-# --------------------------------------------------
-# Always use REAL RSS source
-# --------------------------------------------------
-
-source_title = real_title
-source_url = real_url
-
-# --------------------------------------------------
-# Loaf Score
-# --------------------------------------------------
 
 loaf_score = tg.get("loaf_score", {})
 
@@ -287,7 +273,6 @@ for bullet in tg.get("bullets", []):
     telegram_message += f"\n• {bullet}"
 
 telegram_message += "\n\n🧈 <b>Why It Matters</b>\n\n"
-
 telegram_message += tg.get("why","")
 
 telegram_message += "\n\n📊 <b>Loaf Score</b>\n"
@@ -326,31 +311,49 @@ telegram_message += f"""
 
 meme = data["meme"]
 art = data["art_image"]
-
 header = tg.get("header_image", {})
 
 print("=" * 60)
-print("HEADER")
-print(header)
+print("IMAGE SELECTION")
 print("=" * 60)
 
-# Prefer REAL article image
+# -----------------------------
+# Hot Loaf
+# -----------------------------
 
-header_image = real_image
+if rss_image:
 
-if not header_image:
-
-    print("Generating AI Header...")
-
-    header_image = generate_image(header)
+    print("Using RSS article image.")
+    hot_loaf_image = rss_image
 
 else:
 
-    print("Using RSS Article Image")
+    print("RSS has no image.")
+    print("Generating AI header...")
 
-print("Generating Art...")
+    hot_loaf_image = generate_image(header)
+
+# -----------------------------
+# AI Art
+# -----------------------------
+
+print("Generating AI artwork...")
 
 art_image = generate_image(art)
+
+# -----------------------------
+# X Images
+# -----------------------------
+
+x_news_image = hot_loaf_image
+
+x_funny_image = art_image
+
+x_education_image = hot_loaf_image
+
+# --------------------------------------------------
+# Art Message
+# --------------------------------------------------
 
 meme_message = f"""
 🎨 <b>$CLOAF ART FOR YOU ❤️</b>
@@ -374,7 +377,7 @@ hot_loaf = {
     "id": f"hot_loaf_{RUN_ID}",
     "type": "hot_loaf",
     "text": telegram_message,
-    "image": header_image,
+    "image": hot_loaf_image,
     "source_title": source_title,
     "source_url": source_url,
     "persona": persona,
@@ -414,33 +417,33 @@ posts = data.get("x_posts", [])
 while len(posts) < 3:
 
     posts.append({
-        "type":"fallback",
-        "content":"🍞 Stay loafy with $CLOAF!"
+        "type": "fallback",
+        "content": "🍞 Stay loafy with $CLOAF!"
     })
 
 x_viral = {
     "id": f"x_viral_{RUN_ID}",
-    "type":"x_viral",
+    "type": "x_viral",
     "text": posts[0]["content"],
-    "image": header_image,
+    "image": x_news_image,
     "source_title": source_title,
     "source_url": source_url
 }
 
 x_funny = {
     "id": f"x_funny_{RUN_ID}",
-    "type":"x_funny",
+    "type": "x_funny",
     "text": posts[1]["content"],
-    "image": header_image,
+    "image": x_funny_image,
     "source_title": source_title,
     "source_url": source_url
 }
 
 x_educational = {
     "id": f"x_educational_{RUN_ID}",
-    "type":"x_educational",
+    "type": "x_educational",
     "text": posts[2]["content"],
-    "image": header_image,
+    "image": x_education_image,
     "source_title": source_title,
     "source_url": source_url
 }
@@ -459,58 +462,54 @@ add_to_queue(x_educational)
 print("✓ Queue Updated")
 
 # --------------------------------------------------
-# BEST TIME
+# Best Time
 # --------------------------------------------------
 
 best = data.get("best_time", {})
 
-best_message = f"""
-🕒 <b>BEST TIME TO POST</b>
-
-{divider()}
-
-⏰ {best.get("utc", "Anytime")}
-
-🌍 {best.get("reason", "No recommendation available.")}
-
-🎯 {best.get("audience", "Crypto Community")}
-"""
-
-print(best_message)
+print("\n" + "=" * 60)
+print("BEST TIME TO POST")
+print("=" * 60)
+print("UTC      :", best.get("utc", "Anytime"))
+print("Reason   :", best.get("reason", "No recommendation"))
+print("Audience :", best.get("audience", "Crypto Community"))
 
 # --------------------------------------------------
-# Compact History
+# History
 # --------------------------------------------------
 
 history_entry = {
     "headline": headline,
     "source": source_title,
     "url": source_url,
+    "news_mode": news_mode,
     "art": art.get("title", ""),
     "poll": data["poll"]["question"],
     "x_posts": [
-        p.get("content", "")
-        for p in posts[:3]
+        posts[0]["content"],
+        posts[1]["content"],
+        posts[2]["content"]
     ]
 }
 
-entries = []
+history_lines = []
 
 for line in history.splitlines():
 
     line = line.strip()
 
     if line:
-        entries.append(line)
 
-entries.append(
+        history_lines.append(line)
+
+history_lines.append(
     json.dumps(
         history_entry,
         ensure_ascii=False
     )
 )
 
-entries = entries[-10:]
+history_lines = history_lines[-10:]
 
 with open(
     "history.txt",
@@ -519,7 +518,7 @@ with open(
 ) as f:
 
     f.write(
-        "\n".join(entries)
+        "\n".join(history_lines)
     )
 
 print("✓ History Updated")
@@ -528,15 +527,34 @@ print("✓ History Updated")
 # Summary
 # --------------------------------------------------
 
-print("=" * 60)
-print("Daily Content Summary")
+print("\n" + "=" * 60)
+print("🍞 DAILY CONTENT SUMMARY")
 print("=" * 60)
 
-print("Headline :", headline)
-print("Source   :", source_title)
-print("URL      :", source_url)
-print("Image    :", "RSS" if real_image else "AI Generated")
-print("Queued   : 6 posts")
+print(f"Headline      : {headline}")
+print(f"News Mode     : {news_mode}")
+print(f"Source        : {source_title}")
+print(f"RSS Image     : {'Yes' if rss_image else 'No'}")
+print(f"Hot Loaf Img  : {'RSS' if rss_image else 'AI'}")
+print(f"AI Art        : Generated")
+print(f"Posts Queued  : 6")
+
+print("=" * 60)
+
+print("Queued Posts")
+
+for item in [
+    hot_loaf,
+    art_post,
+    poll_post,
+    x_viral,
+    x_funny,
+    x_educational
+]:
+
+    print(
+        f" • {item['type']} -> {item['id']}"
+    )
 
 print("=" * 60)
 
@@ -544,11 +562,20 @@ print("=" * 60)
 # Send Approval Queue
 # --------------------------------------------------
 
-print("Starting approval queue...")
+print("\nStarting Approval Queue...\n")
 
-process_queue()
+try:
 
-print("Approval queue finished.")
+    process_queue()
+
+    print("\n✓ Approval Queue Finished")
+
+except Exception as e:
+
+    print("=" * 60)
+    print("APPROVAL ERROR")
+    print(e)
+    print("=" * 60)
 
 print("=" * 60)
 print("🍞 CatLoaf AI Bakery Complete")
