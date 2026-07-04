@@ -107,6 +107,8 @@ def process_queue():
 
         print("=" * 60)
         print(f"Preparing approval: {post_id}")
+        print("Type :", item.get("type"))
+        print("Image:", item.get("image"))
         print("=" * 60)
 
         reply_markup = approval_keyboard(
@@ -120,7 +122,7 @@ def process_queue():
         try:
 
             # ------------------------------------
-            # Poll Approval (Preview, NOT live poll)
+            # Poll Preview
             # ------------------------------------
             if post_type == "what_if":
 
@@ -133,9 +135,9 @@ def process_queue():
                 )
 
             # ------------------------------------
-            # Image Approval
+            # Any Image (Local OR RSS URL)
             # ------------------------------------
-            elif image and os.path.exists(image):
+            elif image:
 
                 send_photo(
                     TELEGRAM_BOT_TOKEN,
@@ -147,7 +149,7 @@ def process_queue():
                 )
 
             # ------------------------------------
-            # Text Approval
+            # Text Post
             # ------------------------------------
             else:
 
@@ -168,13 +170,13 @@ def process_queue():
             print("=" * 60)
             print("Approval Send Error")
             print("Post:", post_id)
+            print("Type:", post_type)
             print(e)
             print("=" * 60)
 
     print("=" * 60)
     print("✓ Finished sending approval queue.")
     print("=" * 60)
-
 
 if __name__ == "__main__":
 
