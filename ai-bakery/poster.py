@@ -137,7 +137,7 @@ def process_queue():
             # ------------------------------------
             # Any Image (Local OR RSS URL)
             # ------------------------------------
-            elif image:
+            elif image is not None:
 
                 print("=" * 60)
                 print("Sending image approval")
@@ -174,7 +174,6 @@ def process_queue():
             mark_pending(post_id)
 
             print(f"✓ Approval sent: {post_id}")
-
         except Exception as e:
 
             print("=" * 60)
