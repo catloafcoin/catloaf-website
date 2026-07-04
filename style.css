@@ -1600,3 +1600,275 @@ color:#ff6b6b;
 color:var(--primary);
 
 }
+
+/* ==========================================================
+   AI Bakery Scanner
+========================================================== */
+
+#scanner-container{
+
+    margin-top:30px;
+
+    display:grid;
+
+    gap:24px;
+
+}
+
+.scanner-loading{
+
+    text-align:center;
+
+    padding:60px 20px;
+
+}
+
+.loading-loaf{
+
+    font-size:3rem;
+
+    animation:loafBounce 2s infinite;
+
+}
+
+@keyframes loafBounce{
+
+    0%,100%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-10px);
+
+    }
+
+}
+
+.coin-card{
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:22px;
+
+    padding:24px;
+
+    transition:.3s;
+
+}
+
+.coin-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:rgba(255,179,71,.45);
+
+    box-shadow:0 20px 50px rgba(255,179,71,.12);
+
+}
+
+.coin-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    margin-bottom:20px;
+
+}
+
+.coin-logo{
+
+    width:64px;
+
+    height:64px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+.coin-name{
+
+    font-size:1.3rem;
+
+    font-weight:700;
+
+}
+
+.coin-symbol{
+
+    color:var(--muted);
+
+}
+
+.coin-rank{
+
+    float:right;
+
+    color:var(--primary);
+
+    font-weight:bold;
+
+}
+
+.coin-price{
+
+    font-size:2rem;
+
+    font-weight:bold;
+
+    color:var(--green);
+
+    margin:18px 0 10px;
+
+}
+
+.coin-change{
+
+    color:var(--green);
+
+    margin-bottom:20px;
+
+}
+
+.coin-stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:14px;
+
+    margin:25px 0;
+
+}
+
+.stat{
+
+    background:rgba(255,255,255,.04);
+
+    border-radius:14px;
+
+    padding:14px;
+
+    text-align:center;
+
+}
+
+.stat small{
+
+    display:block;
+
+    color:var(--muted);
+
+    margin-bottom:6px;
+
+}
+
+.loaf-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:20px;
+
+    margin-bottom:10px;
+
+}
+
+.loaf-bar{
+
+    height:10px;
+
+    border-radius:999px;
+
+    background:#252a33;
+
+    overflow:hidden;
+
+}
+
+.loaf-fill{
+
+    height:100%;
+
+    border-radius:999px;
+
+    background:linear-gradient(
+        90deg,
+        #ffb347,
+        #ff8c42
+    );
+
+    transition:width .6s;
+
+}
+
+.sparkline{
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:4px;
+
+    height:70px;
+
+    margin-top:22px;
+
+}
+
+.spark{
+
+    flex:1;
+
+    background:linear-gradient(
+        to top,
+        #ff8c42,
+        #ffb347
+    );
+
+    border-radius:6px;
+
+}
+
+.coin-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:24px;
+
+}
+
+.view-btn{
+
+    background:rgba(255,179,71,.12);
+
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    transition:.3s;
+
+}
+
+.view-btn:hover{
+
+    background:var(--primary);
+
+    color:#111;
+
+}
