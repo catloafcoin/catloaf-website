@@ -8,8 +8,7 @@ from scheduler import (
 
 from modules import (
     send_telegram,
-    send_photo,
-    send_poll
+    send_photo
 )
 
 import os
@@ -18,6 +17,10 @@ import json
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
+
+# --------------------------------------------------
+# Approval Keyboard
+# --------------------------------------------------
 
 def approval_keyboard(post_id, item):
 
@@ -58,6 +61,23 @@ def approval_keyboard(post_id, item):
     })
 
 
+# --------------------------------------------------
+# Poll Preview
+# --------------------------------------------------
+
+def build_poll_preview(item):
+
+    text = "📊 <b>POLL APPROVAL</b>\n\n"
+
+    text += f"<b>Question</b>\n{item['question']}\n\n"
+
+    text += "<b>Options</b>\n"
+
+    for option in item["options"]:
+        text += f"• {option}\n"
+
+    return text
+
 def process_queue():
 
     if not should_post_now():
@@ -85,7 +105,9 @@ def process_queue():
             print(f"Skipping pending: {post_id}")
             continue
 
+        print("=" * 60)
         print(f"Preparing approval: {post_id}")
+        print("=" * 60)
 
         reply_markup = approval_keyboard(
             post_id,
@@ -93,26 +115,26 @@ def process_queue():
         )
 
         post_type = item.get("type")
-
         image = item.get("image")
 
         try:
 
-            # -----------------------------
-            # Poll Approval
-            # -----------------------------
+            # ------------------------------------
+            # Poll Approval (Preview, NOT live poll)
+            # ------------------------------------
             if post_type == "what_if":
 
-                send_poll(
+                send_telegram(
                     TELEGRAM_BOT_TOKEN,
                     TELEGRAM_CHAT_ID,
-                    item["question"],
-                    item["options"]
+                    build_poll_preview(item),
+                    "poll",
+                    reply_markup
                 )
 
-            # -----------------------------
-            # Photo Approval
-            # -----------------------------
+            # ------------------------------------
+            # Image Approval
+            # ------------------------------------
             elif image and os.path.exists(image):
 
                 send_photo(
@@ -124,9 +146,9 @@ def process_queue():
                     post_type
                 )
 
-            # -----------------------------
+            # ------------------------------------
             # Text Approval
-            # -----------------------------
+            # ------------------------------------
             else:
 
                 send_telegram(
