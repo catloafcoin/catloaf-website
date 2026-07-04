@@ -239,9 +239,24 @@ def send_photo(
         msg_type
     )
 
+    # Telegram only allows captions up to 1024 chars.
+    # Long captions will be sent as a separate message.
+
+    caption_text = caption
+    followup_text = None
+
+    if len(caption_text) > 1000:
+
+        followup_text = caption_text
+
+        caption_text = (
+            "🍞 <b>Preview</b>\n\n"
+            "Full post below ⬇️"
+        )
+
     payload = {
         "chat_id": chat_id,
-        "caption": telegram_safe(caption),
+        "caption": telegram_safe(caption_text),
         "parse_mode": "HTML"
     }
 
@@ -249,7 +264,7 @@ def send_photo(
         payload["reply_markup"] = merged_markup
 
     # --------------------------------------------------
-    # Remote image (RSS URL)
+    # Remote RSS image
     # --------------------------------------------------
 
     if isinstance(photo_path, str) and (
@@ -266,7 +281,7 @@ def send_photo(
         )
 
     # --------------------------------------------------
-    # Local image (AI generated)
+    # Local AI image
     # --------------------------------------------------
 
     else:
@@ -291,6 +306,19 @@ def send_photo(
     if r.status_code != 200:
         raise Exception(r.text)
 
+    # --------------------------------------------------
+    # Send remaining caption if too long
+    # --------------------------------------------------
+
+    if followup_text:
+
+        send_telegram(
+            token,
+            chat_id,
+            followup_text,
+            msg_type,
+            reply_markup
+        )
 
 # --------------------------------------------------
 # Poll Sender
