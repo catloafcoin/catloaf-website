@@ -139,6 +139,14 @@ def process_queue():
             # ------------------------------------
             elif image:
 
+                print("=" * 60)
+                print("Sending image approval")
+                print("Post ID :", post_id)
+                print("Type    :", post_type)
+                print("Image   :", image)
+                print("Caption :", item.get("text", "")[:80])
+                print("=" * 60)
+
                 send_photo(
                     TELEGRAM_BOT_TOKEN,
                     TELEGRAM_CHAT_ID,
@@ -147,6 +155,8 @@ def process_queue():
                     reply_markup,
                     post_type
                 )
+
+                print("✓ Image approval sent")
 
             # ------------------------------------
             # Text Post
