@@ -1,35 +1,47 @@
 /* ==========================================================
    CatLoaf AI Bakery
    script.js
-   Version 2.0
-   Part 1 - Core Engine
+   Production Edition
+   Part 1
 ========================================================== */
 
 "use strict";
 
+/* ==========================================================
+   Configuration
+========================================================== */
+
+const CONFIG = {
+
+    scannerFile: "scanner/scanner.json",
+
+    refreshInterval: 5 * 60 * 1000,
+
+    animationSpeed: 800,
+
+    sparkBars: 12,
+
+    version: "2.0"
+
+};
+
+/* ==========================================================
+   Bakery Application
+========================================================== */
+
 const Bakery = {
-
-    version: "2.0.0",
-
-    refreshMinutes: 5,
 
     scannerData: [],
 
-    scannerElement: null,
+    refreshTimer: null,
 
-    lastUpdateElement: null,
-
-    clockElement: null,
-
-    /* ======================================================
-       Initialize
-    ====================================================== */
+    /* ------------------------------------------------------ */
 
     init() {
 
-        console.log("🍞 CatLoaf AI Bakery Started");
+        console.log("🍞 CatLoaf AI Bakery v" + CONFIG.version);
 
-        this.cacheDOM();
+        this.cacheElements();
 
         this.startClock();
 
@@ -37,30 +49,27 @@ const Bakery = {
 
         this.observeCards();
 
-        this.startScanner();
+        this.fetchScanner();
+
+        this.startAutoRefresh();
 
     },
 
-    /* ======================================================
-       Cache DOM
-    ====================================================== */
+    /* ------------------------------------------------------ */
 
-    cacheDOM() {
+    cacheElements() {
 
-        this.scannerElement =
-            document.getElementById(
-                "scanner-container"
-            );
+        this.scannerContainer =
+            document.getElementById("scanner-container");
 
-        this.lastUpdateElement =
-            document.getElementById(
-                "last-update"
-            );
+        this.lastUpdate =
+            document.getElementById("last-update");
 
-        this.clockElement =
-            document.getElementById(
-                "bakery-time"
-            );
+        this.clock =
+            document.getElementById("bakery-time");
+
+        this.scannerCount =
+            document.getElementById("scanner-count");
 
     },
 
@@ -70,18 +79,26 @@ const Bakery = {
 
     startClock() {
 
-        const updateClock = () => {
+        const update = () => {
 
-            if (!this.clockElement) return;
+            if (!this.clock) return;
 
-            this.clockElement.textContent =
-                new Date().toLocaleTimeString();
+            this.clock.textContent =
+                new Date().toLocaleTimeString([], {
+
+                    hour: "2-digit",
+
+                    minute: "2-digit",
+
+                    second: "2-digit"
+
+                });
 
         };
 
-        updateClock();
+        update();
 
-        setInterval(updateClock,1000);
+        setInterval(update, 1000);
 
     },
 
@@ -95,25 +112,21 @@ const Bakery = {
 
             .querySelectorAll("[data-count]")
 
-            .forEach(counter=>{
+            .forEach(counter => {
 
-                const target =
+                const target = Number(counter.dataset.count);
 
-                    Number(counter.dataset.count);
+                let value = 0;
 
-                let current = 0;
+                const step = Math.max(1, target / 40);
 
-                const step =
+                const timer = setInterval(() => {
 
-                    Math.max(1,target/40);
+                    value += step;
 
-                const timer = setInterval(()=>{
+                    if (value >= target) {
 
-                    current += step;
-
-                    if(current >= target){
-
-                        current = target;
+                        value = target;
 
                         clearInterval(timer);
 
@@ -121,9 +134,9 @@ const Bakery = {
 
                     counter.textContent =
 
-                        Math.floor(current);
+                        Math.floor(value);
 
-                },25);
+                }, 25);
 
             });
 
@@ -135,13 +148,13 @@ const Bakery = {
 
     observeCards() {
 
-        const observer =
+        const observer = new IntersectionObserver(
 
-            new IntersectionObserver(entries=>{
+            entries => {
 
-                entries.forEach(entry=>{
+                entries.forEach(entry => {
 
-                    if(entry.isIntersecting){
+                    if (entry.isIntersecting) {
 
                         entry.target.classList.add("show");
 
@@ -149,21 +162,21 @@ const Bakery = {
 
                 });
 
-            },{
+            },
 
-                threshold:0.12
+            {
 
-            });
+                threshold: 0.15
+
+            }
+
+        );
 
         document
 
-            .querySelectorAll(
+            .querySelectorAll(".card,.status-item")
 
-                ".card,.status-item"
-
-            )
-
-            .forEach(card=>{
+            .forEach(card => {
 
                 card.classList.add("fade-in");
 
@@ -172,59 +185,53 @@ const Bakery = {
             });
 
     },
-
     /* ======================================================
-       Scanner Bootstrap
+       Scanner Loader
     ====================================================== */
 
-    startScanner(){
+    async fetchScanner() {
 
-        this.fetchScannerData();
+        if (!this.scannerContainer) return;
 
-        setInterval(()=>{
-
-            this.fetchScannerData();
-
-        },this.refreshMinutes*60*1000);
-
-    },
-
-    /* ======================================================
-       Fetch Scanner JSON
-       (continues in Part 2)
-    ====================================================== */
-
-    async fetchScannerData() {
-
-        if (!this.scannerElement) return;
+        this.showLoading();
 
         try {
 
             const response = await fetch(
 
-                "scanner/scanner.json?ts=" + Date.now(),
+                CONFIG.scannerFile + "?t=" + Date.now(),
 
                 {
+
                     cache: "no-store"
+
                 }
 
             );
 
             if (!response.ok) {
 
-                throw new Error("Unable to load scanner.json");
+                throw new Error(
+
+                    "Unable to load scanner.json"
+
+                );
 
             }
 
             const data = await response.json();
 
-            this.scannerData = data.coins || [];
+            this.scannerData =
 
-            this.renderScanner(this.scannerData);
+                Array.isArray(data)
 
-            this.updateLastUpdated(data.last_updated);
+                ? data
 
-            console.log("✅ Scanner updated");
+                : (data.coins || []);
+
+            this.updateSummary();
+
+            this.renderScanner();
 
         }
 
@@ -232,263 +239,362 @@ const Bakery = {
 
             console.error(error);
 
-            this.showScannerError();
+            this.showError();
 
         }
 
     },
 
     /* ======================================================
-       Update Timestamp
+       Auto Refresh
     ====================================================== */
 
-    updateLastUpdated(time) {
+    startAutoRefresh() {
 
-        if (!this.lastUpdateElement) return;
+        this.refreshTimer = setInterval(() => {
 
-        if (!time) {
+            this.fetchScanner();
 
-            this.lastUpdateElement.textContent =
-                "Waiting for first scan...";
+        },
+
+        CONFIG.refreshInterval);
+
+    },
+
+    /* ======================================================
+       Loading Screen
+    ====================================================== */
+
+    showLoading() {
+
+        this.scannerContainer.innerHTML = `
+
+            <div class="scanner-loading">
+
+                <div class="loading-loaf">
+
+                    🍞
+
+                </div>
+
+                <h3>
+
+                    Scanning fresh Pump.fun launches...
+
+                </h3>
+
+                <p>
+
+                    AI Bakery is ranking today's strongest projects.
+
+                </p>
+
+            </div>
+
+        `;
+
+    },
+
+    /* ======================================================
+       Error Screen
+    ====================================================== */
+
+    showError() {
+
+        this.scannerContainer.innerHTML = `
+
+            <div class="scanner-empty">
+
+                <h3>
+
+                    ⚠ Scanner Offline
+
+                </h3>
+
+                <p>
+
+                    Unable to load today's launches.
+
+                    The Bakery will automatically retry.
+
+                </p>
+
+            </div>
+
+        `;
+
+    },
+
+    /* ======================================================
+       Summary Cards
+    ====================================================== */
+
+    updateSummary() {
+
+        if (this.scannerCount) {
+
+            this.scannerCount.textContent =
+
+                this.scannerData.length;
+
+        }
+
+        if (this.lastUpdate) {
+
+            this.lastUpdate.textContent =
+
+                new Date().toLocaleTimeString([], {
+
+                    hour: "2-digit",
+
+                    minute: "2-digit"
+
+                });
+
+        }
+
+    },
+    /* ======================================================
+       Render Scanner
+    ====================================================== */
+
+    renderScanner() {
+
+        if (!this.scannerContainer) return;
+
+        this.scannerContainer.innerHTML = "";
+
+        if (this.scannerData.length === 0) {
+
+            this.showError();
 
             return;
 
         }
 
-        this.lastUpdateElement.textContent = time;
+        this.scannerData.forEach((coin, index) => {
 
-    },
+            const card = document.createElement("div");
 
-    /* ======================================================
-       Scanner Error
-    ====================================================== */
+            card.className = "coin-card";
 
-    showScannerError() {
+            card.innerHTML = `
 
-        if (!this.scannerElement) return;
+                <div class="coin-rank">
 
-        this.scannerElement.innerHTML = `
+                    🥇 #${index + 1}
 
-        <div class="scanner-loading">
+                </div>
 
-            <div class="loading-loaf">
+                <div class="coin-header">
 
-                ⚠️
+                    <img
+                        class="coin-logo"
+                        src="${coin.logo || "assets/logo.jpg"}"
+                        alt="${coin.name}"
+                    >
 
-            </div>
+                    <div>
 
-            <h3>
+                        <div class="coin-name">
 
-                Scanner Offline
+                            ${coin.name}
 
-            </h3>
+                        </div>
 
-            <p>
+                        <div class="coin-symbol">
 
-                The Bakery couldn't load today's launches.
+                            ${coin.symbol}
 
-                It will automatically try again.
+                        </div>
 
-            </p>
+                    </div>
 
-        </div>
+                </div>
 
-        `;
+                <div class="coin-price">
 
-    },
+                    ${this.formatPrice(coin.price)}
 
-    /* ======================================================
-       Render Scanner
-    ====================================================== */
+                </div>
 
-    renderScanner(coins) {
+                <div class="coin-change ${Number(coin.change24h) >= 0 ? "gain" : "loss"}">
 
-        if (!this.scannerElement) return;
+                    ${this.formatPercent(coin.change24h)}
 
-        this.scannerElement.innerHTML = "";
+                </div>
 
-        coins.forEach((coin, index) => {
+                <div class="coin-stats">
 
-            this.scannerElement.innerHTML +=
-                this.createCoinCard(coin, index + 1);
+                    <div class="stat">
+
+                        <small>Volume</small>
+
+                        <strong>
+
+                            ${this.formatCompact(coin.volume)}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="stat">
+
+                        <small>Market Cap</small>
+
+                        <strong>
+
+                            ${this.formatCompact(coin.market_cap)}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="stat">
+
+                        <small>Holders</small>
+
+                        <strong>
+
+                            ${coin.holders || "--"}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="stat">
+
+                        <small>Age</small>
+
+                        <strong>
+
+                            ${coin.age_hours ?? "--"}h
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <div class="loaf-title">
+
+                    <span>
+
+                        🍞 Loaf Score
+
+                    </span>
+
+                    <strong>
+
+                        ${coin.loaf_score}/100
+
+                    </strong>
+
+                </div>
+
+                <div class="loaf-bar">
+
+                    <div
+                        class="loaf-fill"
+                        style="width:${coin.loaf_score}%"
+                    ></div>
+
+                </div>
+
+                <div class="sparkline">
+
+                    ${this.generateSparkline()}
+
+                </div>
+
+                <div class="coin-footer">
+
+                    <span class="updated">
+
+                        Updated just now
+
+                    </span>
+
+                    <a
+                        class="view-btn"
+                        href="${coin.url || "#"}"
+                        target="_blank"
+                    >
+
+                        View →
+
+                    </a>
+
+                </div>
+
+            `;
+
+            this.scannerContainer.appendChild(card);
 
         });
 
     },
-
     /* ======================================================
-       Coin Card Generator
-       (continues in Part 3)
+       Sparkline Generator
     ====================================================== */
 
-    createCoinCard(coin, rank) {
+    generateSparkline() {
 
-        return `
+        let html = "";
 
-        <div class="coin-card">
+        for (let i = 0; i < CONFIG.sparkBars; i++) {
 
-            <div class="coin-header">
+            const height =
 
-                <img
-                    class="coin-logo"
-                    src="${coin.logo || "assets/logo.jpg"}"
-                    alt="${coin.name}"
-                    onerror="this.src='assets/logo.jpg'"
-                >
+                Math.floor(Math.random() * 55) + 25;
 
-                <div style="flex:1;">
+            html += `
 
-                    <div class="coin-name">
+                <span
+                    class="spark"
+                    style="height:${height}%"
+                ></span>
 
-                        ${coin.name}
+            `;
 
-                    </div>
+        }
 
-                    <div class="coin-symbol">
-
-                        $${coin.symbol}
-
-                    </div>
-
-                </div>
-
-                <div class="coin-rank">
-
-                    🥇 #${rank}
-
-                </div>
-
-            </div>
-
-            <div class="coin-price">
-
-                $${this.formatPrice(coin.price)}
-
-            </div>
-
-            <div class="coin-change ${coin.change24h >= 0 ? "gain" : "loss"}">
-
-                ${coin.change24h >= 0 ? "📈" : "📉"}
-                ${this.formatPercent(coin.change24h)}
-
-            </div>
-
-            <div class="coin-stats">
-
-                <div class="stat">
-
-                    <small>Market Cap</small>
-
-                    <strong>
-
-                        $${this.formatCompact(coin.market_cap)}
-
-                    </strong>
-
-                </div>
-
-                <div class="stat">
-
-                    <small>Volume</small>
-
-                    <strong>
-
-                        $${this.formatCompact(coin.volume)}
-
-                    </strong>
-
-                </div>
-
-                <div class="stat">
-
-                    <small>Holders</small>
-
-                    <strong>
-
-                        ${this.formatCompact(coin.holders)}
-
-                    </strong>
-
-                </div>
-
-                <div class="stat">
-
-                    <small>Age</small>
-
-                    <strong>
-
-                        ${coin.age_hours}h
-
-                    </strong>
-
-                </div>
-
-            </div>
-
-            <div class="loaf-title">
-
-                <span>
-
-                    🍞 Loaf Score
-
-                </span>
-
-                <strong>
-
-                    ${coin.loaf_score}/100
-
-                </strong>
-
-            </div>
-
-            <div class="loaf-bar">
-
-                <div
-                    class="loaf-fill"
-                    style="width:${coin.loaf_score}%"
-                ></div>
-
-            </div>
-
-            <div class="sparkline">
-
-                ${this.generateSparkline()}
-
-            </div>
-
-            <div class="coin-footer">
-
-                <small>
-
-                    Updated just now
-
-                </small>
-
-                <a
-
-                    href="${coin.url}"
-
-                    target="_blank"
-
-                    class="view-btn"
-
-                >
-
-                    🚀 View
-
-                </a>
-
-            </div>
-
-        </div>
-
-        `;
+        return html;
 
     },
 
     /* ======================================================
-       Utility Functions
-       (continues in Part 4)
+       Price Formatter
+    ====================================================== */
+
+    formatPrice(price) {
+
+        if (price === undefined || price === null) {
+
+            return "--";
+
+        }
+
+        const value = Number(price);
+
+        if (value < 0.01) {
+
+            return "$" + value.toFixed(6);
+
+        }
+
+        if (value < 1) {
+
+            return "$" + value.toFixed(4);
+
+        }
+
+        return "$" + value.toFixed(2);
+
+    },
+
+    /* ======================================================
+       Compact Number Formatter
     ====================================================== */
 
     formatCompact(value) {
@@ -516,22 +622,6 @@ const Bakery = {
     },
 
     /* ======================================================
-       Price Formatter
-    ====================================================== */
-
-    formatPrice(value) {
-
-        if (value === undefined || value === null) {
-
-            return "0.000000";
-
-        }
-
-        return Number(value).toFixed(6);
-
-    },
-
-    /* ======================================================
        Percent Formatter
     ====================================================== */
 
@@ -539,46 +629,13 @@ const Bakery = {
 
         if (value === undefined || value === null) {
 
-            return "0.00%";
+            return "--";
 
         }
 
         const number = Number(value);
 
-        return `${number > 0 ? "+" : ""}${number.toFixed(2)}%`;
-
-    },
-
-    /* ======================================================
-       Sparkline Generator
-    ====================================================== */
-
-    generateSparkline() {
-
-        let html = "";
-
-        for (let i = 0; i < 16; i++) {
-
-            const height =
-
-                Math.floor(
-
-                    Math.random() * 55
-
-                ) + 30;
-
-            html += `
-
-                <span
-                    class="spark"
-                    style="height:${height}%"
-                ></span>
-
-            `;
-
-        }
-
-        return html;
+        return `${number >= 0 ? "+" : ""}${number.toFixed(2)}%`;
 
     },
 
@@ -586,27 +643,25 @@ const Bakery = {
        Copy Contract Address
     ====================================================== */
 
-    copyContract() {
+    copyCA() {
 
-        const contract = document.getElementById("ca");
+        const contract =
+
+            document.getElementById("ca");
 
         if (!contract) return;
 
-        navigator.clipboard.writeText(
+        navigator.clipboard
 
-            contract.textContent.trim()
+            .writeText(contract.innerText)
 
-        );
+            .then(() => {
 
-        alert("🍞 Contract Address Copied!");
+                alert("✅ Contract copied!");
+
+            });
 
     },
-
-    /* ======================================================
-       End of Utilities
-       (continues in Part 5)
-    ====================================================== */
-
 };
 
 /* ==========================================================
@@ -615,12 +670,12 @@ const Bakery = {
 
 function copyCA() {
 
-    Bakery.copyContract();
+    Bakery.copyCA();
 
 }
 
 /* ==========================================================
-   Launch Bakery
+   Start AI Bakery
 ========================================================== */
 
 document.addEventListener(
