@@ -1586,3 +1586,86 @@ color:var(--primary);
     }
 
 }
+/* ==========================================================
+   AI Bakery Verdict
+========================================================== */
+
+.ai-verdict{
+
+    margin-top:24px;
+
+    padding:18px;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,179,71,.12);
+
+}
+
+.ai-verdict h4{
+
+    color:var(--primary);
+
+    margin-bottom:14px;
+
+    font-size:1rem;
+
+}
+
+.ai-tags{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-bottom:14px;
+
+}
+
+.tag{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:rgba(255,179,71,.12);
+
+    border:1px solid rgba(255,179,71,.18);
+
+    color:var(--primary);
+
+    font-size:.85rem;
+
+    font-weight:700;
+
+}
+
+.verdict{
+
+    color:#ffffff;
+
+    line-height:1.7;
+
+    font-size:.95rem;
+
+}
+
+@media(max-width:700px){
+
+    .ai-tags{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+}
