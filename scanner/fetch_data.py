@@ -20,10 +20,9 @@ HEADERS = {
     "accept": "application/json",
     "x-cg-demo-api-key": API_KEY
 }
+
+
 def fetch_launches() -> List[Dict]:
-    """
-    Fetch live Solana ecosystem tokens from CoinGecko.
-    """
 
     url = f"{BASE_URL}/coins/markets"
 
@@ -31,108 +30,19 @@ def fetch_launches() -> List[Dict]:
         "vs_currency": "usd",
         "category": "solana-ecosystem",
         "order": "volume_desc",
-        "per_page": 50,
+        "per_page": 100,
         "page": 1,
         "sparkline": "false",
         "price_change_percentage": "24h"
     }
 
-    response = requests.get(
-
-        url,
-
-        headers=HEADERS,
-
-        params=params,
-
-        timeout=20
-
-    )
-
-    response.raise_for_status()
-
-    data = response.json()
-
-    launches = []
-
-    for coin in data:
-
-        launches.append({
-
-            "name": coin.get("name", "Unknown"),
-
-            "symbol": coin.get("symbol", "").upper(),
-
-            "price": coin.get("current_price", 0),
-
-            "change24h": coin.get("price_change_percentage_24h", 0) or 0,
-
-            "market_cap": coin.get("market_cap", 0),
-
-            "volume": coin.get("total_volume", 0),
-
-            "holders": 0,
-
-            "age_hours": 0,
-
-            "logo": coin.get("image", "assets/logo.jpg"),
-
-            "url": f"https://www.coingecko.com/en/coins/{coin.get('id','')}"
-
-        })
-
-    return launches
-    # ==========================================
-    # Filter promising projects
-    # ==========================================
-
-    launches = [
-
-        coin
-
-        for coin in launches
-
-        if
-
-        coin["market_cap"] > 100000
-
-        and coin["market_cap"] < 50000000
-
-        and coin["volume"] > 25000
-
-        and coin["change24h"] > 0
-
-    ]
-
-    launches.sort(
-
-        key=lambda x: (
-
-            x["change24h"] * 2
-
-            +
-
-            (x["volume"] / 100000)
-
-        ),
-
-        reverse=True
-
-    )
-
-    launches = launches[:20]
     try:
 
         response = requests.get(
-
             url,
-
             headers=HEADERS,
-
             params=params,
-
             timeout=20
-
         )
 
         response.raise_for_status()
@@ -149,6 +59,22 @@ def fetch_launches() -> List[Dict]:
 
     for coin in data:
 
+        market_cap = coin.get("market_cap") or 0
+        volume = coin.get("total_volume") or 0
+        change = coin.get("price_change_percentage_24h") or 0
+
+        # Skip huge established projects
+        if market_cap > 50_000_000:
+            continue
+
+        # Skip inactive projects
+        if volume < 25_000:
+            continue
+
+        # Skip negative momentum
+        if change <= 0:
+            continue
+
         launches.append({
 
             "name": coin.get("name", "Unknown"),
@@ -157,11 +83,11 @@ def fetch_launches() -> List[Dict]:
 
             "price": coin.get("current_price", 0),
 
-            "change24h": coin.get("price_change_percentage_24h", 0) or 0,
+            "change24h": change,
 
-            "market_cap": coin.get("market_cap", 0),
+            "market_cap": market_cap,
 
-            "volume": coin.get("total_volume", 0),
+            "volume": volume,
 
             "holders": 0,
 
@@ -173,6 +99,19 @@ def fetch_launches() -> List[Dict]:
 
         })
 
-    print(f"✅ Retrieved {len(launches)} Solana projects")
+    launches.sort(
+
+        key=lambda coin: (
+            coin["change24h"] * 2 +
+            (coin["volume"] / 100000)
+        ),
+
+        reverse=True
+
+    )
+
+    launches = launches[:20]
+
+    print(f"✅ Retrieved {len(launches)} promising projects")
 
     return launches
