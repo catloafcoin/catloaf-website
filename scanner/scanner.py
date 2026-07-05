@@ -9,10 +9,10 @@ Main Scanner Controller
 
 import json
 from pathlib import Path
+from datetime import datetime
 
 from fetch_data import fetch_launches
 from loaf_score import calculate_loaf_score
-
 
 OUTPUT_FILE = Path(__file__).parent / "scanner.json"
 
@@ -40,8 +40,13 @@ def build_scanner():
 
     top = ranked[:TOP_COINS]
 
+    output = {
+        "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+        "coins": top
+    }
+
     OUTPUT_FILE.write_text(
-        json.dumps(top, indent=4)
+        json.dumps(output, indent=4)
     )
 
     print(f"✅ Saved {len(top)} projects")
