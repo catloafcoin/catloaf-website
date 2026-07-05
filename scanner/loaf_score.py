@@ -3,109 +3,43 @@
 CatLoaf AI Bakery
 loaf_score.py
 
-Loaf Score Algorithm
+AI Bakery Loaf Score
 ==========================================================
 """
 
 
-def clamp(value, minimum, maximum):
-    return max(minimum, min(value, maximum))
-
-
 def calculate_loaf_score(coin):
-    """
-    Calculate a CatLoaf Loaf Score (0-100)
 
-    Current weights:
+    score = 0
 
-    📈 Momentum      30%
-    💰 Volume        25%
-    👥 Holders       20%
-    ⚡ Market Cap    15%
-    🕒 Freshness     10%
+    change = float(coin.get("change24h", 0))
+    volume = float(coin.get("volume", 0))
+    market_cap = float(coin.get("market_cap", 0))
 
-    """
-
-    volume = coin.get("volume", 0)
-    holders = coin.get("holders", 0)
-    market_cap = coin.get("market_cap", 0)
-    change = coin.get("change24h", 0)
-    age = coin.get("age_hours", 24)
-
-    # -----------------------------
     # Momentum
-    # -----------------------------
+    if change > 100:
+        score += 40
+    elif change > 50:
+        score += 30
+    elif change > 20:
+        score += 20
+    elif change > 5:
+        score += 10
 
-    momentum_score = clamp(change, 0, 100)
+    # Trading Activity
+    if volume > 5_000_000:
+        score += 30
+    elif volume > 1_000_000:
+        score += 20
+    elif volume > 100_000:
+        score += 10
 
-    # -----------------------------
-    # Volume
-    # -----------------------------
+    # Prefer smaller projects
+    if market_cap < 10_000_000:
+        score += 30
+    elif market_cap < 50_000_000:
+        score += 20
+    elif market_cap < 100_000_000:
+        score += 10
 
-    volume_score = clamp(volume / 10000, 0, 100)
-
-    # -----------------------------
-    # Holders
-    # -----------------------------
-
-    holder_score = clamp(holders / 20, 0, 100)
-
-    # -----------------------------
-    # Market Cap
-    # Lower caps score higher
-    # (better discovery potential)
-    # -----------------------------
-
-    if market_cap <= 0:
-
-        market_score = 0
-
-    elif market_cap <= 500000:
-
-        market_score = 100
-
-    elif market_cap <= 1000000:
-
-        market_score = 80
-
-    elif market_cap <= 3000000:
-
-        market_score = 60
-
-    elif market_cap <= 10000000:
-
-        market_score = 40
-
-    else:
-
-        market_score = 20
-
-    # -----------------------------
-    # Freshness
-    # -----------------------------
-
-    freshness_score = clamp(
-        100 - (age * 4),
-        0,
-        100
-    )
-
-    # -----------------------------
-    # Final Loaf Score
-    # -----------------------------
-
-    loaf_score = (
-
-        momentum_score * 0.30 +
-
-        volume_score * 0.25 +
-
-        holder_score * 0.20 +
-
-        market_score * 0.15 +
-
-        freshness_score * 0.10
-
-    )
-
-    return round(loaf_score, 1)
+    return min(score, 100)
