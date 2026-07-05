@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 
 from fetch_data import fetch_launches
 from loaf_score import calculate_loaf_score
+from bakery_ai import generate_ai_verdict
 
 OUTPUT_FILE = Path(__file__).parent / "scanner.json"
 
@@ -30,6 +31,13 @@ def build_scanner():
     for coin in launches:
 
         coin["loaf_score"] = calculate_loaf_score(coin)
+
+        ai = generate_ai_verdict(coin)
+
+        coin["momentum"] = ai["momentum"]
+        coin["risk"] = ai["risk"]
+        coin["opportunity"] = ai["opportunity"]
+        coin["verdict"] = ai["verdict"]
 
         ranked.append(coin)
 
