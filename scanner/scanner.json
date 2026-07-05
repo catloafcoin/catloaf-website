@@ -1,0 +1,75 @@
+{
+  "last_updated": "",
+  "coins": [
+    {
+      "rank": 1,
+      "name": "Loading...",
+      "symbol": "---",
+      "price": 0,
+      "change24h": 0,
+      "market_cap": 0,
+      "volume": 0,
+      "holders": 0,
+      "age_hours": 0,
+      "loaf_score": 0,
+      "logo": "assets/logo.jpg",
+      "url": "https://pump.fun"
+    },
+    {
+      "rank": 2,
+      "name": "Loading...",
+      "symbol": "---",
+      "price": 0,
+      "change24h": 0,
+      "market_cap": 0,
+      "volume": 0,
+      "holders": 0,
+      "age_hours": 0,
+      "loaf_score": 0,
+      "logo": "assets/logo.jpg",
+      "url": "https://pump.fun"
+    },
+    {
+      "rank": 3,
+      "name": "Loading...",
+      "symbol": "---",
+      "price": 0,
+      "change24h": 0,
+      "market_cap": 0,
+      "volume": 0,
+      "holders": 0,
+      "age_hours": 0,
+      "loaf_score": 0,
+      "logo": "assets/logo.jpg",
+      "url": "https://pump.fun"
+    },
+    {
+      "rank": 4,
+      "name": "Loading...",
+      "symbol": "---",
+      "price": 0,
+      "change24h": 0,
+      "market_cap": 0,
+      "volume": 0,
+      "holders": 0,
+      "age_hours": 0,
+      "loaf_score": 0,
+      "logo": "assets/logo.jpg",
+      "url": "https://pump.fun"
+    },
+    {
+      "rank": 5,
+      "name": "Loading...",
+      "symbol": "---",
+      "price": 0,
+      "change24h": 0,
+      "market_cap": 0,
+      "volume": 0,
+      "holders": 0,
+      "age_hours": 0,
+      "loaf_score": 0,
+      "logo": "assets/logo.jpg",
+      "url": "https://pump.fun"
+    }
+  ]
+}
