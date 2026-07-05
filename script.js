@@ -33,9 +33,19 @@ const Bakery = {
 
         this.cacheDOM();
 
+        this.updateClock();
+
+        this.animateNewsCounter();
+
         this.fetchScanner();
 
         this.startAutoRefresh();
+
+        setInterval(() => {
+
+            this.updateClock();
+
+}, 1000);
 
     },
 
@@ -521,6 +531,49 @@ const Bakery = {
         return `${number >= 0 ? "+" : ""}${number.toFixed(2)}%`;
 
     },
+updateClock() {
+
+    const clock = document.getElementById("bakery-time");
+
+    if (!clock) return;
+
+    const now = new Date();
+
+    clock.textContent = now.toLocaleTimeString([], {
+
+        hour: "2-digit",
+
+        minute: "2-digit"
+
+    });
+
+},
+
+animateNewsCounter() {
+
+    const counter = document.querySelector("[data-count]");
+
+    if (!counter) return;
+
+    const target = Number(counter.dataset.count);
+
+    let current = 0;
+
+    const timer = setInterval(() => {
+
+        current++;
+
+        counter.textContent = current;
+
+        if (current >= target) {
+
+            clearInterval(timer);
+
+        }
+
+    }, 80);
+
+},
 
     copyCA() {
 
