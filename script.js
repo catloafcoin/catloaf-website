@@ -358,11 +358,45 @@ const Bakery = {
 
                 <div class="sparkline">
 
-                    ${this.generateSparkline()}
+    ${this.generateSparkline()}
 
-                </div>
+</div>
 
-                <div class="coin-footer">
+<div class="ai-verdict">
+
+    <h4>🤖 AI Bakery Verdict</h4>
+
+    <div class="ai-tags">
+
+        <span class="tag">
+
+            🚀 ${coin.momentum}
+
+        </span>
+
+        <span class="tag">
+
+            ⚠️ ${coin.risk}
+
+        </span>
+
+        <span class="tag">
+
+            ⭐ ${coin.opportunity}
+
+        </span>
+
+    </div>
+
+    <p class="verdict">
+
+        ${coin.verdict}
+
+    </p>
+
+</div>
+
+<div class="coin-footer">
 
                     <span>
 
