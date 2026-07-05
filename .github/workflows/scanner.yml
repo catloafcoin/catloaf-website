@@ -32,6 +32,10 @@ jobs:
 
       - name: Run Scanner
         working-directory: scanner
+
+        env:
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+
         run: |
           python scanner.py
 
