@@ -1,0 +1,48 @@
+name: AI Bakery Scanner
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+
+  scanner:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run Scanner
+        working-directory: scanner
+        run: |
+          python scanner.py
+
+      - name: Commit scanner.json
+        run: |
+          git config user.name "CatLoaf AI"
+          git config user.email "actions@github.com"
+
+          git add scanner/scanner.json
+
+          git diff --cached --quiet || \
+          git commit -m "🍞 AI Bakery Scanner Update"
+
+          git push
