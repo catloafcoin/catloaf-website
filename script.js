@@ -846,3 +846,42 @@ updateTimestamp(){
     }
 
 }
+/* ==========================================================
+   AI Bakery Scanner
+========================================================== */
+
+async function loadScanner() {
+
+    try {
+
+        const response = await fetch("scanner/scanner.json");
+
+        const data = await response.json();
+
+        renderScanner(data);
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+function renderScanner(data){
+
+    const container = document.getElementById("scanner-container");
+
+    if(!container) return;
+
+    container.innerHTML = "";
+
+    data.coins.forEach(coin=>{
+
+        container.innerHTML += createCoinCard(coin);
+
+    });
+
+}
