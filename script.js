@@ -1,14 +1,8 @@
-/* ==========================================================
-   CatLoaf AI Bakery
-   script.js
-   Production Edition
-   Part 1
-========================================================== */
-
 "use strict";
 
 /* ==========================================================
-   Configuration
+   CatLoaf AI Bakery
+   script.js
 ========================================================== */
 
 const CONFIG = {
@@ -17,37 +11,27 @@ const CONFIG = {
 
     refreshInterval: 5 * 60 * 1000,
 
-    animationSpeed: 800,
-
-    sparkBars: 12,
-
-    version: "2.0"
+    sparkBars: 12
 
 };
 
-/* ==========================================================
-   Bakery Application
-========================================================== */
-
 const Bakery = {
+
+    scannerContainer: null,
+
+    scannerCount: null,
+
+    lastUpdate: null,
 
     scannerData: [],
 
     refreshTimer: null,
 
-    /* ------------------------------------------------------ */
-
     init() {
 
-        console.log("🍞 CatLoaf AI Bakery v" + CONFIG.version);
+        console.log("🍞 CatLoaf AI Bakery Started");
 
-        this.cacheElements();
-
-        this.startClock();
-
-        this.animateCounters();
-
-        this.observeCards();
+        this.cacheDOM();
 
         this.fetchScanner();
 
@@ -55,139 +39,33 @@ const Bakery = {
 
     },
 
-    /* ------------------------------------------------------ */
-
-    cacheElements() {
+    cacheDOM() {
 
         this.scannerContainer =
-            document.getElementById("scanner-container");
 
-        this.lastUpdate =
-            document.getElementById("last-update");
+            document.getElementById(
 
-        this.clock =
-            document.getElementById("bakery-time");
+                "scanner-container"
+
+            );
 
         this.scannerCount =
-            document.getElementById("scanner-count");
+
+            document.getElementById(
+
+                "scanner-count"
+
+            );
+
+        this.lastUpdate =
+
+            document.getElementById(
+
+                "last-update"
+
+            );
 
     },
-
-    /* ======================================================
-       Live Clock
-    ====================================================== */
-
-    startClock() {
-
-        const update = () => {
-
-            if (!this.clock) return;
-
-            this.clock.textContent =
-                new Date().toLocaleTimeString([], {
-
-                    hour: "2-digit",
-
-                    minute: "2-digit",
-
-                    second: "2-digit"
-
-                });
-
-        };
-
-        update();
-
-        setInterval(update, 1000);
-
-    },
-
-    /* ======================================================
-       Animated Counters
-    ====================================================== */
-
-    animateCounters() {
-
-        document
-
-            .querySelectorAll("[data-count]")
-
-            .forEach(counter => {
-
-                const target = Number(counter.dataset.count);
-
-                let value = 0;
-
-                const step = Math.max(1, target / 40);
-
-                const timer = setInterval(() => {
-
-                    value += step;
-
-                    if (value >= target) {
-
-                        value = target;
-
-                        clearInterval(timer);
-
-                    }
-
-                    counter.textContent =
-
-                        Math.floor(value);
-
-                }, 25);
-
-            });
-
-    },
-
-    /* ======================================================
-       Scroll Reveal
-    ====================================================== */
-
-    observeCards() {
-
-        const observer = new IntersectionObserver(
-
-            entries => {
-
-                entries.forEach(entry => {
-
-                    if (entry.isIntersecting) {
-
-                        entry.target.classList.add("show");
-
-                    }
-
-                });
-
-            },
-
-            {
-
-                threshold: 0.15
-
-            }
-
-        );
-
-        document
-
-            .querySelectorAll(".card,.status-item")
-
-            .forEach(card => {
-
-                card.classList.add("fade-in");
-
-                observer.observe(card);
-
-            });
-
-    },
-    /* ======================================================
-       Scanner Loader
-    ====================================================== */
 
     async fetchScanner() {
 
@@ -199,7 +77,11 @@ const Bakery = {
 
             const response = await fetch(
 
-                CONFIG.scannerFile + "?t=" + Date.now(),
+                CONFIG.scannerFile +
+
+                "?t=" +
+
+                Date.now(),
 
                 {
 
@@ -219,17 +101,19 @@ const Bakery = {
 
             }
 
-            const data = await response.json();
+            const json =
+
+                await response.json();
 
             this.scannerData =
 
-                Array.isArray(data)
+                json.coins || [];
 
-                ? data
+            this.updateSummary(
 
-                : (data.coins || []);
+                json.last_updated
 
-            this.updateSummary();
+            );
 
             this.renderScanner();
 
@@ -245,10 +129,6 @@ const Bakery = {
 
     },
 
-    /* ======================================================
-       Auto Refresh
-    ====================================================== */
-
     startAutoRefresh() {
 
         this.refreshTimer = setInterval(() => {
@@ -260,11 +140,6 @@ const Bakery = {
         CONFIG.refreshInterval);
 
     },
-
-    /* ======================================================
-       Loading Screen
-    ====================================================== */
-
     showLoading() {
 
         this.scannerContainer.innerHTML = `
@@ -285,7 +160,7 @@ const Bakery = {
 
                 <p>
 
-                    AI Bakery is ranking today's strongest projects.
+                    AI Bakery is baking today's rankings...
 
                 </p>
 
@@ -294,10 +169,6 @@ const Bakery = {
         `;
 
     },
-
-    /* ======================================================
-       Error Screen
-    ====================================================== */
 
     showError() {
 
@@ -313,9 +184,9 @@ const Bakery = {
 
                 <p>
 
-                    Unable to load today's launches.
+                    Unable to retrieve today's launches.
 
-                    The Bakery will automatically retry.
+                    The Bakery will try again automatically.
 
                 </p>
 
@@ -325,11 +196,7 @@ const Bakery = {
 
     },
 
-    /* ======================================================
-       Summary Cards
-    ====================================================== */
-
-    updateSummary() {
+    updateSummary(lastUpdated) {
 
         if (this.scannerCount) {
 
@@ -343,21 +210,11 @@ const Bakery = {
 
             this.lastUpdate.textContent =
 
-                new Date().toLocaleTimeString([], {
-
-                    hour: "2-digit",
-
-                    minute: "2-digit"
-
-                });
+                lastUpdated || "Waiting for first scan";
 
         }
 
     },
-    /* ======================================================
-       Render Scanner
-    ====================================================== */
-
     renderScanner() {
 
         if (!this.scannerContainer) return;
@@ -381,9 +238,7 @@ const Bakery = {
             card.innerHTML = `
 
                 <div class="coin-rank">
-
-                    🥇 #${index + 1}
-
+                    🥇 #${coin.rank || index + 1}
                 </div>
 
                 <div class="coin-header">
@@ -394,7 +249,7 @@ const Bakery = {
                         alt="${coin.name}"
                     >
 
-                    <div>
+                    <div class="coin-info">
 
                         <div class="coin-name">
 
@@ -404,7 +259,7 @@ const Bakery = {
 
                         <div class="coin-symbol">
 
-                            ${coin.symbol}
+                            $${coin.symbol}
 
                         </div>
 
@@ -428,18 +283,6 @@ const Bakery = {
 
                     <div class="stat">
 
-                        <small>Volume</small>
-
-                        <strong>
-
-                            ${this.formatCompact(coin.volume)}
-
-                        </strong>
-
-                    </div>
-
-                    <div class="stat">
-
                         <small>Market Cap</small>
 
                         <strong>
@@ -452,11 +295,23 @@ const Bakery = {
 
                     <div class="stat">
 
+                        <small>Volume</small>
+
+                        <strong>
+
+                            ${this.formatCompact(coin.volume)}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="stat">
+
                         <small>Holders</small>
 
                         <strong>
 
-                            ${coin.holders || "--"}
+                            ${coin.holders}
 
                         </strong>
 
@@ -468,7 +323,7 @@ const Bakery = {
 
                         <strong>
 
-                            ${coin.age_hours ?? "--"}h
+                            ${coin.age_hours}h
 
                         </strong>
 
@@ -509,15 +364,15 @@ const Bakery = {
 
                 <div class="coin-footer">
 
-                    <span class="updated">
+                    <span>
 
-                        Updated just now
+                        Updated
 
                     </span>
 
                     <a
                         class="view-btn"
-                        href="${coin.url || "#"}"
+                        href="${coin.url}"
                         target="_blank"
                     >
 
@@ -535,7 +390,7 @@ const Bakery = {
 
     },
     /* ======================================================
-       Sparkline Generator
+       Helper Functions
     ====================================================== */
 
     generateSparkline() {
@@ -546,7 +401,7 @@ const Bakery = {
 
             const height =
 
-                Math.floor(Math.random() * 55) + 25;
+                Math.floor(Math.random() * 45) + 30;
 
             html += `
 
@@ -563,10 +418,6 @@ const Bakery = {
 
     },
 
-    /* ======================================================
-       Price Formatter
-    ====================================================== */
-
     formatPrice(price) {
 
         if (price === undefined || price === null) {
@@ -576,6 +427,12 @@ const Bakery = {
         }
 
         const value = Number(price);
+
+        if (value === 0) {
+
+            return "--";
+
+        }
 
         if (value < 0.01) {
 
@@ -592,10 +449,6 @@ const Bakery = {
         return "$" + value.toFixed(2);
 
     },
-
-    /* ======================================================
-       Compact Number Formatter
-    ====================================================== */
 
     formatCompact(value) {
 
@@ -621,10 +474,6 @@ const Bakery = {
 
     },
 
-    /* ======================================================
-       Percent Formatter
-    ====================================================== */
-
     formatPercent(value) {
 
         if (value === undefined || value === null) {
@@ -639,27 +488,19 @@ const Bakery = {
 
     },
 
-    /* ======================================================
-       Copy Contract Address
-    ====================================================== */
-
     copyCA() {
 
-        const contract =
+        const ca = document.getElementById("ca");
 
-            document.getElementById("ca");
+        if (!ca) return;
 
-        if (!contract) return;
+        navigator.clipboard.writeText(
 
-        navigator.clipboard
+            ca.textContent.trim()
 
-            .writeText(contract.innerText)
+        );
 
-            .then(() => {
-
-                alert("✅ Contract copied!");
-
-            });
+        alert("✅ Contract Address Copied");
 
     },
 };
