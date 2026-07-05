@@ -1,75 +1,70 @@
 {
-  "last_updated": "",
-  "coins": [
-    {
-      "rank": 1,
-      "name": "Loading...",
-      "symbol": "---",
-      "price": 0,
-      "change24h": 0,
-      "market_cap": 0,
-      "volume": 0,
-      "holders": 0,
-      "age_hours": 0,
-      "loaf_score": 0,
-      "logo": "assets/logo.jpg",
-      "url": "https://pump.fun"
-    },
-    {
-      "rank": 2,
-      "name": "Loading...",
-      "symbol": "---",
-      "price": 0,
-      "change24h": 0,
-      "market_cap": 0,
-      "volume": 0,
-      "holders": 0,
-      "age_hours": 0,
-      "loaf_score": 0,
-      "logo": "assets/logo.jpg",
-      "url": "https://pump.fun"
-    },
-    {
-      "rank": 3,
-      "name": "Loading...",
-      "symbol": "---",
-      "price": 0,
-      "change24h": 0,
-      "market_cap": 0,
-      "volume": 0,
-      "holders": 0,
-      "age_hours": 0,
-      "loaf_score": 0,
-      "logo": "assets/logo.jpg",
-      "url": "https://pump.fun"
-    },
-    {
-      "rank": 4,
-      "name": "Loading...",
-      "symbol": "---",
-      "price": 0,
-      "change24h": 0,
-      "market_cap": 0,
-      "volume": 0,
-      "holders": 0,
-      "age_hours": 0,
-      "loaf_score": 0,
-      "logo": "assets/logo.jpg",
-      "url": "https://pump.fun"
-    },
-    {
-      "rank": 5,
-      "name": "Loading...",
-      "symbol": "---",
-      "price": 0,
-      "change24h": 0,
-      "market_cap": 0,
-      "volume": 0,
-      "holders": 0,
-      "age_hours": 0,
-      "loaf_score": 0,
-      "logo": "assets/logo.jpg",
-      "url": "https://pump.fun"
-    }
-  ]
+    "last_updated": "2026-07-05 18:07 UTC",
+    "coins": [
+        {
+            "name": "KittyAI",
+            "symbol": "KAI",
+            "price": 3.1e-05,
+            "change24h": 72.8,
+            "market_cap": 380000,
+            "volume": 420000,
+            "holders": 973,
+            "age_hours": 2,
+            "logo": "assets/logo.jpg",
+            "url": "https://pump.fun",
+            "loaf_score": 66.3
+        },
+        {
+            "name": "Loafy",
+            "symbol": "LOAF",
+            "price": 2.1e-05,
+            "change24h": 48.6,
+            "market_cap": 425000,
+            "volume": 186000,
+            "holders": 842,
+            "age_hours": 4,
+            "logo": "assets/logo.jpg",
+            "url": "https://pump.fun",
+            "loaf_score": 51.0
+        },
+        {
+            "name": "CatMint",
+            "symbol": "MINT",
+            "price": 1.2e-05,
+            "change24h": 33.2,
+            "market_cap": 780000,
+            "volume": 241000,
+            "holders": 1250,
+            "age_hours": 8,
+            "logo": "assets/logo.jpg",
+            "url": "https://pump.fun",
+            "loaf_score": 47.3
+        },
+        {
+            "name": "BreadDog",
+            "symbol": "BDOG",
+            "price": 8.3e-05,
+            "change24h": 21.5,
+            "market_cap": 1300000,
+            "volume": 315000,
+            "holders": 1815,
+            "age_hours": 15,
+            "logo": "assets/logo.jpg",
+            "url": "https://pump.fun",
+            "loaf_score": 45.5
+        },
+        {
+            "name": "ToastCoin",
+            "symbol": "TOAST",
+            "price": 1.5e-05,
+            "change24h": 15.9,
+            "market_cap": 2400000,
+            "volume": 92000,
+            "holders": 562,
+            "age_hours": 20,
+            "logo": "assets/logo.jpg",
+            "url": "https://pump.fun",
+            "loaf_score": 23.7
+        }
+    ]
 }
