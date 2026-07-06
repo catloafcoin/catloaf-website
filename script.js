@@ -208,23 +208,21 @@ const Bakery = {
 
     updateSummary(lastUpdated) {
 
-        if (this.scannerCount) {
+    if (this.scannerCount) {
+        this.scannerCount.textContent = this.scannerData.length;
+    }
 
-            this.scannerCount.textContent =
+    const heroUpdate = document.getElementById("hero-last-update");
 
-                this.scannerData.length;
+    if (heroUpdate) {
+        heroUpdate.textContent = lastUpdated || "Waiting...";
+    }
 
-        }
+    if (this.lastUpdate) {
+        this.lastUpdate.textContent = lastUpdated || "Waiting...";
+    }
 
-        if (this.lastUpdate) {
-
-            this.lastUpdate.textContent =
-
-                lastUpdated || "Waiting for first scan";
-
-        }
-
-    },
+},
     renderScanner() {
 
         if (!this.scannerContainer) return;
