@@ -824,89 +824,68 @@ def send_poll(
     reply_markup=None
 ):
 
+    import json
+    import requests
+    import time
+
+    print("=" * 70)
+    print("🍞 POLL PUBLISH START")
+    print("=" * 70)
+    print("Chat ID :", chat_id)
+    print("Question:", question)
+    print("Options :", options)
+    print("=" * 70)
+
     if not question:
-
-        print("⚠ Poll question missing.")
-
+        print("ERROR: Empty question")
         return False
 
     if not options or len(options) < 2:
-
-        print("⚠ Poll requires at least two options.")
-
+        print("ERROR: Poll needs at least 2 options")
         return False
 
     url = f"https://api.telegram.org/bot{token}/sendPoll"
 
     payload = {
-
         "chat_id": chat_id,
-
         "question": question[:300],
-
         "options": json.dumps(options),
-
         "is_anonymous": False,
-
         "allows_multiple_answers": False
-
     }
 
-    for attempt in range(1, MAX_RETRIES + 1):
+    for attempt in range(1, 4):
 
         try:
 
-            log_request(
-
-                f"POLL ({attempt}/{MAX_RETRIES})",
-
-                payload
-
-            )
+            print(f"Attempt {attempt}")
 
             response = requests.post(
-
                 url,
-
                 data=payload,
-
-                timeout=REQUEST_TIMEOUT
-
+                timeout=30
             )
 
-            print("Status:", response.status_code)
+            print("Status Code :", response.status_code)
+            print("Response    :", response.text)
 
             if response.status_code == 200:
 
-                print("=" * 60)
-                print("✓ POLL SENT")
-                print("=" * 60)
+                print("=" * 70)
+                print("✅ POLL SENT SUCCESSFULLY")
+                print("=" * 70)
 
                 return True
 
-            print(response.text)
-
         except Exception as e:
 
-            print("Poll Error:", e)
+            print("Exception:", e)
 
         time.sleep(2)
 
-    print("=" * 60)
-    print("⚠ POLL FAILED")
-    print("=" * 60)
-
-    send_telegram(
-
-        token,
-
-        chat_id,
-
-        f"<b>Poll could not be published.</b>\n\n{question}",
-
-        "poll"
-
-    )
+    print("=" * 70)
+    print("❌ POLL FAILED")
+    print("=" * 70)
 
     return False
 
