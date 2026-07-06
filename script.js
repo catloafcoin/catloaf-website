@@ -315,27 +315,27 @@ const Bakery = {
 
                     <div class="stat">
 
-                        <small>Holders</small>
+    <small>Momentum</small>
 
-                        <strong>
+    <strong>
 
-                            ${coin.holders}
+        ${coin.momentum}
 
-                        </strong>
+    </strong>
 
-                    </div>
+</div>
 
-                    <div class="stat">
+<div class="stat">
 
-                        <small>Age</small>
+    <small>Risk</small>
 
-                        <strong>
+    <strong>
 
-                            ${coin.age_hours}h
+        ${coin.risk}
 
-                        </strong>
+    </strong>
 
-                    </div>
+</div>
 
                 </div>
 
