@@ -48,6 +48,12 @@ def add_to_queue(item):
     clean_item.setdefault("caption", "")
     clean_item.setdefault("quote", "")
     clean_item.setdefault("cta", "")
+    from datetime import datetime, timezone
+
+    clean_item.setdefault(
+        "created_at",
+        datetime.now(timezone.utc).isoformat()
+    )
 
     supabase.table("queue").upsert(clean_item).execute()
 
@@ -88,8 +94,17 @@ def remove_first():
 # --------------------------------------------------
 
 def add_pending(post_id):
+
+    from datetime import datetime, timezone
+
     supabase.table("pending_posts").upsert({
-        "id": post_id
+
+        "id": post_id,
+
+        "created_at": datetime.now(
+            timezone.utc
+        ).isoformat()
+
     }).execute()
 
 
@@ -118,10 +133,18 @@ def remove_pending(post_id):
 # --------------------------------------------------
 
 def mark_posted(post_id):
-    supabase.table("posted_posts").upsert({
-        "id": post_id
-    }).execute()
 
+    from datetime import datetime, timezone
+
+    supabase.table("posted_posts").upsert({
+
+        "id": post_id,
+
+        "created_at": datetime.now(
+            timezone.utc
+        ).isoformat()
+
+    }).execute()
 
 def load_posted():
     result = (
