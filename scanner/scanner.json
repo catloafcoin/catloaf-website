@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-08-08 15:10 UTC",
+    "last_updated": "2026-08-08 15:47 UTC",
     "coins": [
         {
             "name": "Bull",
             "symbol": "BULL",
-            "price": 0.00816695,
+            "price": 0.00754918,
             "change24h": 5335.9,
-            "market_cap": 7993044,
-            "volume": 4027068,
+            "market_cap": 7521053,
+            "volume": 3953204,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102172695/large/BULL.jpg?1776225921",
@@ -21,10 +21,10 @@
         {
             "name": "Jimothy The Raccoon",
             "symbol": "JIMOTHY",
-            "price": 0.01489833,
+            "price": 0.01417197,
             "change24h": 229.3,
-            "market_cap": 14894445,
-            "volume": 27803622,
+            "market_cap": 14168183,
+            "volume": 26458185,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102174627/large/ds1bxricdzevh41l96amz78ormrh.?1784284675",
@@ -36,12 +36,29 @@
             "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
         },
         {
+            "name": "Simon's Cat",
+            "symbol": "CAT",
+            "price": 2.26e-06,
+            "change24h": 55.6,
+            "market_cap": 18484540,
+            "volume": 9473209,
+            "holders": 0,
+            "age_hours": 0,
+            "logo": "https://coin-images.coingecko.com/coins/images/39765/large/Dv9GheV0_400x400.jpg?1756951559",
+            "url": "https://www.coingecko.com/en/coins/simon-s-cat",
+            "loaf_score": 100,
+            "momentum": "Explosive \ud83d\ude80",
+            "risk": "Low",
+            "opportunity": "Exceptional \ud83c\udf5e",
+            "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
+        },
+        {
             "name": "Solstice",
             "symbol": "SLX",
-            "price": 0.08962,
+            "price": 0.090212,
             "change24h": 19.2,
-            "market_cap": 21816210,
-            "volume": 36245580,
+            "market_cap": 21880789,
+            "volume": 36182654,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/71128/large/slx.png?1779455873",
@@ -55,10 +72,10 @@
         {
             "name": "SpaceX (Backpack Securities)",
             "symbol": "SPCX",
-            "price": 132.89,
+            "price": 133.11,
             "change24h": 10.0,
-            "market_cap": 8885861,
-            "volume": 9132505,
+            "market_cap": 8900343,
+            "volume": 8759649,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102173747/large/HbrI04tM_400x400.jpg?1781237061",
@@ -68,23 +85,6 @@
             "risk": "Medium",
             "opportunity": "Exceptional \ud83c\udf5e",
             "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
-        },
-        {
-            "name": "Solayer",
-            "symbol": "LAYER",
-            "price": 0.061214,
-            "change24h": 1.4,
-            "market_cap": 12852587,
-            "volume": 8346684,
-            "holders": 0,
-            "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/53498/large/Layer_Green.png?1744950002",
-            "url": "https://www.coingecko.com/en/coins/solayer",
-            "loaf_score": 85,
-            "momentum": "Weak \ud83d\ude34",
-            "risk": "Low",
-            "opportunity": "Excellent",
-            "verdict": "Healthy momentum backed by good trading activity."
         }
     ]
 }
