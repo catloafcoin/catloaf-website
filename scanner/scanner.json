@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-08-09 21:14 UTC",
+    "last_updated": "2026-08-09 21:52 UTC",
     "coins": [
         {
             "name": "Bubblemaps",
             "symbol": "BMT",
-            "price": 0.03671576,
+            "price": 0.03449551,
             "change24h": 192.9,
-            "market_cap": 9439883,
-            "volume": 229162723,
+            "market_cap": 8872544,
+            "volume": 281736864,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/52778/large/background-square.png?1734284378",
@@ -21,10 +21,10 @@
         {
             "name": "ChainGPT",
             "symbol": "CGPT",
-            "price": 0.02291987,
+            "price": 0.02304661,
             "change24h": 19.8,
-            "market_cap": 21408492,
-            "volume": 9092025,
+            "market_cap": 21500162,
+            "volume": 10647726,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/29306/large/200x200.png?1696528257",
@@ -38,10 +38,10 @@
         {
             "name": "BounceBit",
             "symbol": "BB",
-            "price": 0.01567001,
+            "price": 0.01518172,
             "change24h": 10.5,
-            "market_cap": 6407261,
-            "volume": 9835372,
+            "market_cap": 6216571,
+            "volume": 11418826,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/37144/large/bb.jpeg?1713439092",
@@ -55,10 +55,10 @@
         {
             "name": "aixbt",
             "symbol": "AIXBT",
-            "price": 0.01973292,
+            "price": 0.01985245,
             "change24h": 10.1,
-            "market_cap": 19714480,
-            "volume": 6896255,
+            "market_cap": 19847262,
+            "volume": 7139600,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/51784/large/3.png?1731981138",
@@ -70,21 +70,21 @@
             "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
         },
         {
-            "name": "Coin98",
-            "symbol": "C98",
-            "price": 0.01535357,
-            "change24h": 1.8,
-            "market_cap": 15353623,
-            "volume": 11772988,
+            "name": "Just a chill guy",
+            "symbol": "CHILLGUY",
+            "price": 0.01167736,
+            "change24h": 14.3,
+            "market_cap": 11712906,
+            "volume": 5046121,
             "holders": 0,
             "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/17117/large/logo.png?1696516677",
-            "url": "https://www.coingecko.com/en/coins/coin98",
-            "loaf_score": 85,
-            "momentum": "Weak \ud83d\ude34",
+            "logo": "https://coin-images.coingecko.com/coins/images/51746/large/Scherm%C2%ADafbeelding_2024-11-15_om_20.57.58.png?1731926037",
+            "url": "https://www.coingecko.com/en/coins/chill-guy",
+            "loaf_score": 91,
+            "momentum": "Building \ud83c\udf31",
             "risk": "Low",
-            "opportunity": "Excellent",
-            "verdict": "Healthy momentum backed by good trading activity."
+            "opportunity": "Exceptional \ud83c\udf5e",
+            "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
         }
     ]
 }
