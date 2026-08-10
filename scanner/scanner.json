@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-08-10 22:08 UTC",
+    "last_updated": "2026-08-10 22:57 UTC",
     "coins": [
         {
             "name": "STONK",
             "symbol": "STONK",
-            "price": 0.01244015,
+            "price": 0.01212211,
             "change24h": 80.3,
-            "market_cap": 11710003,
-            "volume": 7779813,
+            "market_cap": 11515464,
+            "volume": 7371395,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102175239/large/tscmgapqpfx5j4hu8gbs3aj85s7a.?1785895603",
@@ -21,10 +21,10 @@
         {
             "name": "Act I The AI Prophecy",
             "symbol": "ACT",
-            "price": 0.01121596,
+            "price": 0.01129407,
             "change24h": 4.4,
-            "market_cap": 10636583,
-            "volume": 41463118,
+            "market_cap": 10710892,
+            "volume": 38960869,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/50984/large/ai_prophecy.jpg?1729653897",
@@ -38,10 +38,10 @@
         {
             "name": "Bless",
             "symbol": "BLESS",
-            "price": 0.01319926,
+            "price": 0.01329516,
             "change24h": 7.6,
-            "market_cap": 24273455,
-            "volume": 9035948,
+            "market_cap": 24500411,
+            "volume": 8888737,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/69339/large/Layer_1_%284%29.png?1758523043",
@@ -55,10 +55,10 @@
         {
             "name": "Portal",
             "symbol": "PORTAL",
-            "price": 0.01200194,
+            "price": 0.01181517,
             "change24h": 3.9,
-            "market_cap": 11997680,
-            "volume": 7762585,
+            "market_cap": 11829504,
+            "volume": 7597332,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/35436/large/portal.jpeg?1708590254",
@@ -70,21 +70,21 @@
             "verdict": "Healthy momentum backed by good trading activity."
         },
         {
-            "name": "HOME",
-            "symbol": "HOME",
-            "price": 0.00943173,
-            "change24h": 7.8,
-            "market_cap": 40477400,
-            "volume": 74251289,
+            "name": "Audius",
+            "symbol": "AUDIO",
+            "price": 0.01245904,
+            "change24h": 2.1,
+            "market_cap": 18038510,
+            "volume": 6260906,
             "holders": 0,
             "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/54873/large/defi-app.png?1742235743",
-            "url": "https://www.coingecko.com/en/coins/home",
-            "loaf_score": 70,
-            "momentum": "Building \ud83c\udf31",
+            "logo": "https://coin-images.coingecko.com/coins/images/12913/large/audio-token-asset_2x.png?1747243328",
+            "url": "https://www.coingecko.com/en/coins/audius",
+            "loaf_score": 85,
+            "momentum": "Weak \ud83d\ude34",
             "risk": "Low",
-            "opportunity": "High",
-            "verdict": "Worth monitoring as momentum continues to build."
+            "opportunity": "Excellent",
+            "verdict": "Healthy momentum backed by good trading activity."
         }
     ]
 }
