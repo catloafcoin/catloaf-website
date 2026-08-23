@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-08-23 11:36 UTC",
+    "last_updated": "2026-08-23 11:59 UTC",
     "coins": [
         {
             "name": "CyberLeek",
             "symbol": "CYBERLEEK",
-            "price": 0.02552463,
+            "price": 0.02954359,
             "change24h": 1520.4,
-            "market_cap": 19412191,
-            "volume": 89593931,
+            "market_cap": 21558406,
+            "volume": 104998067,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102175616/large/u5p8iho92d1t5f8m2k95da1j3yer.?1787116786",
@@ -19,29 +19,12 @@
             "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
         },
         {
-            "name": "Official Winning Coin",
-            "symbol": "WINNING",
-            "price": 0.00094647,
-            "change24h": 68.8,
-            "market_cap": 941837,
-            "volume": 5772597,
-            "holders": 0,
-            "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/102175755/large/2Y0j7Tt2_400x400.jpg?1787433161",
-            "url": "https://www.coingecko.com/en/coins/official-winning-coin",
-            "loaf_score": 96,
-            "momentum": "Explosive \ud83d\ude80",
-            "risk": "High \u26a0\ufe0f",
-            "opportunity": "Exceptional \ud83c\udf5e",
-            "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
-        },
-        {
             "name": "Alon",
             "symbol": "ALON",
-            "price": 0.00668123,
+            "price": 0.00690917,
             "change24h": 12.4,
-            "market_cap": 6621398,
-            "volume": 11887884,
+            "market_cap": 6842810,
+            "volume": 12074031,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/53922/large/alon-logo.jpg?1737721293",
@@ -55,10 +38,10 @@
         {
             "name": "PURPLE PEPE",
             "symbol": "PURPE",
-            "price": 1.636e-05,
+            "price": 1.684e-05,
             "change24h": 15.5,
-            "market_cap": 6863943,
-            "volume": 6483285,
+            "market_cap": 7087479,
+            "volume": 6690810,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/38962/large/IMG_3953.jpeg?1719709952",
@@ -72,10 +55,10 @@
         {
             "name": "Wrapped MON",
             "symbol": "WMON",
-            "price": 0.0290349,
+            "price": 0.02960029,
             "change24h": 10.5,
-            "market_cap": 10991512,
-            "volume": 5105701,
+            "market_cap": 11185480,
+            "volume": 5248477,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/70784/large/wmon.png?1766028904",
@@ -85,6 +68,23 @@
             "risk": "Low",
             "opportunity": "Exceptional \ud83c\udf5e",
             "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
+        },
+        {
+            "name": "Portal",
+            "symbol": "PORTAL",
+            "price": 0.01310761,
+            "change24h": 9.7,
+            "market_cap": 11677110,
+            "volume": 48731607,
+            "holders": 0,
+            "age_hours": 0,
+            "logo": "https://coin-images.coingecko.com/coins/images/35436/large/portal.jpeg?1708590254",
+            "url": "https://www.coingecko.com/en/coins/portal-2",
+            "loaf_score": 85,
+            "momentum": "Building \ud83c\udf31",
+            "risk": "Low",
+            "opportunity": "Excellent",
+            "verdict": "Healthy momentum backed by good trading activity."
         }
     ]
 }
