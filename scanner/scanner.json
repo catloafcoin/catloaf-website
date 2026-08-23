@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-08-23 22:32 UTC",
+    "last_updated": "2026-08-23 22:59 UTC",
     "coins": [
         {
             "name": "CyberLeek",
             "symbol": "CYBERLEEK",
-            "price": 0.02496471,
+            "price": 0.02491665,
             "change24h": 312.7,
-            "market_cap": 18223404,
-            "volume": 65654754,
+            "market_cap": 18140864,
+            "volume": 62526155,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102175616/large/u5p8iho92d1t5f8m2k95da1j3yer.?1787116786",
@@ -21,10 +21,10 @@
         {
             "name": "Elon's Space Cat",
             "symbol": "CATALORIAN",
-            "price": 0.01449957,
+            "price": 0.01524666,
             "change24h": 269.2,
-            "market_cap": 14523128,
-            "volume": 39611033,
+            "market_cap": 15770244,
+            "volume": 41755695,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102175775/large/logo.png?1787493131",
@@ -38,10 +38,10 @@
         {
             "name": "Alon",
             "symbol": "ALON",
-            "price": 0.00827365,
+            "price": 0.007895,
             "change24h": 25.7,
-            "market_cap": 8190714,
-            "volume": 17038804,
+            "market_cap": 7814102,
+            "volume": 16042799,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/53922/large/alon-logo.jpg?1737721293",
@@ -53,12 +53,29 @@
             "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
         },
         {
+            "name": "Delysium",
+            "symbol": "AGI",
+            "price": 0.00433939,
+            "change24h": 26.8,
+            "market_cap": 11321741,
+            "volume": 8228512,
+            "holders": 0,
+            "age_hours": 0,
+            "logo": "https://coin-images.coingecko.com/coins/images/29299/large/AGI_logo_200.png?1696528251",
+            "url": "https://www.coingecko.com/en/coins/delysium",
+            "loaf_score": 97,
+            "momentum": "Strong \ud83d\udcc8",
+            "risk": "Low",
+            "opportunity": "Exceptional \ud83c\udf5e",
+            "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
+        },
+        {
             "name": "OG Fan Token",
             "symbol": "OG",
             "price": 2.98,
             "change24h": 11.7,
-            "market_cap": 14199919,
-            "volume": 7507608,
+            "market_cap": 14199155,
+            "volume": 10248788,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/11663/large/OG_400px_%282%29.png?1769068991",
@@ -68,23 +85,6 @@
             "risk": "Low",
             "opportunity": "Exceptional \ud83c\udf5e",
             "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
-        },
-        {
-            "name": "STONK",
-            "symbol": "STONK",
-            "price": 0.01024966,
-            "change24h": 17.6,
-            "market_cap": 9315457,
-            "volume": 4660755,
-            "holders": 0,
-            "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/102175239/large/tscmgapqpfx5j4hu8gbs3aj85s7a.?1785895603",
-            "url": "https://www.coingecko.com/en/coins/stonk-3",
-            "loaf_score": 86,
-            "momentum": "Building \ud83c\udf31",
-            "risk": "Medium",
-            "opportunity": "Excellent",
-            "verdict": "Healthy momentum backed by good trading activity."
         }
     ]
 }
