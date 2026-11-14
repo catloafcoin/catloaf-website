@@ -1,39 +1,22 @@
 {
-    "last_updated": "2026-11-14 16:01 UTC",
+    "last_updated": "2026-11-14 20:44 UTC",
     "coins": [
         {
-            "name": "ElizaOS",
-            "symbol": "ELIZAOS",
-            "price": 0.00026158,
-            "change24h": 10.24244,
-            "market_cap": 1957266,
-            "volume": 6259194,
+            "name": "Take-Two Interactive Software (Backpack Securities)",
+            "symbol": "TTWO",
+            "price": 230.19,
+            "change24h": 1.28235,
+            "market_cap": 4377349,
+            "volume": 29599075,
             "holders": 0,
             "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/70556/large/elizaOS_token_logo_high_quality.png?1763494093",
-            "url": "https://www.coingecko.com/en/coins/elizaos",
-            "loaf_score": 91,
-            "momentum": "Building \ud83c\udf31",
+            "logo": "https://coin-images.coingecko.com/coins/images/102175225/large/backpack_securities.png?1788858675",
+            "url": "https://www.coingecko.com/en/coins/take-two-interactive-software-backpack-securities",
+            "loaf_score": 85,
+            "momentum": "Weak \ud83d\ude34",
             "risk": "Medium",
-            "opportunity": "Exceptional \ud83c\udf5e",
-            "verdict": "Fresh out of the oven. Exceptional momentum with strong market activity."
-        },
-        {
-            "name": "Unitas",
-            "symbol": "UP",
-            "price": 0.15361,
-            "change24h": 14.91879,
-            "market_cap": 33170804,
-            "volume": 17310776,
-            "holders": 0,
-            "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/71531/large/Logo_Mark_200.png?1772722048",
-            "url": "https://www.coingecko.com/en/coins/unitas",
-            "loaf_score": 76,
-            "momentum": "Building \ud83c\udf31",
-            "risk": "Low",
-            "opportunity": "High",
-            "verdict": "Worth monitoring as momentum continues to build."
+            "opportunity": "Excellent",
+            "verdict": "Healthy momentum backed by good trading activity."
         }
     ]
 }
