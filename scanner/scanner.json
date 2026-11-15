@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-11-14 20:44 UTC",
+    "last_updated": "2026-11-15 00:25 UTC",
     "coins": [
         {
             "name": "Take-Two Interactive Software (Backpack Securities)",
             "symbol": "TTWO",
-            "price": 230.19,
-            "change24h": 1.28235,
-            "market_cap": 4377349,
-            "volume": 29599075,
+            "price": 229.9,
+            "change24h": 0.62785,
+            "market_cap": 4372201,
+            "volume": 30517512,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102175225/large/backpack_securities.png?1788858675",
@@ -17,6 +17,40 @@
             "risk": "Medium",
             "opportunity": "Excellent",
             "verdict": "Healthy momentum backed by good trading activity."
+        },
+        {
+            "name": "Apple xStock",
+            "symbol": "AAPLX",
+            "price": 357.39,
+            "change24h": 0.12192,
+            "market_cap": 12503549,
+            "volume": 5702420,
+            "holders": 0,
+            "age_hours": 0,
+            "logo": "https://coin-images.coingecko.com/coins/images/55586/large/Ticker_AAPL__Company_Name_Apple_Inc.__size_200x200_2x.png?1746807196",
+            "url": "https://www.coingecko.com/en/coins/apple-xstock",
+            "loaf_score": 85,
+            "momentum": "Weak \ud83d\ude34",
+            "risk": "Low",
+            "opportunity": "Excellent",
+            "verdict": "Healthy momentum backed by good trading activity."
+        },
+        {
+            "name": "The9bit",
+            "symbol": "9BIT",
+            "price": 0.04848314,
+            "change24h": 0.08422,
+            "market_cap": 0,
+            "volume": 5766408,
+            "holders": 0,
+            "age_hours": 0,
+            "logo": "https://coin-images.coingecko.com/coins/images/71396/large/v1.png?1767864318",
+            "url": "https://www.coingecko.com/en/coins/the9bit",
+            "loaf_score": 78,
+            "momentum": "Weak \ud83d\ude34",
+            "risk": "High \u26a0\ufe0f",
+            "opportunity": "High",
+            "verdict": "Worth monitoring as momentum continues to build."
         }
     ]
 }
