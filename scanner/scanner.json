@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-11-15 00:25 UTC",
+    "last_updated": "2026-11-15 07:01 UTC",
     "coins": [
         {
             "name": "Take-Two Interactive Software (Backpack Securities)",
             "symbol": "TTWO",
-            "price": 229.9,
-            "change24h": 0.62785,
-            "market_cap": 4372201,
-            "volume": 30517512,
+            "price": 229.32,
+            "change24h": 0.38052,
+            "market_cap": 4360294,
+            "volume": 29927459,
             "holders": 0,
             "age_hours": 0,
             "logo": "https://coin-images.coingecko.com/coins/images/102175225/large/backpack_securities.png?1788858675",
@@ -19,38 +19,21 @@
             "verdict": "Healthy momentum backed by good trading activity."
         },
         {
-            "name": "Apple xStock",
-            "symbol": "AAPLX",
-            "price": 357.39,
-            "change24h": 0.12192,
-            "market_cap": 12503549,
-            "volume": 5702420,
+            "name": "SpaceX (Backpack Securities)",
+            "symbol": "SPCX",
+            "price": 137.46,
+            "change24h": 0.95779,
+            "market_cap": 12883425,
+            "volume": 9273305,
             "holders": 0,
             "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/55586/large/Ticker_AAPL__Company_Name_Apple_Inc.__size_200x200_2x.png?1746807196",
-            "url": "https://www.coingecko.com/en/coins/apple-xstock",
+            "logo": "https://coin-images.coingecko.com/coins/images/102173747/large/HbrI04tM_400x400.jpg?1781237061",
+            "url": "https://www.coingecko.com/en/coins/spacex-backpack-securities",
             "loaf_score": 85,
             "momentum": "Weak \ud83d\ude34",
             "risk": "Low",
             "opportunity": "Excellent",
             "verdict": "Healthy momentum backed by good trading activity."
-        },
-        {
-            "name": "The9bit",
-            "symbol": "9BIT",
-            "price": 0.04848314,
-            "change24h": 0.08422,
-            "market_cap": 0,
-            "volume": 5766408,
-            "holders": 0,
-            "age_hours": 0,
-            "logo": "https://coin-images.coingecko.com/coins/images/71396/large/v1.png?1767864318",
-            "url": "https://www.coingecko.com/en/coins/the9bit",
-            "loaf_score": 78,
-            "momentum": "Weak \ud83d\ude34",
-            "risk": "High \u26a0\ufe0f",
-            "opportunity": "High",
-            "verdict": "Worth monitoring as momentum continues to build."
         }
     ]
 }
